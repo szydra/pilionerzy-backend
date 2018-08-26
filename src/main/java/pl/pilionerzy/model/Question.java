@@ -21,7 +21,7 @@ public class Question {
 
     private String content;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Answer> answers;
 
