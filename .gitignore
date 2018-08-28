@@ -1,4 +1,6 @@
 target/
+*.jar
+questions_loaded.json
 
 ### STS ###
 .apt_generated
