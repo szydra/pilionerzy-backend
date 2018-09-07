@@ -13,7 +13,7 @@ public class LevelUtils {
         return currentLevel + 1;
     }
 
-    public static int getQuaranteedLevel(int currentLevel) {
+    public static int getGuaranteedLevel(int currentLevel) {
         if (currentLevel < 0 || currentLevel > 12) {
             throw new IllegalArgumentException("Game level has to be between 0 and 12");
         }

@@ -38,7 +38,7 @@ public class AnswerService {
     private void updateGameForIncorrect(Game game) {
         int currentLevel = game.getLevel();
         game.setActive(false);
-        game.setLevel(LevelUtils.getQuaranteedLevel(currentLevel));
+        game.setLevel(LevelUtils.getGuaranteedLevel(currentLevel));
     }
 
 }
