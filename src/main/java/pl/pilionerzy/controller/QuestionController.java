@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.service.QuestionService;
 
+@CrossOrigin(origins = "${allowed.origins}")
 @RestController
 @RequestMapping("/question")
 public class QuestionController {
@@ -25,4 +26,5 @@ public class QuestionController {
     public void add(@RequestBody Question question) {
         questionService.save(question);
     }
+
 }

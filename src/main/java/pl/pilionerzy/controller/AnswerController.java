@@ -8,6 +8,7 @@ import pl.pilionerzy.util.PrefixUtils;
 import java.util.Collections;
 import java.util.Map;
 
+@CrossOrigin(origins = "${allowed.origins}")
 @RestController
 @RequestMapping("/answer")
 public class AnswerController {
