@@ -10,7 +10,7 @@ public class GameUtils {
             throw new GameException(String.format("Game with id %s is inactive", game.getId()));
         }
         if (game.getAskedQuestions().size() != game.getLevel()) {
-            throw new GameException("Too many requests for game with id " + game.getId());
+            throw new GameException("Invalid number of requests for game with id " + game.getId());
         }
     }
 
