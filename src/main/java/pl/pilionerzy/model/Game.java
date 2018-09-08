@@ -1,5 +1,6 @@
 package pl.pilionerzy.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,9 +26,11 @@ public class Game {
 
     private Integer level;
 
+    @JsonIgnore
     @ManyToMany
     private Set<Question> askedQuestions;
 
+    @JsonIgnore
     private Long lastAskedQuestionId;
 
     @Override
