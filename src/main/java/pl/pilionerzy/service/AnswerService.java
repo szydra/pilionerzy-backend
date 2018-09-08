@@ -3,7 +3,9 @@ package pl.pilionerzy.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pilionerzy.model.Game;
+import pl.pilionerzy.util.GameUtils;
 import pl.pilionerzy.util.LevelUtils;
+import pl.pilionerzy.util.RequestType;
 
 @Service
 public class AnswerService {
@@ -17,6 +19,7 @@ public class AnswerService {
 
     public Character processRequest(Long gameId, Character selectedPrefix) {
         Game game = gameService.findById(gameId);
+        GameUtils.validate(game, RequestType.ANSWER);
         Character correct = gameService.getCorrectAnswerPrefix(game);
         if (!correct.equals(selectedPrefix)) {
             updateGameForIncorrect(game);

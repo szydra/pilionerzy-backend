@@ -9,6 +9,7 @@ import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.util.GameUtils;
+import pl.pilionerzy.util.RequestType;
 
 import java.util.Random;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class QuestionService {
 
     public Question getNextQuestion(Long gameId) {
         Game game = gameService.findById(gameId);
-        GameUtils.validate(game);
+        GameUtils.validate(game, RequestType.QUESTION);
         return getAnotherQuestion(game);
     }
 
