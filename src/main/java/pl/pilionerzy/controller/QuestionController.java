@@ -7,7 +7,7 @@ import pl.pilionerzy.service.QuestionService;
 
 @CrossOrigin(origins = "${allowed.origins}")
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/questions")
 public class QuestionController {
 
     private QuestionService questionService;
@@ -17,13 +17,14 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @GetMapping("/get/{gameId}")
-    public Question getByGameId(@PathVariable Long gameId) {
+    @GetMapping(params = "game-id")
+    public Question getByGameId(@RequestParam("game-id") Long gameId) {
         return questionService.getNextQuestion(gameId);
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public void add(@RequestBody Question question) {
+        // TODO: 18.10.18  Use QuestionDTO
         questionService.save(question);
     }
 
