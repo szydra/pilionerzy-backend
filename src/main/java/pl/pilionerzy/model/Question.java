@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,14 +22,20 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank
     private String content;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     @JsonManagedReference
+    @Size(min = 4, max = 4)
     private List<Answer> answers;
 
     @JsonProperty(access = Access.WRITE_ONLY)
+    @NotNull
     private Character correctAnswer;
+
+    @NotNull
+    private Boolean active;
 
     @Override
     public String toString() {

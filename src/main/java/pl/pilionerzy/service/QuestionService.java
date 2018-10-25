@@ -37,20 +37,22 @@ public class QuestionService {
         return getAnotherQuestion(game);
     }
 
+    //TODO Prevent infinite loop; HTTP status 508
     private Question getAnotherQuestion(Game game) {
         Set<Question> askedQuestions = game.getAskedQuestions();
         Question question;
         do {
             question = getRandomQuestion();
-        } while (askedQuestions.contains(question));
+        } while (!question.getActive() && askedQuestions.contains(question));
         gameService.updateLastQuestion(game, question);
         return question;
     }
 
+    //TODO Improve performance
     private Question getRandomQuestion() {
         Random random = new Random();
-        int page = random.nextInt((int) questionDao.count());
-        Page<Question> questionPage = questionDao.findAll(PageRequest.of(page, 1));
+        int page = random.nextInt((int) questionDao.countByActive(true));
+        Page<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {

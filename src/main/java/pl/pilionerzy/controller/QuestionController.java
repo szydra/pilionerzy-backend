@@ -2,6 +2,8 @@ package pl.pilionerzy.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pl.pilionerzy.dto.NewQuestionDto;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.service.QuestionService;
 
@@ -10,10 +12,12 @@ import pl.pilionerzy.service.QuestionService;
 @RequestMapping("/questions")
 public class QuestionController {
 
+    private DtoMapper dtoMapper;
     private QuestionService questionService;
 
     @Autowired
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(DtoMapper dtoMapper, QuestionService questionService) {
+        this.dtoMapper = dtoMapper;
         this.questionService = questionService;
     }
 
@@ -23,9 +27,8 @@ public class QuestionController {
     }
 
     @PostMapping
-    public void add(@RequestBody Question question) {
-        // TODO: 18.10.18  Use QuestionDTO
-        questionService.save(question);
+    public void add(@RequestBody NewQuestionDto question) {
+        questionService.save(dtoMapper.mapToModel(question));
     }
 
 }

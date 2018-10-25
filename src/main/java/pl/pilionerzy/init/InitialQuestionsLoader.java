@@ -57,6 +57,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
             LOGGER.warn("File {} found. Initial questions will not be added", QUESTIONS_JSON_LOADED);
         } else {
             List<Question> initialQuestions = readQuestions(questionsJson);
+            initialQuestions.forEach(question -> question.setActive(true));
             questionDao.saveAll(initialQuestions);
             LOGGER.info("{} initial questions added", initialQuestions.size());
             Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
