@@ -43,12 +43,11 @@ public class QuestionService {
         Question question;
         do {
             question = getRandomQuestion();
-        } while (!question.getActive() && askedQuestions.contains(question));
+        } while (askedQuestions.contains(question));
         gameService.updateLastQuestion(game, question);
         return question;
     }
 
-    //TODO Improve performance
     private Question getRandomQuestion() {
         Random random = new Random();
         int page = random.nextInt((int) questionDao.countByActive(true));
