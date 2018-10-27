@@ -110,26 +110,26 @@
     "correctAnswer": "A"
   },
   {
-    "content": "W którym z poniższych miast znajduje się instytut fizyki, będący na światowym poziomie?",
+    "content": "Która z podanych liczb może być liczbą boków wielokąta foremnego, który da się skonstruować przy użyciu cyrkla i linijki?",
     "answers": [
       {
         "prefix": "A",
-        "content": "Moskwa"
+        "content": "\\(33\\)"
       },
       {
         "prefix": "B",
-        "content": "Mińsk"
+        "content": "\\(34\\)"
       },
       {
         "prefix": "C",
-        "content": "Chorzów"
+        "content": "\\(35\\)"
       },
       {
         "prefix": "D",
-        "content": "Czarnobyl"
+        "content": "\\(36\\)"
       }
     ],
-    "correctAnswer": "C"
+    "correctAnswer": "B"
   },
   {
     "content": "Jak nazywa się najgorsza przeglądarka internetowa?",
@@ -506,7 +506,7 @@
     "correctAnswer": "B"
   },
   {
-    "content": "Która z poniższych linii (kodu w Javie) powoduje błąd kompilacji?",
+    "content": "Która z poniższych linii kodu w Javie powoduje błąd kompilacji?",
     "answers": [
       {
         "prefix": "A",
@@ -526,5 +526,27 @@
       }
     ],
     "correctAnswer": "B"
+  },
+  {
+    "content": "Która z poniższych liczb może być wartością \\(\\mathrm{i}^\\mathrm{i}\\,\\)?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(\\mathrm{i}\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(-1\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(\\pi/2\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(\\mathrm{e}^{-\\pi/2}\\)"
+      }
+    ],
+    "correctAnswer": "D"
   }
 ]
