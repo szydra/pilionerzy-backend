@@ -61,7 +61,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
             questionDao.saveAll(initialQuestions);
             LOGGER.info("{} initial questions added", initialQuestions.size());
             Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
-            LOGGER.info("File {} renamed successfully", QUESTIONS_JSON);
+            LOGGER.info("File {} renamed", QUESTIONS_JSON);
         }
     }
 
