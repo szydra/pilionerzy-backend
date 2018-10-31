@@ -6,6 +6,7 @@ import pl.pilionerzy.dao.GameDao;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import java.util.Set;
@@ -42,7 +43,7 @@ public class GameService {
         return gameDao.save(game);
     }
 
-    public Character getCorrectAnswerPrefix(Game game) {
+    public Prefix getCorrectAnswerPrefix(Game game) {
         Long lastAskedQuestionId = game.getLastAskedQuestionId();
         return game.getAskedQuestions().stream()
                 .filter(q -> lastAskedQuestionId.equals(q.getId()))

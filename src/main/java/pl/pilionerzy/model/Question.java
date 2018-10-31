@@ -32,7 +32,8 @@ public class Question {
 
     @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull
-    private Character correctAnswer;
+    @Enumerated(EnumType.STRING)
+    private Prefix correctAnswer;
 
     @NotNull
     private Boolean active;

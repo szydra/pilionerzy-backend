@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.pilionerzy.model.Prefix;
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ public class AnswerDto {
     @JsonBackReference
     private NewQuestionDto question;
 
-    private Character prefix;
+    private Prefix prefix;
 
     private String content;
 

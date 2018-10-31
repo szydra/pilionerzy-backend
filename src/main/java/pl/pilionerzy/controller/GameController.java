@@ -3,9 +3,9 @@ package pl.pilionerzy.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
-import pl.pilionerzy.util.PrefixUtils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,18 +30,16 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/answers")
-    public Map<String, String> sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, String> answer) {
-        String rawSelected = answer.get("selected");
-        PrefixUtils.validatePrefix(rawSelected);
-        Character selected = rawSelected.trim().charAt(0);
-        Character correct = answerService.processRequest(gameId, selected);
-        return Collections.singletonMap("prefix", String.valueOf(correct));
+    public Map<String, Prefix> sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
+        Prefix selected = answer.get("selected");
+        Prefix correct = answerService.processRequest(gameId, selected);
+        return Collections.singletonMap("prefix", correct);
     }
 
     @PutMapping("/{gameId}/stop")
-    public Map<String, String> stopGame(@PathVariable Long gameId) {
+    public Map<String, Prefix> stopGame(@PathVariable Long gameId) {
         Game game = gameService.stopGame(gameId);
-        return Collections.singletonMap("prefix", String.valueOf(gameService.getCorrectAnswerPrefix(game)));
+        return Collections.singletonMap("prefix", gameService.getCorrectAnswerPrefix(game));
     }
 
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.pilionerzy.model.Prefix;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class NewQuestionDto {
     @JsonManagedReference
     private List<AnswerDto> answers;
 
-    private Character correctAnswer;
+    private Prefix correctAnswer;
 
     @Override
     public String toString() {

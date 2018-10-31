@@ -25,7 +25,8 @@ public class Answer {
     private Question question;
 
     @NotNull
-    private Character prefix;
+    @Enumerated(EnumType.STRING)
+    private Prefix prefix;
 
     @NotBlank
     private String content;
