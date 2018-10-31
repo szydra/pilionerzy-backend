@@ -23,14 +23,14 @@ public class QuestionTest {
         Answer answerB = new Answer();
         answerA.setId(456L);
         answerA.setContent("sample answer content");
-        answerA.setPrefix('A');
+        answerA.setPrefix(Prefix.A);
         answerB.setId(789L);
         answerB.setContent("sample answer content");
-        answerB.setPrefix('B');
+        answerB.setPrefix(Prefix.B);
         question.setId(123L);
         question.setContent("sample question content");
         question.setAnswers(Arrays.asList(answerA, answerB));
-        question.setCorrectAnswer('A');
+        question.setCorrectAnswer(Prefix.A);
         answerA.setQuestion(question);
         answerB.setQuestion(question);
     }
@@ -54,7 +54,7 @@ public class QuestionTest {
     public void stringToJsonQuestionShouldSetCorrectAnswer() throws IOException {
         String json = "{\"correctAnswer\":\"C\"}";
         Question questionParsed = objectMapper.readValue(json, Question.class);
-        assertEquals(Character.valueOf('C'), questionParsed.getCorrectAnswer());
+        assertEquals(Prefix.C, questionParsed.getCorrectAnswer());
     }
 
     @Test

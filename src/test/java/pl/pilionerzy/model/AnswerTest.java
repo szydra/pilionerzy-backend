@@ -23,11 +23,11 @@ public class AnswerTest {
         Question question = new Question();
         answer.setId(456L);
         answer.setContent("sample answer content");
-        answer.setPrefix('A');
+        answer.setPrefix(Prefix.A);
         question.setId(123L);
         question.setContent("sample question content");
         question.setAnswers(Collections.singletonList(answer));
-        question.setCorrectAnswer('A');
+        question.setCorrectAnswer(Prefix.A);
         answer.setQuestion(question);
     }
 
