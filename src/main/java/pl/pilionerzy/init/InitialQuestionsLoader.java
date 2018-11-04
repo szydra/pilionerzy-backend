@@ -11,7 +11,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.dao.QuestionDao;
-import pl.pilionerzy.model.Question;
+import pl.pilionerzy.dto.NewQuestionDto;
+import pl.pilionerzy.mapping.DtoMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,12 +32,14 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     private static final String QUESTIONS_JSON_LOADED = "questions_loaded.json";
 
+    private DtoMapper dtoMapper;
     private QuestionDao questionDao;
 
     private ResourceLoader resourceLoader = new FileSystemResourceLoader();
 
     @Autowired
-    public InitialQuestionsLoader(QuestionDao questionDao) {
+    public InitialQuestionsLoader(DtoMapper dtoMapper, QuestionDao questionDao) {
+        this.dtoMapper = dtoMapper;
         this.questionDao = questionDao;
     }
 
@@ -56,19 +59,21 @@ class InitialQuestionsLoader implements CommandLineRunner {
         if (questionsLoadedJson.exists()) {
             LOGGER.warn("File {} found. Initial questions will not be added", QUESTIONS_JSON_LOADED);
         } else {
-            List<Question> initialQuestions = readQuestions(questionsJson);
-            initialQuestions.forEach(question -> question.setActive(true));
-            questionDao.saveAll(initialQuestions);
+            List<NewQuestionDto> initialQuestions = readQuestions(questionsJson);
+            initialQuestions.stream()
+                    .map(dtoMapper::mapToModel)
+                    .peek(question -> question.setActive(true))
+                    .forEach(questionDao::save);
             LOGGER.info("{} initial questions added", initialQuestions.size());
             Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
             LOGGER.info("File {} renamed", QUESTIONS_JSON);
         }
     }
 
-    private List<Question> readQuestions(Resource questionsJson) throws IOException {
+    private List<NewQuestionDto> readQuestions(Resource questionsJson) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(questionsJson.getFile(),
-                new TypeReference<List<Question>>() {
+                new TypeReference<List<NewQuestionDto>>() {
                 });
     }
 
