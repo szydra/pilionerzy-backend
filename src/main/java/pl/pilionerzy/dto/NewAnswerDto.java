@@ -9,7 +9,7 @@ import pl.pilionerzy.model.Prefix;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AnswerDto {
+public class NewAnswerDto {
 
     @JsonBackReference
     private NewQuestionDto question;

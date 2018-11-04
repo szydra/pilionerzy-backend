@@ -3,8 +3,8 @@ package pl.pilionerzy.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.NewQuestionDto;
+import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.mapping.DtoMapper;
-import pl.pilionerzy.model.Question;
 import pl.pilionerzy.service.QuestionService;
 
 @CrossOrigin(origins = "${allowed.origins}")
@@ -22,8 +22,8 @@ public class QuestionController {
     }
 
     @GetMapping(params = "game-id")
-    public Question getByGameId(@RequestParam("game-id") Long gameId) {
-        return questionService.getNextQuestion(gameId);
+    public QuestionDto getByGameId(@RequestParam("game-id") Long gameId) {
+        return dtoMapper.mapToDto(questionService.getNextQuestion(gameId));
     }
 
     @PostMapping

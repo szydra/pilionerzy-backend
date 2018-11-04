@@ -11,9 +11,4 @@ public interface QuestionDao extends PagingAndSortingRepository<Question, Long> 
 
     Page<Question> findByActive(Boolean active, Pageable pageable);
 
-    // TODO: 25.10.18 Consider using in the future
-    // long countByIdNotIn(Set<Long> excludedIds);
-
-    // Page<Question> findFirstByIdNotIn(Set<Long> excludedIds, Pageable pageable);
-
 }

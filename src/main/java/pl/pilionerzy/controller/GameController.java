@@ -2,7 +2,8 @@ package pl.pilionerzy.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pl.pilionerzy.model.Game;
+import pl.pilionerzy.dto.GameDto;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
@@ -16,17 +17,19 @@ import java.util.Map;
 public class GameController {
 
     private AnswerService answerService;
+    private DtoMapper dtoMapper;
     private GameService gameService;
 
     @Autowired
-    public GameController(AnswerService answerService, GameService gameService) {
+    public GameController(AnswerService answerService, DtoMapper dtoMapper, GameService gameService) {
         this.answerService = answerService;
+        this.dtoMapper = dtoMapper;
         this.gameService = gameService;
     }
 
     @GetMapping("/start-new")
-    public Game createNewGame() {
-        return gameService.startNewGame();
+    public GameDto createNewGame() {
+        return dtoMapper.mapToDto(gameService.startNewGame());
     }
 
     @PostMapping("/{gameId}/answers")
@@ -38,8 +41,8 @@ public class GameController {
 
     @PutMapping("/{gameId}/stop")
     public Map<String, Prefix> stopGame(@PathVariable Long gameId) {
-        Game game = gameService.stopGame(gameId);
-        return Collections.singletonMap("prefix", gameService.getCorrectAnswerPrefix(game));
+        Prefix prefix = gameService.stopAndGetCorrectAnswerPrefix(gameId);
+        return Collections.singletonMap("prefix", prefix);
     }
 
 }
