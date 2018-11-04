@@ -1,7 +1,5 @@
 package pl.pilionerzy.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,11 +15,10 @@ public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
     private Long id;
 
     @ManyToOne
-    @JsonBackReference
+    @NotNull
     private Question question;
 
     @NotNull
@@ -48,4 +45,5 @@ public class Answer {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

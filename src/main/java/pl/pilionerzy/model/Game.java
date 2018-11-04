@@ -1,11 +1,11 @@
 package pl.pilionerzy.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -22,15 +22,15 @@ public class Game {
     @CreationTimestamp
     private LocalDateTime startTime;
 
+    @NotNull
     private Boolean active;
 
+    @NotNull
     private Integer level;
 
-    @JsonIgnore
     @ManyToMany
     private Set<Question> askedQuestions;
 
-    @JsonIgnore
     private Long lastAskedQuestionId;
 
     @Override

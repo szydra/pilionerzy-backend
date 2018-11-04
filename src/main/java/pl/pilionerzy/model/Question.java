@@ -1,8 +1,5 @@
 package pl.pilionerzy.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,11 +23,9 @@ public class Question {
     private String content;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    @JsonManagedReference
     @Size(min = 4, max = 4)
     private List<Answer> answers;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
     @NotNull
     @Enumerated(EnumType.STRING)
     private Prefix correctAnswer;
