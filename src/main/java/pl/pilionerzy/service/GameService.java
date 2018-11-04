@@ -34,6 +34,11 @@ public class GameService {
         return save(game);
     }
 
+    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId){
+        Game game = stopGame(gameId);
+        return getCorrectAnswerPrefix(game);
+    }
+
     Game findById(Long gameId) {
         return gameDao.findById(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
