@@ -62,8 +62,10 @@ class InitialQuestionsLoader implements CommandLineRunner {
             List<NewQuestionDto> initialQuestions = readQuestions(questionsJson);
             initialQuestions.stream()
                     .map(dtoMapper::mapToModel)
-                    .peek(question -> question.setActive(true))
-                    .forEach(questionDao::save);
+                    .forEach(question -> {
+                        question.setActive(true);
+                        questionDao.save(question);
+                    });
             LOGGER.info("{} initial questions added", initialQuestions.size());
             Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
             LOGGER.info("File {} renamed", QUESTIONS_JSON);

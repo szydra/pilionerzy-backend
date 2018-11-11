@@ -51,8 +51,8 @@ public class NewQuestionDtoTest {
         NewQuestionDto question = new NewQuestionDto();
         List<NewAnswerDto> answers = Arrays.stream(Prefix.values())
                 .map(this::mapToAnswer)
-                .peek(answer -> answer.setQuestion(question))
                 .collect(Collectors.toList());
+        answers.forEach(answer -> answer.setQuestion(question));
         question.setContent("content");
         question.setAnswers(answers);
         question.setCorrectAnswer(Prefix.C);

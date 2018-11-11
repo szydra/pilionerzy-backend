@@ -50,8 +50,8 @@ public class QuestionDtoTest {
         QuestionDto question = new QuestionDto();
         List<AnswerDto> answers = Arrays.stream(Prefix.values())
                 .map(this::mapToAnswer)
-                .peek(answer -> answer.setQuestion(question))
                 .collect(Collectors.toList());
+        answers.forEach(answer -> answer.setQuestion(question));
         question.setContent("content");
         question.setAnswers(answers);
         return question;
