@@ -2,48 +2,55 @@ package pl.pilionerzy.util;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 public class LevelUtilsTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNegativeLevel() {
-        LevelUtils.getGuaranteedLevel(-5);
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> LevelUtils.getGuaranteedLevel(-5));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testTooLargeLevel() {
-        LevelUtils.getGuaranteedLevel(13);
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> LevelUtils.getGuaranteedLevel(13));
     }
 
     @Test
     public void testLevel10() {
-        assertEquals(7, LevelUtils.getGuaranteedLevel(10));
+        int guaranteedLevel = LevelUtils.getGuaranteedLevel(10);
+        assertThat(guaranteedLevel).isEqualTo(7);
     }
 
     @Test
     public void testLevel7() {
-        assertEquals(7, LevelUtils.getGuaranteedLevel(7));
+        int guaranteedLevel = LevelUtils.getGuaranteedLevel(7);
+        assertThat(guaranteedLevel).isEqualTo(7);
     }
 
     @Test
     public void testLevel1() {
-        assertEquals(0, LevelUtils.getGuaranteedLevel(1));
+        int guaranteedLevel = LevelUtils.getGuaranteedLevel(1);
+        assertThat(guaranteedLevel).isZero();
     }
 
     @Test
     public void testNextLevel() {
-        assertEquals(4, LevelUtils.getNextLevel(3));
+        int nextLevel = LevelUtils.getNextLevel(3);
+        assertThat(nextLevel).isEqualTo(4);
     }
 
     @Test
     public void testHighestLevel() {
-        assertTrue(LevelUtils.isHighestLevel(12));
+        assertThat(LevelUtils.isHighestLevel(12)).isTrue();
     }
 
     @Test
     public void testNonHighestLevel() {
-        assertFalse(LevelUtils.isHighestLevel(11));
+        assertThat(LevelUtils.isHighestLevel(11)).isFalse();
     }
 
 }
