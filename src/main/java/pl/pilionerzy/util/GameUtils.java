@@ -2,6 +2,8 @@ package pl.pilionerzy.util;
 
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Prefix;
+import pl.pilionerzy.model.Question;
 
 public class GameUtils {
 
@@ -23,6 +25,15 @@ public class GameUtils {
         if (!valid) {
             throw new GameException("Invalid number of requests for game with id " + game.getId());
         }
+    }
+
+    public static Prefix getCorrectAnswerPrefix(Game game) {
+        Long lastAskedQuestionId = game.getLastAskedQuestionId();
+        return game.getAskedQuestions().stream()
+                .filter(q -> lastAskedQuestionId.equals(q.getId()))
+                .map(Question::getCorrectAnswer)
+                .findAny()
+                .orElseThrow(() -> new GameException("Game does not have last asked question"));
     }
 
 }

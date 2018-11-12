@@ -3,11 +3,11 @@ package pl.pilionerzy.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.pilionerzy.dao.GameDao;
-import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.util.GameUtils;
 
 import java.util.Set;
 
@@ -34,9 +34,9 @@ public class GameService {
         return save(game);
     }
 
-    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId){
+    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId) {
         Game game = stopGame(gameId);
-        return getCorrectAnswerPrefix(game);
+        return GameUtils.getCorrectAnswerPrefix(game);
     }
 
     Game findById(Long gameId) {
@@ -46,15 +46,6 @@ public class GameService {
 
     Game save(Game game) {
         return gameDao.save(game);
-    }
-
-    public Prefix getCorrectAnswerPrefix(Game game) {
-        Long lastAskedQuestionId = game.getLastAskedQuestionId();
-        return game.getAskedQuestions().stream()
-                .filter(q -> lastAskedQuestionId.equals(q.getId()))
-                .map(Question::getCorrectAnswer)
-                .findAny()
-                .orElseThrow(() -> new GameException("Game does not have last asked question"));
     }
 
     void updateLastQuestion(Game game, Question question) {

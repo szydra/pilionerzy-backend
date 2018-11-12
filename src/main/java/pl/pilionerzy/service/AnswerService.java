@@ -21,7 +21,7 @@ public class AnswerService {
     public Prefix processRequest(Long gameId, Prefix selectedPrefix) {
         Game game = gameService.findById(gameId);
         GameUtils.validate(game, RequestType.ANSWER);
-        Prefix correct = gameService.getCorrectAnswerPrefix(game);
+        Prefix correct = GameUtils.getCorrectAnswerPrefix(game);
         if (correct != selectedPrefix) {
             updateGameForIncorrect(game);
         } else {
