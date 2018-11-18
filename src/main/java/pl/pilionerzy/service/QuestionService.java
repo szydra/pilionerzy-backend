@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import pl.pilionerzy.dao.QuestionDao;
-import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.util.GameUtils;
@@ -17,8 +17,12 @@ import java.util.Set;
 @Service
 public class QuestionService {
 
-    private GameService gameService;
+    /**
+     * The number of attempts to get another question from the database.
+     */
+    static final int LIMIT = 12;
 
+    private GameService gameService;
     private QuestionDao questionDao;
 
     @Autowired
@@ -37,11 +41,15 @@ public class QuestionService {
         return getAnotherQuestion(game);
     }
 
-    //TODO Prevent infinite loop; HTTP status 508
     private Question getAnotherQuestion(Game game) {
         Set<Question> askedQuestions = game.getAskedQuestions();
         Question question;
+        int attempts = 0;
         do {
+            // Prevent an infinite loop
+            if (attempts++ >= LIMIT) {
+                throw new NotEnoughDataException("Cannot get another question");
+            }
             question = getRandomQuestion();
         } while (askedQuestions.contains(question));
         gameService.updateLastQuestion(game, question);
@@ -55,7 +63,7 @@ public class QuestionService {
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {
-            throw new GameException("Cannot get another question");
+            throw new NotEnoughDataException("Cannot get another question");
         }
     }
 
