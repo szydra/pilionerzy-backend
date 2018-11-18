@@ -82,7 +82,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
     }
 
     private void rename(Resource questionsJson, Resource questionsLoadedJson) throws IOException {
-        if (environment.acceptsProfiles("test")) {
+        if (environment.acceptsProfiles("dev", "test")) {
             return;
         }
         Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
