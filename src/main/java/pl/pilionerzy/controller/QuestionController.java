@@ -7,6 +7,8 @@ import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.service.QuestionService;
 
+import javax.validation.Valid;
+
 @CrossOrigin(origins = "${allowed.origins}")
 @RestController
 @RequestMapping("/questions")
@@ -27,7 +29,7 @@ public class QuestionController {
     }
 
     @PostMapping
-    public void add(@RequestBody NewQuestionDto question) {
+    public void add(@Valid @RequestBody NewQuestionDto question) {
         questionService.save(dtoMapper.mapToModel(question));
     }
 

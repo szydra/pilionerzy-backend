@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.pilionerzy.model.Prefix;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Getter
@@ -12,10 +14,13 @@ import java.util.Objects;
 public class NewAnswerDto {
 
     @JsonBackReference
+    @NotNull
     private NewQuestionDto question;
 
+    @NotNull
     private Prefix prefix;
 
+    @NotBlank
     private String content;
 
     @Override
