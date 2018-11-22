@@ -89,7 +89,8 @@ public class QuestionControllerTest {
         question.setContent("What is bad?");
         doReturn(question).when(questionService).getNextQuestion(1L);
 
-        String responseContent = mvc.perform(get("/questions?game-id=1")
+        String responseContent = mvc.perform(get("/questions")
+                .param("game-id", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

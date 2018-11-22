@@ -28,7 +28,7 @@ public class GameService {
         return save(game);
     }
 
-    public Game stopGame(Long gameId) {
+    Game stopGame(Long gameId) {
         Game game = findById(gameId);
         game.setActive(false);
         return save(game);
