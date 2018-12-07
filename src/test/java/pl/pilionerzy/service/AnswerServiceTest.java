@@ -55,8 +55,9 @@ public class AnswerServiceTest {
 
         verify(gameService).save(gameArgumentCaptor.capture());
         Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getActive()).isTrue();
-        assertThat(capturedGame.getLevel()).isEqualTo(1);
+        assertThat(capturedGame)
+                .hasFieldOrPropertyWithValue("active", true)
+                .hasFieldOrPropertyWithValue("level", 1);
     }
 
     @Test
@@ -68,8 +69,9 @@ public class AnswerServiceTest {
 
         verify(gameService).save(gameArgumentCaptor.capture());
         Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getActive()).isFalse();
-        assertThat(capturedGame.getLevel()).isZero();
+        assertThat(capturedGame)
+                .hasFieldOrPropertyWithValue("active", false)
+                .hasFieldOrPropertyWithValue("level", 0);
     }
 
     @Test
@@ -84,8 +86,9 @@ public class AnswerServiceTest {
 
         verify(gameService).save(gameArgumentCaptor.capture());
         Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getActive()).isFalse();
-        assertThat(capturedGame.getLevel()).isEqualTo(12);
+        assertThat(capturedGame)
+                .hasFieldOrPropertyWithValue("active", false)
+                .hasFieldOrPropertyWithValue("level", 12);
     }
 
     private Game prepareGame(Boolean active) {

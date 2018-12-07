@@ -45,8 +45,9 @@ public class GameServiceTest {
     public void shouldStartNewGame() {
         Game game = gameService.startNewGame();
 
-        assertThat(game.getLevel()).isZero();
-        assertThat(game.getActive()).isTrue();
+        assertThat(game)
+                .hasFieldOrPropertyWithValue("level", 0)
+                .hasFieldOrPropertyWithValue("active", true);
         assertThat(game.getAskedQuestions()).isNullOrEmpty();
     }
 
