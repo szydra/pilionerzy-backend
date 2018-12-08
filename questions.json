@@ -548,5 +548,27 @@
       }
     ],
     "correctAnswer": "D"
+  },
+  {
+    "content": "Co nie jest chmurą?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "AWS"
+      },
+      {
+        "prefix": "B",
+        "content": "Azure"
+      },
+      {
+        "prefix": "C",
+        "content": "Cirrus"
+      },
+      {
+        "prefix": "D",
+        "content": "Docker"
+      }
+    ],
+    "correctAnswer": "D"
   }
 ]
