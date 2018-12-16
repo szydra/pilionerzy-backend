@@ -31,7 +31,8 @@ public class Game {
     @ManyToMany
     private Set<Question> askedQuestions;
 
-    private Long lastAskedQuestionId;
+    @OneToOne
+    private Question lastAskedQuestion;
 
     @Override
     public String toString() {

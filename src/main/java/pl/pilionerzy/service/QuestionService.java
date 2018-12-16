@@ -1,8 +1,8 @@
 package pl.pilionerzy.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import pl.pilionerzy.dao.QuestionDao;
 import pl.pilionerzy.exception.NotEnoughDataException;
@@ -59,7 +59,7 @@ public class QuestionService {
     private Question getRandomQuestion() {
         Random random = new Random();
         int page = random.nextInt((int) questionDao.countByActive(true));
-        Page<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
+        Slice<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {

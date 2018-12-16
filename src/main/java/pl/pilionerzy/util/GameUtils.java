@@ -5,6 +5,8 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import java.util.Optional;
+
 public class GameUtils {
 
     public static void validate(Game game, RequestType requestType) {
@@ -14,7 +16,7 @@ public class GameUtils {
         boolean valid;
         switch (requestType) {
             case ANSWER:
-                valid = game.getAskedQuestions().size() == game.getLevel() + 1;
+                valid = true;
                 break;
             case QUESTION:
                 valid = game.getAskedQuestions().size() == game.getLevel();
@@ -28,11 +30,8 @@ public class GameUtils {
     }
 
     public static Prefix getCorrectAnswerPrefix(Game game) {
-        Long lastAskedQuestionId = game.getLastAskedQuestionId();
-        return game.getAskedQuestions().stream()
-                .filter(q -> lastAskedQuestionId.equals(q.getId()))
+        return Optional.ofNullable(game.getLastAskedQuestion())
                 .map(Question::getCorrectAnswer)
-                .findAny()
                 .orElseThrow(() -> new GameException("Game does not have last asked question"));
     }
 
