@@ -78,7 +78,7 @@ public class GameServiceTest {
         question.setCorrectAnswer(Prefix.C);
         Game game = new Game();
         game.setId(1L);
-        game.setLastAskedQuestionId(8L);
+        game.setLastAskedQuestion(question);
         game.setAskedQuestions(Sets.newHashSet(question));
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
@@ -98,15 +98,15 @@ public class GameServiceTest {
         question2.setId(12L);
         Game game = new Game();
         game.setId(1L);
-        game.setLastAskedQuestionId(11L);
+        game.setLastAskedQuestion(question1);
         game.setAskedQuestions(Sets.newHashSet(question1));
 
         gameService.updateLastQuestion(game, question2);
 
         verify(gameDao).save(gameArgumentCaptor.capture());
         Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getLastAskedQuestionId())
-                .isEqualTo(12L);
+        assertThat(capturedGame.getLastAskedQuestion())
+                .isEqualTo(question2);
         assertThat(capturedGame.getAskedQuestions())
                 .containsExactly(question1, question2);
     }

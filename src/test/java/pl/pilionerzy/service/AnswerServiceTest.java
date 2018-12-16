@@ -78,7 +78,7 @@ public class AnswerServiceTest {
     public void testHighestAward() {
         Game game = prepareGame(true);
         game.setLevel(11);
-        game.setLastAskedQuestionId(11L);
+        game.setLastAskedQuestion(prepareQuestion(11L, Prefix.D));
         game.setAskedQuestions(prepare12Questions());
         doReturn(game).when(gameService).findById(GAME_ID);
 
@@ -96,7 +96,7 @@ public class AnswerServiceTest {
         Game game = new Game();
         game.setId(GAME_ID);
         game.setActive(active);
-        game.setLastAskedQuestionId(QUESTION_ID);
+        game.setLastAskedQuestion(question);
         game.setAskedQuestions(Sets.newHashSet(question));
         game.setLevel(0);
         return game;

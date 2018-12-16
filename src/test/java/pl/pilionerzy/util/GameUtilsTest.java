@@ -13,14 +13,16 @@ import static org.assertj.core.api.Assertions.*;
 public class GameUtilsTest {
 
     private Game game;
+    private Question q1;
+    private Question q2;
 
     @Before
     public void prepareGame() {
         game = new Game();
-        Question q1 = new Question();
+        q1 = new Question();
         q1.setId(1L);
         q1.setCorrectAnswer(Prefix.A);
-        Question q2 = new Question();
+        q2 = new Question();
         q2.setId(2L);
         q2.setCorrectAnswer(Prefix.B);
         game.setAskedQuestions(Sets.newHashSet(q1, q2));
@@ -37,19 +39,13 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void testTooManyRequestsForAnswer() {
-        game.setLevel(2);
-
-        assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> GameUtils.validate(game, RequestType.ANSWER));
-    }
-
-    @Test
     public void testTooManyRequestsForQuestion() {
         game.setLevel(1);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> GameUtils.validate(game, RequestType.QUESTION));
+                .isThrownBy(() -> GameUtils.validate(game, RequestType.QUESTION))
+                .withMessageContaining("Invalid number of requests");
+        ;
     }
 
     @Test
@@ -78,7 +74,7 @@ public class GameUtilsTest {
 
     @Test
     public void shouldFindCorrectAnswer() {
-        game.setLastAskedQuestionId(2L);
+        game.setLastAskedQuestion(q2);
 
         Prefix correctAnswerPrefix = GameUtils.getCorrectAnswerPrefix(game);
 
@@ -87,10 +83,9 @@ public class GameUtilsTest {
 
     @Test
     public void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
-        game.setLastAskedQuestionId(3L);
-
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> GameUtils.getCorrectAnswerPrefix(game));
+                .isThrownBy(() -> GameUtils.getCorrectAnswerPrefix(game))
+                .withMessageContaining("Game does not have last asked question");
     }
 
 }
