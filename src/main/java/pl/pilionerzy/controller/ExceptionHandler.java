@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 
 @ControllerAdvice
@@ -23,6 +24,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleGameException(GameException exception, WebRequest request) {
         return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
                 HttpStatus.BAD_REQUEST, request);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(LifelineException.class)
+    protected ResponseEntity<Object> handleLifelineException(LifelineException exception, WebRequest request) {
+        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(),
+                HttpStatus.FORBIDDEN, request);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchGameException.class)
