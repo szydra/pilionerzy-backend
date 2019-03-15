@@ -28,11 +28,15 @@ public class Game {
     @NotNull
     private Integer level;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Question> askedQuestions;
 
     @OneToOne
     private Question lastAskedQuestion;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private Set<Lifeline> usedLifelines;
 
     @Override
     public String toString() {
