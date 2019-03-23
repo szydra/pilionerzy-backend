@@ -31,7 +31,7 @@ public class Game {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Question> askedQuestions;
 
-    @OneToOne
+    @ManyToOne
     private Question lastAskedQuestion;
 
     @ElementCollection
