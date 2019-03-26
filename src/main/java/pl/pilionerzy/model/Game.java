@@ -16,7 +16,7 @@ import java.util.Set;
 public class Game {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @CreationTimestamp
@@ -35,8 +35,7 @@ public class Game {
     private Question lastAskedQuestion;
 
     @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private Set<Lifeline> usedLifelines;
+    private Set<UsedLifeline> usedLifelines;
 
     @Override
     public String toString() {

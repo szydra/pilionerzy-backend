@@ -5,6 +5,7 @@ import lombok.Setter;
 import pl.pilionerzy.model.converter.RejectedAnswersConverter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -13,9 +14,11 @@ import java.util.Objects;
 @Setter
 public class UsedLifeline {
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Lifeline type;
 
+    @NotNull
     @ManyToOne
     private Question question;
 
