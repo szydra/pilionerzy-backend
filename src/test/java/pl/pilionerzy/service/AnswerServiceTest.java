@@ -3,8 +3,6 @@ package pl.pilionerzy.service;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,7 +17,6 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnswerServiceTest {
@@ -33,16 +30,13 @@ public class AnswerServiceTest {
     @InjectMocks
     private AnswerService answerService;
 
-    @Captor
-    private ArgumentCaptor<Game> gameArgumentCaptor;
-
     @Test
     public void testRequestForInactiveGame() {
         Game inactiveGame = prepareGame(false);
         doReturn(inactiveGame).when(gameService).findById(GAME_ID);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> answerService.processRequest(GAME_ID, Prefix.A))
+                .isThrownBy(() -> answerService.doAnswer(GAME_ID, Prefix.A))
                 .withMessageContaining("inactive");
     }
 
@@ -51,11 +45,9 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.processRequest(GAME_ID, Prefix.A);
+        answerService.doAnswer(GAME_ID, Prefix.A);
 
-        verify(gameService).save(gameArgumentCaptor.capture());
-        Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame)
+        assertThat(game)
                 .hasFieldOrPropertyWithValue("active", true)
                 .hasFieldOrPropertyWithValue("level", 1);
     }
@@ -65,11 +57,9 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.processRequest(GAME_ID, Prefix.B);
+        answerService.doAnswer(GAME_ID, Prefix.B);
 
-        verify(gameService).save(gameArgumentCaptor.capture());
-        Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame)
+        assertThat(game)
                 .hasFieldOrPropertyWithValue("active", false)
                 .hasFieldOrPropertyWithValue("level", 0);
     }
@@ -82,11 +72,9 @@ public class AnswerServiceTest {
         game.setAskedQuestions(prepare12Questions());
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.processRequest(GAME_ID, Prefix.D);
+        answerService.doAnswer(GAME_ID, Prefix.D);
 
-        verify(gameService).save(gameArgumentCaptor.capture());
-        Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame)
+        assertThat(game)
                 .hasFieldOrPropertyWithValue("active", false)
                 .hasFieldOrPropertyWithValue("level", 12);
     }

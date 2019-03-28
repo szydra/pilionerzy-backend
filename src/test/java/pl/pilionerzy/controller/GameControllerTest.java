@@ -50,7 +50,7 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessRequest() throws Exception {
-        doReturn(Prefix.C).when(answerService).processRequest(50L, Prefix.A);
+        doReturn(Prefix.C).when(answerService).doAnswer(50L, Prefix.A);
 
         String responseContent = mvc.perform(post("/games/50/answers")
                 .contentType(MediaType.APPLICATION_JSON)

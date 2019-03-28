@@ -1,40 +1,56 @@
 package pl.pilionerzy.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.util.GameUtils;
-import pl.pilionerzy.util.LevelUtils;
 import pl.pilionerzy.util.RequestType;
 
+import static pl.pilionerzy.util.GameUtils.getCorrectAnswerPrefix;
+import static pl.pilionerzy.util.GameUtils.validate;
+import static pl.pilionerzy.util.LevelUtils.*;
+
+/**
+ * Processes player's answers during a game.
+ * Updates game level and marks game as inactive if necessary.
+ */
 @Service
 public class AnswerService {
 
     private GameService gameService;
 
-    @Autowired
     public AnswerService(GameService gameService) {
         this.gameService = gameService;
     }
 
-    public Prefix processRequest(Long gameId, Prefix selectedPrefix) {
+    /**
+     * Processes answer request, updates game status and returns correct answer.
+     *
+     * @param gameId         game id
+     * @param selectedPrefix answer selected by a player
+     * @return prefix of the correct answer
+     * @throws NoSuchGameException if no game with the passed id can be found
+     * @throws GameException       if the existing game does not accept answers
+     */
+    @Transactional
+    public Prefix doAnswer(Long gameId, Prefix selectedPrefix) {
         Game game = gameService.findById(gameId);
-        GameUtils.validate(game, RequestType.ANSWER);
-        Prefix correct = GameUtils.getCorrectAnswerPrefix(game);
+        validate(game, RequestType.ANSWER);
+        Prefix correct = getCorrectAnswerPrefix(game);
         if (correct != selectedPrefix) {
             updateGameForIncorrect(game);
         } else {
             updateGameForCorrect(game);
         }
-        gameService.save(game);
         return correct;
     }
 
     private void updateGameForCorrect(Game game) {
         int currentLevel = game.getLevel();
-        game.setLevel(LevelUtils.getNextLevel(currentLevel));
-        if (LevelUtils.isHighestLevel(game.getLevel())) {
+        game.setLevel(getNextLevel(currentLevel));
+        if (isHighestLevel(game.getLevel())) {
             game.setActive(false);
         }
     }
@@ -42,7 +58,6 @@ public class AnswerService {
     private void updateGameForIncorrect(Game game) {
         int currentLevel = game.getLevel();
         game.setActive(false);
-        game.setLevel(LevelUtils.getGuaranteedLevel(currentLevel));
+        game.setLevel(getGuaranteedLevel(currentLevel));
     }
-
 }

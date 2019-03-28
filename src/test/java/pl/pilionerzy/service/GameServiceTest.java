@@ -58,7 +58,9 @@ public class GameServiceTest {
         game.setActive(true);
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
-        Game stoppedGame = gameService.stopGame(1L);
+        Game game1 = gameService.findById(1L);
+        game1.setActive(false);
+        Game stoppedGame = gameService.save(game1);
 
         assertThat(stoppedGame.getActive()).isFalse();
     }
@@ -84,9 +86,7 @@ public class GameServiceTest {
 
         Prefix correct = gameService.stopAndGetCorrectAnswerPrefix(1L);
 
-        verify(gameDao).save(gameArgumentCaptor.capture());
-        Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getActive()).isFalse();
+        assertThat(game.getActive()).isFalse();
         assertThat(correct).isEqualTo(Prefix.C);
     }
 

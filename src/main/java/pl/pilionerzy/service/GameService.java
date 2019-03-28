@@ -1,42 +1,103 @@
 package pl.pilionerzy.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.model.UsedLifeline;
 import pl.pilionerzy.util.GameUtils;
+import pl.pilionerzy.util.lifeline.FiftyFiftyCalculator;
 
+import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
+import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
+
+/**
+ * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
+ */
 @Service
 public class GameService {
 
     private GameDao gameDao;
 
-    @Autowired
     public GameService(GameDao gameDao) {
         this.gameDao = gameDao;
     }
 
+    /**
+     * Creates and saves a new {@link Game} instance.
+     *
+     * @return started game
+     */
     public Game startNewGame() {
         Game game = new Game();
         game.setActive(true);
         game.setLevel(0);
-        return save(game);
+        return gameDao.save(game);
     }
 
-    Game stopGame(Long gameId) {
+    /**
+     * Deactivates game with the passed id and returns the correct answer.
+     * Should be called when a user manually stops the game.
+     *
+     * @param gameId game id
+     * @return prefix of the correct answer
+     * @throws NoSuchGameException if no game with the passed id can be found
+     */
+    @Transactional
+    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId) {
         Game game = findById(gameId);
         game.setActive(false);
-        return save(game);
+        return GameUtils.getCorrectAnswerPrefix(game);
     }
 
-    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId) {
-        Game game = stopGame(gameId);
-        return GameUtils.getCorrectAnswerPrefix(game);
+    /**
+     * Processes fifty-fifty lifeline.
+     *
+     * @param gameId game id
+     * @return prefixes to reject
+     * @throws NoSuchGameException if no game with the passed id can be found
+     * @throws LifelineException   if fifty-fifty was already used
+     * @throws GameException       if the last asked quesion is null
+     */
+    @Transactional
+    public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
+        Game game = findById(gameId);
+        Set<UsedLifeline> usedLifelines = game.getUsedLifelines();
+        if (usedLifelines.stream()
+                .map(UsedLifeline::getType)
+                .anyMatch(type -> type == FIFTY_FIFTY)) {
+            throw new LifelineException("Fifty-fifty lifeline already used");
+        }
+        UsedLifeline fiftyFifty = getFiftyFiftyResult(game);
+        usedLifelines.add(fiftyFifty);
+        return fiftyFifty.getRejectedAnswers();
+    }
+
+    private UsedLifeline getFiftyFiftyResult(Game game) {
+        UsedLifeline usedLifeline = new UsedLifeline();
+        usedLifeline.setType(FIFTY_FIFTY);
+        usedLifeline.setQuestion(game.getLastAskedQuestion());
+        Collection<Prefix> rejectedAnswers = Optional.ofNullable(game.getLastAskedQuestion())
+                .map(FiftyFiftyCalculator::getPrefixesToDiscard)
+                .orElseThrow(() -> new GameException("Cannot use lifeline for a game without last asked question"));
+        usedLifeline.setRejectedAnswers(rejectedAnswers);
+        return usedLifeline;
+    }
+
+    /**
+     * Use @{@link Transactional} instead
+     */
+    @Deprecated
+    Game save(Game game) {
+        return gameDao.save(game);
     }
 
     Game findById(Long gameId) {
@@ -44,15 +105,10 @@ public class GameService {
                 .orElseThrow(() -> new NoSuchGameException(gameId));
     }
 
-    Game save(Game game) {
-        return gameDao.save(game);
-    }
-
     void updateLastQuestion(Game game, Question question) {
         Set<Question> askedQuestions = game.getAskedQuestions();
         askedQuestions.add(question);
-        game.setAskedQuestions(askedQuestions);
-        game.setLastAskedQuestionId(question.getId());
+        game.setLastAskedQuestion(question);
         save(game);
     }
 
