@@ -7,6 +7,7 @@ import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -28,6 +29,12 @@ public class GameController {
     @GetMapping("/start-new")
     public GameDto createNewGame() {
         return dtoMapper.mapToDto(gameService.startNewGame());
+    }
+
+    @GetMapping("/{gameId}/fifty-fifty")
+    public Map<String, Collection<Prefix>> getTwoIncorrectPrefixes(@PathVariable Long gameId) {
+        Collection<Prefix> incorrectPrefixes = gameService.getTwoIncorrectPrefixes(gameId);
+        return Collections.singletonMap("incorrectPrefixes", incorrectPrefixes);
     }
 
     @PostMapping("/{gameId}/answers")
