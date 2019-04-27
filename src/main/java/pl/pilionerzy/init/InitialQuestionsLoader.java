@@ -29,7 +29,7 @@ import java.util.List;
 @Transactional
 class InitialQuestionsLoader implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InitialQuestionsLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(InitialQuestionsLoader.class);
 
     private static final String QUESTIONS_JSON = "questions.json";
     private static final String QUESTIONS_JSON_LOADED = "questions_loaded.json";
@@ -50,9 +50,9 @@ class InitialQuestionsLoader implements CommandLineRunner {
     public void run(String... args) throws IOException {
         Resource questionsJson = resourceLoader.getResource(QUESTIONS_JSON);
         if (!questionsJson.exists()) {
-            LOGGER.info("File {} not found", QUESTIONS_JSON);
+            logger.info("File {} not found", QUESTIONS_JSON);
         } else {
-            LOGGER.info("File {} found", QUESTIONS_JSON);
+            logger.info("File {} found", QUESTIONS_JSON);
             loadInitialQuestions(questionsJson);
         }
     }
@@ -60,7 +60,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
     private void loadInitialQuestions(Resource questionsJson) throws IOException {
         Resource questionsLoadedJson = resourceLoader.getResource(QUESTIONS_JSON_LOADED);
         if (questionsLoadedJson.exists()) {
-            LOGGER.warn("File {} found. Initial questions will not be added", QUESTIONS_JSON_LOADED);
+            logger.warn("File {} found. Initial questions will not be added", QUESTIONS_JSON_LOADED);
         } else {
             List<NewQuestionDto> initialQuestions = readQuestions(questionsJson);
             initialQuestions.stream()
@@ -69,7 +69,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
                         question.setActive(true);
                         questionDao.save(question);
                     });
-            LOGGER.info("{} initial questions added", initialQuestions.size());
+            logger.info("{} initial questions added", initialQuestions.size());
             rename(questionsJson, questionsLoadedJson);
         }
     }
@@ -86,7 +86,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
             return;
         }
         Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
-        LOGGER.info("File {} renamed", QUESTIONS_JSON);
+        logger.info("File {} renamed", QUESTIONS_JSON);
     }
 
     @Autowired

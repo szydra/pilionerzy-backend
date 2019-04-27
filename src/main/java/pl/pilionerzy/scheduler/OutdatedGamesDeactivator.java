@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Component
 class OutdatedGamesDeactivator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutdatedGamesDeactivator.class);
+    private static final Logger logger = LoggerFactory.getLogger(OutdatedGamesDeactivator.class);
 
     private GameDao gameDao;
 
@@ -36,7 +36,7 @@ class OutdatedGamesDeactivator {
     public void deactivateOldGames() {
         int deactivatedGames = gameDao.deactivateGamesStartedBefore(LocalDateTime.now().minusMinutes(gameTimeout));
         if (deactivatedGames > 0) {
-            LOGGER.info("{} games marked as inactive", deactivatedGames);
+            logger.info("{} games marked as inactive", deactivatedGames);
         }
     }
 

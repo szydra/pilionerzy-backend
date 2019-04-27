@@ -13,11 +13,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ActiveProfiles("test")
 public class PilionerzyApplicationTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("TestLogger");
+    private static final Logger logger = LoggerFactory.getLogger("TestLogger");
 
     @Test
     public void contextLoads() {
-        LOGGER.info("Context loads!");
+        logger.info("Context loads!");
     }
 
 }
