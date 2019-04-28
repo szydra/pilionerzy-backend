@@ -15,3 +15,6 @@ questions_loaded.json
 *.iws
 *.iml
 *.ipr
+
+# Logs
+logs/
