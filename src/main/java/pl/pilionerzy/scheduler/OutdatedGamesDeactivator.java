@@ -1,12 +1,12 @@
 package pl.pilionerzy.scheduler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.pilionerzy.dao.GameDao;
 
 import java.time.LocalDateTime;
@@ -17,9 +17,8 @@ import java.time.LocalDateTime;
  * The task is run once in a minute.
  */
 @Component
+@Slf4j
 class OutdatedGamesDeactivator {
-
-    private static final Logger logger = LoggerFactory.getLogger(OutdatedGamesDeactivator.class);
 
     private GameDao gameDao;
 
