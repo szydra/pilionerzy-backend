@@ -31,4 +31,11 @@
         <appender-ref ref="Console" />
     </root>
 
+    <!-- Enable DEBUG level in console in dev profile -->
+    <springProfile name="dev">
+        <logger name="pl.pilionerzy" level="debug" additivity="false">
+            <appender-ref ref="Console" />
+        </logger>
+    </springProfile>
+
 </configuration>
