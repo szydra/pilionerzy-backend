@@ -40,7 +40,6 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     private ResourceLoader resourceLoader = new FileSystemResourceLoader();
 
-    @Autowired
     public InitialQuestionsLoader(DtoMapper dtoMapper, QuestionDao questionDao) {
         this.dtoMapper = dtoMapper;
         this.questionDao = questionDao;
