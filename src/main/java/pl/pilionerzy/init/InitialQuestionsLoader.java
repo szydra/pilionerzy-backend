@@ -22,9 +22,9 @@ import java.nio.file.Files;
 import java.util.List;
 
 /**
- * This class runs at application startup and loads initial questions into the database.
- * It looks for a file named <code>questions.json</code> in the current directory and after
- * successful import renames it to <code>questions_loaded.json</code>.
+ * Runs at application startup and loads initial questions into the database. It looks for a file named
+ * <code>questions.json</code> in the current directory and after successful import renames it to
+ * <code>questions_loaded.json</code>.
  */
 @Component
 @Transactional
@@ -50,9 +50,9 @@ class InitialQuestionsLoader implements CommandLineRunner {
     public void run(String... args) throws IOException {
         Resource questionsJson = resourceLoader.getResource(QUESTIONS_JSON);
         if (!questionsJson.exists()) {
-            logger.info("File {} not found", QUESTIONS_JSON);
+            logger.info("File {} not found. No initial questions will be loaded", QUESTIONS_JSON);
         } else {
-            logger.info("File {} found", QUESTIONS_JSON);
+            logger.debug("File {} found", QUESTIONS_JSON);
             loadInitialQuestions(questionsJson);
         }
     }
@@ -62,6 +62,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
         if (questionsLoadedJson.exists()) {
             logger.warn("File {} found. Initial questions will not be added", QUESTIONS_JSON_LOADED);
         } else {
+            logger.info("Initial questions from file {} will be loaded", QUESTIONS_JSON);
             List<NewQuestionDto> initialQuestions = readQuestions(questionsJson);
             initialQuestions.stream()
                     .map(dtoMapper::mapToModel)
@@ -69,7 +70,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
                         question.setActive(true);
                         questionDao.save(question);
                     });
-            logger.info("{} initial questions added", initialQuestions.size());
+            logger.info("{} initial questions saved", initialQuestions.size());
             rename(questionsJson, questionsLoadedJson);
         }
     }
@@ -83,10 +84,12 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     private void rename(Resource questionsJson, Resource questionsLoadedJson) throws IOException {
         if (environment.acceptsProfiles("dev", "test")) {
+            logger.debug("File {} will not be renamed, because application is running in dev or test mode",
+                    QUESTIONS_JSON);
             return;
         }
         Files.move(questionsJson.getFile().toPath(), questionsLoadedJson.getFile().toPath());
-        logger.info("File {} renamed", QUESTIONS_JSON);
+        logger.info("File {} renamed to {}", QUESTIONS_JSON, QUESTIONS_JSON_LOADED);
     }
 
     @Autowired

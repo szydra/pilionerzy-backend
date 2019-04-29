@@ -36,7 +36,8 @@ class OutdatedGamesDeactivator {
         int deactivatedGames = gameDao.deactivateGamesStartedBefore(LocalDateTime.now().minusMinutes(gameTimeout));
         if (deactivatedGames > 0) {
             logger.info("{} games marked as inactive", deactivatedGames);
+        } else {
+            logger.debug("No timed out games found");
         }
     }
-
 }
