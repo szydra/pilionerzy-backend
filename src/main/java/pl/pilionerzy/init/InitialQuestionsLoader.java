@@ -76,9 +76,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     private List<NewQuestionDto> readQuestions(Resource questionsJson) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(questionsJson.getFile(),
-                new TypeReference<List<NewQuestionDto>>() {
-                });
+        return objectMapper.readValue(questionsJson.getFile(), new QuestionList());
     }
 
     private void rename(Resource questionsJson, Resource questionsLoadedJson) throws IOException {
@@ -96,4 +94,6 @@ class InitialQuestionsLoader implements CommandLineRunner {
         this.environment = environment;
     }
 
+    private static class QuestionList extends TypeReference<List<NewQuestionDto>> {
+    }
 }
