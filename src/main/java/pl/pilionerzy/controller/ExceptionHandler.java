@@ -16,6 +16,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(DataAccessException.class)
     protected ResponseEntity<Object> handleDataAccessException(DataAccessException exception, WebRequest request) {
+        logger.error("Database error occurred", exception);
         return handleExceptionInternal(exception, "Database error occurred", new HttpHeaders(),
                 HttpStatus.SERVICE_UNAVAILABLE, request);
     }
