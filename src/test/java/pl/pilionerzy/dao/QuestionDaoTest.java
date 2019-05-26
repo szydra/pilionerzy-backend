@@ -13,8 +13,7 @@ import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,6 +67,22 @@ public class QuestionDaoTest {
                 .isOne();
         assertThat(questionDao.findByActive(true, PageRequest.of(0, 1)))
                 .containsExactly(question);
+    }
+
+    @Test
+    public void shouldFindQuestionAndOrderPrefixes() {
+        Question sampleQuestion = prepareSampleQuestion();
+        sampleQuestion.setActive(true);
+        Collections.reverse(sampleQuestion.getAnswers());
+
+        Long id = questionDao.save(sampleQuestion).getId();
+        entityManager.clear();
+        Optional<Question> foundQuestion = questionDao.findById(id);
+
+        assertThat(foundQuestion)
+                .hasValueSatisfying(question ->
+                        assertThat(question.getAnswers())
+                                .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));
     }
 
     private Question prepareSampleQuestion() {

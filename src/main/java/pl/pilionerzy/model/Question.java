@@ -24,6 +24,7 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     @Size(min = 4, max = 4)
+    @OrderBy("prefix ASC")
     private List<Answer> answers;
 
     @NotNull
