@@ -8,17 +8,16 @@ import org.mockito.internal.util.collections.Sets;
 import pl.pilionerzy.model.AudienceAnswer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
-import pl.pilionerzy.util.Unchecker;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pl.pilionerzy.util.lifeline.AskTheAudienceCalculator.getAnswer;
 
 public class AskTheAudienceCalculatorTest {
 
+    private final AskTheAudienceCalculator calculator = new AskTheAudienceCalculator();
     private final Question question = new Question();
 
     @Before
@@ -28,22 +27,20 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldContainAllAnswersWhenFiftyFiftyWasNotUsed() {
-        assertThat(getAnswer(question, Collections.emptySet()))
+        assertThat(calculator.getAnswer(question, Collections.emptySet()))
                 .containsOnlyKeys(Prefix.A, Prefix.B, Prefix.C, Prefix.D);
     }
 
     @Test
     public void shouldContainOnlyRemainingAnswersWhenFiftyFiftyWasUsed() {
-        assertThat(getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)))
+        assertThat(calculator.getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)))
                 .containsOnlyKeys(Prefix.A, Prefix.B);
     }
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasNotUsed() {
-        int sum = getAnswer(question, Collections.emptySet()).values().stream()
-                .map(AudienceAnswer::toString)
-                .map(Unchecker.uncheck(AudienceAnswer.format::parse))
-                .mapToInt(Number::intValue)
+        int sum = calculator.getAnswer(question, Collections.emptySet()).values().stream()
+                .mapToInt(AudienceAnswer::getVotes)
                 .sum();
 
         assertThat(sum)
@@ -53,10 +50,8 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasUsed() {
-        int sum = getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)).values().stream()
-                .map(AudienceAnswer::toString)
-                .map(Unchecker.uncheck(AudienceAnswer.format::parse))
-                .mapToInt(Number::intValue)
+        int sum = calculator.getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)).values().stream()
+                .mapToInt(AudienceAnswer::getVotes)
                 .sum();
 
         assertThat(sum)
@@ -71,7 +66,7 @@ public class AskTheAudienceCalculatorTest {
         Map<Prefix, Double> averages = Maps.newHashMap(Maps.asMap(Sets.newSet(Prefix.values()), prefix -> 0.0));
 
         for (int i = 0; i < numberOfDraws; i++) {
-            Map<Prefix, AudienceAnswer> answer = getAnswer(question, Collections.emptySet());
+            Map<Prefix, AudienceAnswer> answer = calculator.getAnswer(question, Collections.emptySet());
             averages.replaceAll((prefix, result) -> result += answer.get(prefix).getVotes());
         }
 
