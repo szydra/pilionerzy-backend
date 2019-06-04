@@ -570,5 +570,93 @@
       }
     ],
     "correctAnswer": "D"
+  },
+  {
+    "content": "Andrzej ma 16 lat. To jest dwa razy tyle, ile Jurek miał wtedy, kiedy Andrzej miał tyle, ile Jurek ma teraz. Ile lat ma Jurek?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "8"
+      },
+      {
+        "prefix": "B",
+        "content": "10"
+      },
+      {
+        "prefix": "C",
+        "content": "12"
+      },
+      {
+        "prefix": "D",
+        "content": "Zbyt mało danych, aby to obliczyć"
+      }
+    ],
+    "correctAnswer": "C"
+  },
+  {
+    "content": "Ile istnieje liczb porządkowych?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(\\omega\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(\\mathfrak{c}\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(2^\\mathfrak{c}\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "Żadna liczba porządkowa nie może tego opisać"
+      }
+    ],
+    "correctAnswer": "D"
+  },
+  {
+    "content": "Ile wynosi (w przybliżeniu) masa metra sześciennego złota?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "2 tony"
+      },
+      {
+        "prefix": "B",
+        "content": "7 ton"
+      },
+      {
+        "prefix": "C",
+        "content": "13 ton"
+      },
+      {
+        "prefix": "D",
+        "content": "19 ton"
+      }
+    ],
+    "correctAnswer": "D"
+  },
+  {
+    "content": "Najwyższy szczyt Karpat to:",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "Rysy"
+      },
+      {
+        "prefix": "B",
+        "content": "Moldoveanu"
+      },
+      {
+        "prefix": "C",
+        "content": "Gerlach"
+      },
+      {
+        "prefix": "D",
+        "content": "Mnich"
+      }
+    ],
+    "correctAnswer": "C"
   }
 ]
