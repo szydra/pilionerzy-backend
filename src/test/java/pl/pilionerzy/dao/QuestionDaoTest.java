@@ -59,7 +59,7 @@ public class QuestionDaoTest {
     @Test
     public void shouldGetActiveQuestion() {
         Question question = prepareSampleQuestion();
-        question.setActive(true);
+        question.activate();
 
         questionDao.save(question);
 
@@ -72,7 +72,7 @@ public class QuestionDaoTest {
     @Test
     public void shouldFindQuestionAndOrderPrefixes() {
         Question sampleQuestion = prepareSampleQuestion();
-        sampleQuestion.setActive(true);
+        sampleQuestion.activate();
         Collections.reverse(sampleQuestion.getAnswers());
 
         Long id = questionDao.save(sampleQuestion).getId();

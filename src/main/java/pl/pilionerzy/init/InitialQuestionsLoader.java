@@ -66,7 +66,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
             initialQuestions.stream()
                     .map(dtoMapper::mapToModel)
                     .forEach(question -> {
-                        question.setActive(true);
+                        question.activate();
                         questionDao.save(question);
                     });
             logger.info("{} initial questions saved", initialQuestions.size());
