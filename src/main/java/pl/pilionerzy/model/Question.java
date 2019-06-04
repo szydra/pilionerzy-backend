@@ -34,6 +34,13 @@ public class Question {
     @NotNull
     private Boolean active;
 
+    public void activate() {
+        if (Boolean.TRUE.equals(active)) {
+            throw new IllegalStateException("Active question cannot be activated");
+        }
+        active = true;
+    }
+
     @Override
     public String toString() {
         return content;
