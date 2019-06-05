@@ -62,7 +62,7 @@ public class GameService {
      * @return prefixes to reject
      * @throws NoSuchGameException if no game with the passed id can be found
      * @throws LifelineException   if fifty-fifty was already used
-     * @throws GameException       if the last asked quesion is null
+     * @throws GameException       if the last asked question is null
      */
     @Transactional
     public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
