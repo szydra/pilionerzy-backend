@@ -10,17 +10,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.model.Question;
+import pl.pilionerzy.model.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
+import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GameServiceTest {
@@ -111,4 +113,84 @@ public class GameServiceTest {
                 .containsExactly(question1, question2);
     }
 
+    @Test
+    public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToANonExistingGame() {
+        doReturn(Optional.empty()).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(NoSuchGameException.class)
+                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToAGameWithoutLastAskedQuestion() {
+        Game game = new Game();
+        game.setUsedLifelines(Sets.newHashSet());
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenAskTheAudienceWasAlreadyUsed() {
+        UsedLifeline ata = new UsedLifeline();
+        ata.setType(Lifeline.ASK_THE_AUDIENCE);
+        Game game = new Game();
+        game.setUsedLifelines(Sets.newHashSet(ata));
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(LifelineException.class)
+                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
+    }
+
+    @Test
+    public void shouldApplyAskTheAudienceWhenFiftyFiftyWasUsed() {
+        // given
+        Question question = new Question();
+        question.setId(1L);
+        question.setCorrectAnswer(C);
+
+        UsedLifeline fiftyFifty = new UsedLifeline();
+        fiftyFifty.setType(Lifeline.FIFTY_FIFTY);
+        fiftyFifty.setQuestion(question);
+        fiftyFifty.setRejectedAnswers(Sets.newHashSet(A, B));
+
+        Game game = new Game();
+        game.setLastAskedQuestion(question);
+        game.setUsedLifelines(Sets.newHashSet(fiftyFifty));
+
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        // when
+        Map<Prefix, AudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L);
+
+        // then
+        assertThat(audienceAnswer).containsOnlyKeys(C, D);
+        assertThat(game.getUsedLifelines())
+                .extracting(UsedLifeline::getType)
+                .contains(Lifeline.ASK_THE_AUDIENCE);
+    }
+
+    @Test
+    public void shouldApplyAskTheAudienceWhenFiftyFiftyWasNotUsed() {
+        // given
+        Question question = new Question();
+        question.setId(1L);
+        question.setCorrectAnswer(C);
+
+        Game game = new Game();
+        game.setLastAskedQuestion(question);
+        game.setUsedLifelines(Sets.newHashSet());
+
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        // when
+        Map<Prefix, AudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L);
+
+        // then
+        assertThat(audienceAnswer).containsOnlyKeys(A, B, C, D);
+        assertThat(game.getUsedLifelines())
+                .extracting(UsedLifeline::getType)
+                .contains(Lifeline.ASK_THE_AUDIENCE);
+    }
 }
