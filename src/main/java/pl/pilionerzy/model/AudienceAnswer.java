@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 @JsonSerialize(using = ToStringSerializer.class)
 public class AudienceAnswer {
 
-    public static final DecimalFormat format;
+    private static final DecimalFormat format;
 
     static {
         format = new DecimalFormat("0%");
