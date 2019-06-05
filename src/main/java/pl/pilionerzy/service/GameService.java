@@ -6,17 +6,14 @@ import pl.pilionerzy.dao.GameDao;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.model.Question;
-import pl.pilionerzy.model.UsedLifeline;
-import pl.pilionerzy.util.GameUtils;
+import pl.pilionerzy.model.*;
+import pl.pilionerzy.util.lifeline.AskTheAudienceCalculator;
 import pl.pilionerzy.util.lifeline.FiftyFiftyCalculator;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
 import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 
 /**
@@ -90,6 +87,43 @@ public class GameService {
                 .orElseThrow(() -> new GameException("Cannot use lifeline for a game without last asked question"));
         usedLifeline.setRejectedAnswers(rejectedAnswers);
         return usedLifeline;
+    }
+
+    /**
+     * Processes ask-the-audience lifeline.
+     *
+     * @param gameId game id
+     * @return audience answers sorted by prefix
+     * @throws NoSuchGameException if no game with the passed id can be found
+     * @throws LifelineException   if ask-the-audience was already used
+     * @throws GameException       if the last asked question is null
+     */
+    @Transactional
+    public Map<Prefix, AudienceAnswer> getAudienceAnswerByGameId(Long gameId) {
+        Game game = findById(gameId);
+        Set<UsedLifeline> usedLifelines = game.getUsedLifelines();
+        if (usedLifelines.stream()
+                .map(UsedLifeline::getType)
+                .anyMatch(type -> type == ASK_THE_AUDIENCE)) {
+            throw new LifelineException("Ask the audience lifeline already used");
+        }
+        UsedLifeline askTheAudience = new UsedLifeline();
+        askTheAudience.setType(ASK_THE_AUDIENCE);
+        askTheAudience.setQuestion(game.getLastAskedQuestion());
+        usedLifelines.add(askTheAudience);
+        return getAudienceAnswer(game);
+    }
+
+    private Map<Prefix, AudienceAnswer> getAudienceAnswer(Game game) {
+        Question lastAskedQuestion = Optional.ofNullable(game.getLastAskedQuestion())
+                .orElseThrow(() -> new GameException("Cannot use lifeline for a game without last asked question"));
+        Set<Prefix> rejectedAnswers = game.getUsedLifelines().stream()
+                .filter(usedLifeline -> usedLifeline.getType() == FIFTY_FIFTY)
+                .filter(usedLifeline -> Objects.equals(usedLifeline.getQuestion(), lastAskedQuestion))
+                .map(UsedLifeline::getRejectedAnswers)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+        return new AskTheAudienceCalculator().getAnswer(lastAskedQuestion, rejectedAnswers);
     }
 
     /**
