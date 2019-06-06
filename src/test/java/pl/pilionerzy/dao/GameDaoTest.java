@@ -47,7 +47,7 @@ public class GameDaoTest {
 
     private Game insertActiveGame() {
         Game game = new Game();
-        game.setActive(true);
+        game.activate();
         game.setLevel(1);
         return entityManager.persistAndFlush(game);
     }

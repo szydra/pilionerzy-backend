@@ -51,13 +51,13 @@ public class AnswerService {
         int currentLevel = game.getLevel();
         game.setLevel(getNextLevel(currentLevel));
         if (isHighestLevel(game.getLevel())) {
-            game.setActive(false);
+            game.deactivate();
         }
     }
 
     private void updateGameForIncorrect(Game game) {
         int currentLevel = game.getLevel();
-        game.setActive(false);
+        game.deactivate();
         game.setLevel(getGuaranteedLevel(currentLevel));
     }
 }

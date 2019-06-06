@@ -37,6 +37,27 @@ public class Game {
     @ElementCollection
     private Set<UsedLifeline> usedLifelines;
 
+    public void activate() {
+        if (Boolean.TRUE.equals(active)) {
+            throw new IllegalStateException("Active game cannot be activated");
+        }
+        active = true;
+    }
+
+    public void deactivate() {
+        if (Boolean.FALSE.equals(active)) {
+            throw new IllegalStateException("Inactive game cannot be deactivated");
+        }
+        active = false;
+    }
+
+    public void initLevel() {
+        if (level != null) {
+            throw new IllegalStateException("Level is already set");
+        }
+        level = 0;
+    }
+
     @Override
     public String toString() {
         return "Game with id " + id;

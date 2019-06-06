@@ -35,8 +35,8 @@ public class GameService {
      */
     public Game startNewGame() {
         Game game = new Game();
-        game.setActive(true);
-        game.setLevel(0);
+        game.activate();
+        game.initLevel();
         return gameDao.save(game);
     }
 
