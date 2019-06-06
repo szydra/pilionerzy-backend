@@ -67,7 +67,7 @@ public class GameService {
     @Transactional
     public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
         Game game = findById(gameId);
-        Set<UsedLifeline> usedLifelines = game.getUsedLifelines();
+        Collection<UsedLifeline> usedLifelines = game.getUsedLifelines();
         if (usedLifelines.stream()
                 .map(UsedLifeline::getType)
                 .anyMatch(type -> type == FIFTY_FIFTY)) {
@@ -101,7 +101,7 @@ public class GameService {
     @Transactional
     public Map<Prefix, AudienceAnswer> getAudienceAnswerByGameId(Long gameId) {
         Game game = findById(gameId);
-        Set<UsedLifeline> usedLifelines = game.getUsedLifelines();
+        Collection<UsedLifeline> usedLifelines = game.getUsedLifelines();
         if (usedLifelines.stream()
                 .map(UsedLifeline::getType)
                 .anyMatch(type -> type == ASK_THE_AUDIENCE)) {

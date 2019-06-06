@@ -1,5 +1,6 @@
 package pl.pilionerzy.service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,7 +125,7 @@ public class GameServiceTest {
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToAGameWithoutLastAskedQuestion() {
         Game game = new Game();
-        game.setUsedLifelines(Sets.newHashSet());
+        game.setUsedLifelines(Lists.newArrayList());
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(GameException.class)
@@ -136,7 +137,7 @@ public class GameServiceTest {
         UsedLifeline ata = new UsedLifeline();
         ata.setType(Lifeline.ASK_THE_AUDIENCE);
         Game game = new Game();
-        game.setUsedLifelines(Sets.newHashSet(ata));
+        game.setUsedLifelines(Lists.newArrayList(ata));
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(LifelineException.class)
@@ -157,7 +158,7 @@ public class GameServiceTest {
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
-        game.setUsedLifelines(Sets.newHashSet(fiftyFifty));
+        game.setUsedLifelines(Lists.newArrayList(fiftyFifty));
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
@@ -180,7 +181,7 @@ public class GameServiceTest {
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
-        game.setUsedLifelines(Sets.newHashSet());
+        game.setUsedLifelines(Lists.newArrayList());
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 

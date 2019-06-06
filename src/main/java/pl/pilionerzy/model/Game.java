@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,7 +36,8 @@ public class Game {
     private Question lastAskedQuestion;
 
     @ElementCollection
-    private Set<UsedLifeline> usedLifelines;
+    @OrderColumn
+    private List<UsedLifeline> usedLifelines;
 
     public void activate() {
         if (Boolean.TRUE.equals(active)) {
