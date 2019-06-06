@@ -25,7 +25,7 @@ public class QuestionController {
 
     @GetMapping(params = "game-id")
     public QuestionDto getByGameId(@RequestParam("game-id") Long gameId) {
-        return dtoMapper.mapToDto(questionService.getNextQuestion(gameId));
+        return dtoMapper.mapToDto(questionService.getNextQuestionByGameId(gameId));
     }
 
     @PostMapping

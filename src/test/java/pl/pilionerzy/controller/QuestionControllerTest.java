@@ -87,7 +87,7 @@ public class QuestionControllerTest {
     public void shouldResponseWithCorrectJson() throws Exception {
         Question question = new Question();
         question.setContent("What is bad?");
-        doReturn(question).when(questionService).getNextQuestion(1L);
+        doReturn(question).when(questionService).getNextQuestionByGameId(1L);
 
         String responseContent = mvc.perform(get("/questions")
                 .param("game-id", "1")

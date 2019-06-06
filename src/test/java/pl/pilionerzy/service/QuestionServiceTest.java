@@ -79,7 +79,7 @@ public class QuestionServiceTest {
         doReturn(true).when(page).hasContent();
         doReturn(Collections.singletonList(otherQuestion)).when(page).getContent();
 
-        Question actualQuestion = questionService.getNextQuestion(gameId);
+        Question actualQuestion = questionService.getNextQuestionByGameId(gameId);
 
         verify(gameService)
                 .updateLastQuestion(game, otherQuestion);
@@ -92,7 +92,7 @@ public class QuestionServiceTest {
         doReturn(false).when(page).hasContent();
 
         assertThatExceptionOfType(NotEnoughDataException.class)
-                .isThrownBy(() -> questionService.getNextQuestion(gameId));
+                .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
         verify(questionDao)
                 .findByActive(eq(true), isA(PageRequest.class));
     }
@@ -103,7 +103,7 @@ public class QuestionServiceTest {
         doReturn(Collections.singletonList(question)).when(page).getContent();
 
         assertThatExceptionOfType(NotEnoughDataException.class)
-                .isThrownBy(() -> questionService.getNextQuestion(gameId));
+                .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
         verify(questionDao, times(LIMIT))
                 .findByActive(eq(true), isA(PageRequest.class));
     }

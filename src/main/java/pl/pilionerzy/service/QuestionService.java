@@ -37,7 +37,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public Question getNextQuestion(Long gameId) {
+    public Question getNextQuestionByGameId(Long gameId) {
         Game game = gameService.findById(gameId);
         GameUtils.validate(game, RequestType.QUESTION);
         return getAnotherQuestion(game);
