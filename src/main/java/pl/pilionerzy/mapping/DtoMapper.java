@@ -6,6 +6,10 @@ import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 
+/**
+ * Provides mapping methods to exchange data between controller and service layers.
+ * Its implementation {@link MapStructMapper} uses MapStruct library.
+ */
 public interface DtoMapper {
 
     GameDto mapToDto(Game game);
