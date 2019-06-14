@@ -1,6 +1,5 @@
 package pl.pilionerzy.mapping;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.NewQuestionDto;
@@ -14,7 +13,6 @@ class MultiObjectMapper implements DtoMapper {
     private GameMapper gameMapper;
     private QuestionMapper questionMapper;
 
-    @Autowired
     public MultiObjectMapper(GameMapper gameMapper, QuestionMapper questionMapper) {
         this.gameMapper = gameMapper;
         this.questionMapper = questionMapper;
