@@ -31,8 +31,12 @@ class MultiObjectMapper implements DtoMapper {
     }
 
     @Override
+    public NewQuestionDto mapToNewDto(Question question) {
+        return questionMapper.modelToNewDto(question, new LoopAvoidingContext());
+    }
+
+    @Override
     public Question mapToModel(NewQuestionDto questionDto) {
         return questionMapper.dtoToModel(questionDto, new LoopAvoidingContext());
     }
-
 }

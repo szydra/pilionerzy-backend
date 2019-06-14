@@ -12,6 +12,8 @@ public interface DtoMapper {
 
     QuestionDto mapToDto(Question question);
 
+    NewQuestionDto mapToNewDto(Question question);
+
     Question mapToModel(NewQuestionDto questionDto);
 
 }
