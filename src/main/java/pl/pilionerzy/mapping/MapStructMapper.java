@@ -8,12 +8,12 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 
 @Component
-class MultiObjectMapper implements DtoMapper {
+class MapStructMapper implements DtoMapper {
 
     private GameMapper gameMapper;
     private QuestionMapper questionMapper;
 
-    public MultiObjectMapper(GameMapper gameMapper, QuestionMapper questionMapper) {
+    public MapStructMapper(GameMapper gameMapper, QuestionMapper questionMapper) {
         this.gameMapper = gameMapper;
         this.questionMapper = questionMapper;
     }
