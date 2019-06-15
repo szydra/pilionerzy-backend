@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
-public class PilionerzyApplicationTest {
+public class PilionerzyApplicationIntegrationTest {
 
     @Test
     public void contextLoads() {
