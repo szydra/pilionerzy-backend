@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class QuestionDaoTest {
+public class QuestionDaoIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;

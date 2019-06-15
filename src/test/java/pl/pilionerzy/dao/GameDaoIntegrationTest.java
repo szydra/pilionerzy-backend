@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class GameDaoTest {
+public class GameDaoIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
