@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -49,6 +50,14 @@ public class ExceptionHandlerTest {
     }
 
     @Test
+    public void shouldHandleLifelineException() throws Exception {
+        when(gameController.getAudienceAnswer(anyLong())).thenThrow(LifelineException.class);
+
+        mvc.perform(get("/games/1/ask-the-audience"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     public void shouldHandleNoSuchGameException() throws Exception {
         when(gameController.sendAnswer(anyLong(), anyMap())).thenThrow(NoSuchGameException.class);
 
@@ -57,5 +66,4 @@ public class ExceptionHandlerTest {
                 .content("{\"selected\":\"A\"}"))
                 .andExpect(status().isNotFound());
     }
-
 }
