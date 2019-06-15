@@ -35,6 +35,11 @@ public class GameController {
         return Collections.singletonMap("incorrectPrefixes", incorrectPrefixes);
     }
 
+    @GetMapping("/{gameId}/ask-the-audience")
+    public Map<Prefix, AudienceAnswer> getAudienceAnswer(@PathVariable Long gameId) {
+        return gameService.getAudienceAnswerByGameId(gameId);
+    }
+
     @PostMapping("/{gameId}/answers")
     public Map<String, Prefix> sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
         Prefix selected = answer.get("selected");
