@@ -1,6 +1,5 @@
 package pl.pilionerzy.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class QuestionService {
     private GameService gameService;
     private QuestionDao questionDao;
 
-    @Autowired
     public QuestionService(QuestionDao questionDao, GameService gameService) {
         this.questionDao = questionDao;
         this.gameService = gameService;
@@ -68,5 +66,4 @@ public class QuestionService {
             throw new NotEnoughDataException("Cannot get another question");
         }
     }
-
 }
