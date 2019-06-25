@@ -45,11 +45,11 @@ public class GameService {
     }
 
     /**
-     * Deactivates game with the passed id and returns the correct answer.
+     * Deactivates game with the passed id and returns it.
      * Should be called when a user manually stops the game.
      *
      * @param gameId game id
-     * @return prefix of the correct answer
+     * @return stopped game with the correct answer
      * @throws NoSuchGameException if no game with the passed id can be found
      */
     @Transactional
