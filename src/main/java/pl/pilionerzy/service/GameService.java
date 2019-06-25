@@ -126,14 +126,6 @@ public class GameService {
         return new AskTheAudienceCalculator().getAnswer(lastAskedQuestion, rejectedAnswers);
     }
 
-    /**
-     * Use @{@link Transactional} instead
-     */
-    @Deprecated
-    Game save(Game game) {
-        return gameDao.save(game);
-    }
-
     Game findById(Long gameId) {
         return gameDao.findById(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
@@ -143,7 +135,5 @@ public class GameService {
         Set<Question> askedQuestions = game.getAskedQuestions();
         askedQuestions.add(question);
         game.setLastAskedQuestion(question);
-        save(game);
     }
-
 }
