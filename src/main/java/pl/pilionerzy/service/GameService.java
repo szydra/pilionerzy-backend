@@ -3,9 +3,11 @@ package pl.pilionerzy.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.*;
 import pl.pilionerzy.util.lifeline.AskTheAudienceCalculator;
 import pl.pilionerzy.util.lifeline.FiftyFiftyCalculator;
@@ -22,9 +24,11 @@ import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 @Service
 public class GameService {
 
+    private DtoMapper mapper;
     private GameDao gameDao;
 
-    public GameService(GameDao gameDao) {
+    public GameService(DtoMapper mapper, GameDao gameDao) {
+        this.mapper = mapper;
         this.gameDao = gameDao;
     }
 
@@ -33,11 +37,11 @@ public class GameService {
      *
      * @return started game
      */
-    public Game startNewGame() {
+    public GameDto startNewGame() {
         Game game = new Game();
         game.activate();
         game.initLevel();
-        return gameDao.save(game);
+        return mapper.mapToDto(gameDao.save(game));
     }
 
     /**
@@ -49,10 +53,10 @@ public class GameService {
      * @throws NoSuchGameException if no game with the passed id can be found
      */
     @Transactional
-    public Prefix stopAndGetCorrectAnswerPrefix(Long gameId) {
+    public GameDto stopById(Long gameId) {
         Game game = findById(gameId);
-        game.setActive(false);
-        return GameUtils.getCorrectAnswerPrefix(game);
+        game.deactivate();
+        return mapper.mapToDto(game);
     }
 
     /**
