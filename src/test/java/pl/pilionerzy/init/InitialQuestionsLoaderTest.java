@@ -72,8 +72,8 @@ public class InitialQuestionsLoaderTest {
     }
 
     @Test
-    public void shouldPrepareChangedName() {
-        assertThat(questionsLoader.getChangedName("questions.json"))
+    public void shouldPrepareChangedFilename() {
+        assertThat(questionsLoader.getChangedFilename("questions.json"))
                 .isEqualTo("questions_loaded.json");
     }
 }
