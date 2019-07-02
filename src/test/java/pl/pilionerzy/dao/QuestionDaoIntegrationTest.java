@@ -75,7 +75,7 @@ public class QuestionDaoIntegrationTest {
         sampleQuestion.activate();
         Collections.reverse(sampleQuestion.getAnswers());
 
-        Long id = questionDao.save(sampleQuestion).getId();
+        Long id = (Long) entityManager.persistAndGetId(sampleQuestion);
         entityManager.clear();
         Optional<Question> foundQuestion = questionDao.findById(id);
 
@@ -107,5 +107,4 @@ public class QuestionDaoIntegrationTest {
         answer.setContent(prefix.toString());
         return answer;
     }
-
 }
