@@ -2,27 +2,25 @@ package pl.pilionerzy.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.GameDao;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.model.*;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,38 +32,11 @@ public class GameServiceTest {
     @InjectMocks
     private GameService gameService;
 
-    @Captor
-    private ArgumentCaptor<Game> gameArgumentCaptor;
-
-    @Before
-    public void prepareGameDao() {
-        doAnswer(invocation -> invocation.getArgument(0))
-                .when(gameDao)
-                .save(isA(Game.class));
-    }
-
     @Test
-    public void shouldStartNewGame() {
-        Game game = gameService.startNewGame();
+    public void stoppingGameShouldBeTransactional() throws NoSuchMethodException {
+        Method stopById = GameService.class.getMethod("stopById", Long.class);
 
-        assertThat(game)
-                .hasFieldOrPropertyWithValue("level", 0)
-                .hasFieldOrPropertyWithValue("active", true);
-        assertThat(game.getAskedQuestions()).isNullOrEmpty();
-    }
-
-    @Test
-    public void shouldStopExistingGame() {
-        Game game = new Game();
-        game.setId(1L);
-        game.setActive(true);
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
-
-        Game game1 = gameService.findById(1L);
-        game1.setActive(false);
-        Game stoppedGame = gameService.save(game1);
-
-        assertThat(stoppedGame.getActive()).isFalse();
+        assertThat(stopById.isAnnotationPresent(Transactional.class)).isTrue();
     }
 
     @Test
@@ -74,23 +45,6 @@ public class GameServiceTest {
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.findById(1L));
-    }
-
-    @Test
-    public void shouldStopAndReturnCorrectAnswer() {
-        Question question = new Question();
-        question.setId(8L);
-        question.setCorrectAnswer(Prefix.C);
-        Game game = new Game();
-        game.setId(1L);
-        game.setLastAskedQuestion(question);
-        game.setAskedQuestions(Sets.newHashSet(question));
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
-
-        Prefix correct = gameService.stopAndGetCorrectAnswerPrefix(1L);
-
-        assertThat(game.getActive()).isFalse();
-        assertThat(correct).isEqualTo(Prefix.C);
     }
 
     @Test
@@ -106,12 +60,10 @@ public class GameServiceTest {
 
         gameService.updateLastQuestion(game, question2);
 
-        verify(gameDao).save(gameArgumentCaptor.capture());
-        Game capturedGame = gameArgumentCaptor.getValue();
-        assertThat(capturedGame.getLastAskedQuestion())
+        assertThat(game.getLastAskedQuestion())
                 .isEqualTo(question2);
-        assertThat(capturedGame.getAskedQuestions())
-                .containsExactly(question1, question2);
+        assertThat(game.getAskedQuestions())
+                .containsExactlyInAnyOrder(question1, question2);
     }
 
     @Test
@@ -169,7 +121,7 @@ public class GameServiceTest {
         assertThat(audienceAnswer).containsOnlyKeys(C, D);
         assertThat(game.getUsedLifelines())
                 .extracting(UsedLifeline::getType)
-                .contains(Lifeline.ASK_THE_AUDIENCE);
+                .containsExactlyInAnyOrder(Lifeline.ASK_THE_AUDIENCE, Lifeline.FIFTY_FIFTY);
     }
 
     @Test
@@ -192,6 +144,6 @@ public class GameServiceTest {
         assertThat(audienceAnswer).containsOnlyKeys(A, B, C, D);
         assertThat(game.getUsedLifelines())
                 .extracting(UsedLifeline::getType)
-                .contains(Lifeline.ASK_THE_AUDIENCE);
+                .containsExactly(Lifeline.ASK_THE_AUDIENCE);
     }
 }
