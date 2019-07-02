@@ -1,6 +1,5 @@
 package pl.pilionerzy.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
@@ -17,7 +16,6 @@ public class QuestionController {
     private DtoMapper dtoMapper;
     private QuestionService questionService;
 
-    @Autowired
     public QuestionController(DtoMapper dtoMapper, QuestionService questionService) {
         this.dtoMapper = dtoMapper;
         this.questionService = questionService;
