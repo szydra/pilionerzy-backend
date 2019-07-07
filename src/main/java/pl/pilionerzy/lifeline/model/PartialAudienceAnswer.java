@@ -1,4 +1,4 @@
-package pl.pilionerzy.model;
+package pl.pilionerzy.lifeline.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.text.DecimalFormat;
 
 @JsonSerialize(using = ToStringSerializer.class)
-public class AudienceAnswer {
+public class PartialAudienceAnswer {
 
     private static final DecimalFormat format;
 
@@ -17,12 +17,12 @@ public class AudienceAnswer {
 
     private int votes;
 
-    private AudienceAnswer(int votes) {
+    private PartialAudienceAnswer(int votes) {
         this.votes = votes;
     }
 
-    public static AudienceAnswer withVotes(int votes) {
-        return new AudienceAnswer(votes);
+    public static PartialAudienceAnswer withVotes(int votes) {
+        return new PartialAudienceAnswer(votes);
     }
 
     public int getVotes() {
