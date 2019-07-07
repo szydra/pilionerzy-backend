@@ -1,4 +1,4 @@
-package pl.pilionerzy.util.lifeline;
+package pl.pilionerzy.lifeline;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,10 +6,10 @@ import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pl.pilionerzy.util.lifeline.FiftyFiftyCalculator.getPrefixesToDiscard;
 
 public class FiftyFiftyCalculatorTest {
 
+    private FiftyFiftyCalculator calculator = new FiftyFiftyCalculator();
     private Question question;
 
     @Before
@@ -20,7 +20,7 @@ public class FiftyFiftyCalculatorTest {
 
     @Test
     public void shouldDiscardExactlyTwoIncorrectAnswers() {
-        assertThat(getPrefixesToDiscard(question))
+        assertThat(calculator.getPrefixesToDiscard(question).getPrefixesToDiscard())
                 .hasSize(2)
                 .doesNotContain(Prefix.A);
     }
