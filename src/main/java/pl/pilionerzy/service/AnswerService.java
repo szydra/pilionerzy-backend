@@ -8,7 +8,6 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.util.RequestType;
 
-import static pl.pilionerzy.util.GameUtils.getCorrectAnswerPrefix;
 import static pl.pilionerzy.util.GameUtils.validate;
 import static pl.pilionerzy.util.LevelUtils.*;
 
@@ -38,7 +37,7 @@ public class AnswerService {
     public Prefix doAnswer(Long gameId, Prefix selectedPrefix) {
         Game game = gameService.findById(gameId);
         validate(game, RequestType.ANSWER);
-        Prefix correct = getCorrectAnswerPrefix(game);
+        Prefix correct = game.getLastAskedQuestion().getCorrectAnswer();
         if (correct != selectedPrefix) {
             updateGameForIncorrect(game);
         } else {
