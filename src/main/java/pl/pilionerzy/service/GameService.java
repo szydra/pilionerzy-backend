@@ -7,16 +7,20 @@ import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
+import pl.pilionerzy.lifeline.Calculator;
+import pl.pilionerzy.lifeline.model.AudienceAnswer;
+import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
+import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.*;
-import pl.pilionerzy.util.lifeline.AskTheAudienceCalculator;
-import pl.pilionerzy.util.lifeline.FiftyFiftyCalculator;
+import pl.pilionerzy.util.RequestType;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
-import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
+import static pl.pilionerzy.model.Lifeline.*;
+import static pl.pilionerzy.util.GameUtils.*;
 
 /**
  * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
@@ -24,10 +28,12 @@ import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 @Service
 public class GameService {
 
+    private Calculator lifelineCalculator;
     private DtoMapper mapper;
     private GameDao gameDao;
 
-    public GameService(DtoMapper mapper, GameDao gameDao) {
+    public GameService(Calculator lifelineCalculator, DtoMapper mapper, GameDao gameDao) {
+        this.lifelineCalculator = lifelineCalculator;
         this.mapper = mapper;
         this.gameDao = gameDao;
     }
@@ -51,11 +57,16 @@ public class GameService {
      * @param gameId game id
      * @return stopped game with the correct answer
      * @throws NoSuchGameException if no game with the passed id can be found
+     * @throws GameException       if the game was already stopped
      */
     @Transactional
     public GameDto stopById(Long gameId) {
         Game game = findById(gameId);
-        game.deactivate();
+        try {
+            game.deactivate();
+        } catch (IllegalStateException e) {
+            throw new GameException(e.getMessage());
+        }
         return mapper.mapToDto(game);
     }
 
@@ -71,26 +82,34 @@ public class GameService {
     @Transactional
     public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
         Game game = findById(gameId);
-        Collection<UsedLifeline> usedLifelines = game.getUsedLifelines();
-        if (usedLifelines.stream()
-                .map(UsedLifeline::getType)
-                .anyMatch(type -> type == FIFTY_FIFTY)) {
+        validate(game, RequestType.LIFELINE);
+        if (isLifelineUsed(game, FIFTY_FIFTY)) {
             throw new LifelineException("Fifty-fifty lifeline already used");
         }
-        UsedLifeline fiftyFifty = getFiftyFiftyResult(game);
-        usedLifelines.add(fiftyFifty);
-        return fiftyFifty.getRejectedAnswers();
+        updateUsedLifelines(game, FIFTY_FIFTY);
+        FiftyFiftyResult fiftyFifty = lifelineCalculator.getFiftyFiftyResult(game.getLastAskedQuestion());
+        updateRejectedAnswers(game, fiftyFifty.getPrefixesToDiscard());
+        return fiftyFifty.getPrefixesToDiscard();
     }
 
-    private UsedLifeline getFiftyFiftyResult(Game game) {
-        UsedLifeline usedLifeline = new UsedLifeline();
-        usedLifeline.setType(FIFTY_FIFTY);
-        usedLifeline.setQuestion(game.getLastAskedQuestion());
-        Collection<Prefix> rejectedAnswers = Optional.ofNullable(game.getLastAskedQuestion())
-                .map(FiftyFiftyCalculator::getPrefixesToDiscard)
-                .orElseThrow(() -> new GameException("Cannot use lifeline for a game without last asked question"));
-        usedLifeline.setRejectedAnswers(rejectedAnswers);
-        return usedLifeline;
+    /**
+     * Processes phone-a-friend lifeline.
+     *
+     * @param gameId game id
+     * @return friend's answer containing prefix and wisdom
+     * @throws NoSuchGameException if no game with the passed id can be found
+     * @throws LifelineException   if phone-a-friend was already used
+     * @throws GameException       if the last asked question is null
+     */
+    @Transactional
+    public FriendsAnswer getFriendsAnswerByGameId(Long gameId) {
+        Game game = findById(gameId);
+        validate(game, RequestType.LIFELINE);
+        if (isLifelineUsed(game, PHONE_A_FRIEND)) {
+            throw new LifelineException("Phone a friend lifeline already used");
+        }
+        updateUsedLifelines(game, PHONE_A_FRIEND);
+        return lifelineCalculator.getFriendsAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
     }
 
     /**
@@ -103,36 +122,36 @@ public class GameService {
      * @throws GameException       if the last asked question is null
      */
     @Transactional
-    public Map<Prefix, AudienceAnswer> getAudienceAnswerByGameId(Long gameId) {
+    public AudienceAnswer getAudienceAnswerByGameId(Long gameId) {
         Game game = findById(gameId);
-        Collection<UsedLifeline> usedLifelines = game.getUsedLifelines();
-        if (usedLifelines.stream()
-                .map(UsedLifeline::getType)
-                .anyMatch(type -> type == ASK_THE_AUDIENCE)) {
+        validate(game, RequestType.LIFELINE);
+        if (isLifelineUsed(game, ASK_THE_AUDIENCE)) {
             throw new LifelineException("Ask the audience lifeline already used");
         }
-        UsedLifeline askTheAudience = new UsedLifeline();
-        askTheAudience.setType(ASK_THE_AUDIENCE);
-        askTheAudience.setQuestion(game.getLastAskedQuestion());
-        usedLifelines.add(askTheAudience);
-        return getAudienceAnswer(game);
-    }
-
-    private Map<Prefix, AudienceAnswer> getAudienceAnswer(Game game) {
-        Question lastAskedQuestion = Optional.ofNullable(game.getLastAskedQuestion())
-                .orElseThrow(() -> new GameException("Cannot use lifeline for a game without last asked question"));
-        Set<Prefix> rejectedAnswers = game.getUsedLifelines().stream()
-                .filter(usedLifeline -> usedLifeline.getType() == FIFTY_FIFTY)
-                .filter(usedLifeline -> Objects.equals(usedLifeline.getQuestion(), lastAskedQuestion))
-                .map(UsedLifeline::getRejectedAnswers)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-        return new AskTheAudienceCalculator().getAnswer(lastAskedQuestion, rejectedAnswers);
+        updateUsedLifelines(game, ASK_THE_AUDIENCE);
+        return lifelineCalculator.getAudienceAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
     }
 
     Game findById(Long gameId) {
         return gameDao.findById(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
+    }
+
+    private void updateUsedLifelines(Game game, Lifeline lifeline) {
+        List<UsedLifeline> usedLifelines = game.getUsedLifelines();
+        UsedLifeline usedLifeline = new UsedLifeline();
+        usedLifeline.setType(lifeline);
+        usedLifeline.setQuestion(game.getLastAskedQuestion());
+        usedLifelines.add(usedLifeline);
+    }
+
+    private void updateRejectedAnswers(Game game, Collection<Prefix> rejectedAnswers) {
+        game.getUsedLifelines().forEach(
+                usedLifeline -> {
+                    if (usedLifeline.getType() == FIFTY_FIFTY) {
+                        usedLifeline.setRejectedAnswers(rejectedAnswers);
+                    }
+                });
     }
 
     void updateLastQuestion(Game game, Question question) {
