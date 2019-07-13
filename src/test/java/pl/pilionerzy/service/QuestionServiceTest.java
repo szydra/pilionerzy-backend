@@ -88,7 +88,7 @@ public class QuestionServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenThereAreNoQuestions() {
+    public void shouldThrowExceptionWhenQuestionWasNotObtained() {
         doReturn(false).when(page).hasContent();
 
         assertThatExceptionOfType(NotEnoughDataException.class)
@@ -108,4 +108,12 @@ public class QuestionServiceTest {
                 .findByActive(eq(true), isA(PageRequest.class));
     }
 
+    @Test
+    public void shouldThrowExceptionWhenThereAreNoQuestions() {
+        doReturn(0L).when(questionDao).countByActive(true);
+
+        assertThatExceptionOfType(NotEnoughDataException.class)
+                .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId))
+                .withMessage("No active questions available");
+    }
 }

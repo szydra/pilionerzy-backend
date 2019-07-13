@@ -27,6 +27,7 @@ public class QuestionService {
      */
     static final int LIMIT = 12;
 
+    private final Random random = new Random();
     private GameService gameService;
     private QuestionDao questionDao;
 
@@ -71,8 +72,11 @@ public class QuestionService {
     }
 
     private Question getRandomQuestion() {
-        Random random = new Random();
-        int page = random.nextInt((int) questionDao.countByActive(true));
+        int numberOfActiveQuestions = (int) questionDao.countByActive(true);
+        if (numberOfActiveQuestions == 0) {
+            throw new NotEnoughDataException("No active questions available");
+        }
+        int page = random.nextInt(numberOfActiveQuestions);
         Slice<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
