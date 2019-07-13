@@ -658,5 +658,49 @@
       }
     ],
     "correctAnswer": "C"
+  },
+  {
+    "content": "Które z podanych liczb mogą być długościami boków trójkąta?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(\\sqrt{2}\\), \\(\\sqrt{3}\\), \\(\\sqrt{11}\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(\\sqrt{3}\\), \\(\\sqrt{5}\\), \\(\\sqrt{17}\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(\\sqrt{5}\\), \\(\\sqrt{7}\\), \\(\\sqrt{23}\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(\\sqrt{7}\\), \\(\\sqrt{11}\\), \\(\\sqrt{37}\\)"
+      }
+    ],
+    "correctAnswer": "C"
+  },
+  {
+    "content": "Zwyczajowo kwasem mrówkowym nazywamy związek o wzorze sumarycznym:",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(HCOOH\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(CH_3COOH\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(C_2H_5COOH\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(C_3H_7COOH\\)"
+      }
+    ],
+    "correctAnswer": "A"
   }
 ]
