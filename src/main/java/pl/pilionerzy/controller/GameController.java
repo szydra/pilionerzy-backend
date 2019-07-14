@@ -2,7 +2,8 @@ package pl.pilionerzy.controller;
 
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.GameDto;
-import pl.pilionerzy.model.AudienceAnswer;
+import pl.pilionerzy.lifeline.model.FriendsAnswer;
+import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
@@ -35,9 +36,14 @@ public class GameController {
         return Collections.singletonMap("incorrectPrefixes", incorrectPrefixes);
     }
 
+    @GetMapping("/{gameId}/phone-a-friend")
+    public FriendsAnswer getFriendsAnswer(@PathVariable Long gameId) {
+        return gameService.getFriendsAnswerByGameId(gameId);
+    }
+
     @GetMapping("/{gameId}/ask-the-audience")
-    public Map<Prefix, AudienceAnswer> getAudienceAnswer(@PathVariable Long gameId) {
-        return gameService.getAudienceAnswerByGameId(gameId);
+    public Map<Prefix, PartialAudienceAnswer> getAudienceAnswer(@PathVariable Long gameId) {
+        return gameService.getAudienceAnswerByGameId(gameId).getVotesChart();
     }
 
     @PostMapping("/{gameId}/answers")
