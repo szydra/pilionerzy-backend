@@ -33,6 +33,22 @@ public class NewQuestionDtoTest {
     }
 
     @Test
+    public void shouldIgnoreIdInJson() throws IOException {
+        String json = "{\"id\":1,"
+                + "\"content\": \"content\","
+                + "\"answers\": ["
+                + "  {\"prefix\": \"A\",\"content\": \"A\"},"
+                + "  {\"prefix\": \"B\",\"content\": \"B\"},"
+                + "  {\"prefix\": \"C\",\"content\": \"C\"},"
+                + "  {\"prefix\": \"D\",\"content\": \"D\"}],"
+                + "\"correctAnswer\": \"C\"}";
+
+        NewQuestionDto actualQuestion = new ObjectMapper().readValue(json, NewQuestionDto.class);
+
+        assertThat(actualQuestion.getId()).isNull();
+    }
+
+    @Test
     public void equalsShouldNotThrowStackOverflowError() {
         NewQuestionDto question1 = prepareQuestionWithOneAnswer();
         NewQuestionDto question2 = prepareQuestionWithOneAnswer();
