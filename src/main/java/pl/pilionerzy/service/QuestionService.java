@@ -5,9 +5,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.dto.NewQuestionDto;
+import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.exception.NotEnoughDataException;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.util.GameUtils;
@@ -29,15 +32,18 @@ public class QuestionService {
 
     private final Random random = new Random();
     private GameService gameService;
+    private DtoMapper mapper;
     private QuestionDao questionDao;
 
-    public QuestionService(QuestionDao questionDao, GameService gameService) {
+    public QuestionService(QuestionDao questionDao, DtoMapper mapper, GameService gameService) {
         this.questionDao = questionDao;
+        this.mapper = mapper;
         this.gameService = gameService;
     }
 
-    public Question save(Question question) {
-        return questionDao.save(question);
+    public NewQuestionDto saveNew(NewQuestionDto newQuestion) {
+        Question question = mapper.mapToModel(newQuestion);
+        return mapper.mapToNewDto(questionDao.save(question));
     }
 
     /**
@@ -50,10 +56,10 @@ public class QuestionService {
      * @throws NotEnoughDataException if fetching another question failed
      */
     @Transactional
-    public Question getNextQuestionByGameId(Long gameId) {
+    public QuestionDto getNextQuestionByGameId(Long gameId) {
         Game game = gameService.findById(gameId);
         GameUtils.validate(game, RequestType.QUESTION);
-        return getAnotherQuestion(game);
+        return mapper.mapToDto(getAnotherQuestion(game));
     }
 
     private Question getAnotherQuestion(Game game) {
