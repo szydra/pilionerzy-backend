@@ -1,5 +1,6 @@
 package pl.pilionerzy.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.Test;
@@ -12,6 +13,9 @@ import pl.pilionerzy.dao.GameDao;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
+import pl.pilionerzy.lifeline.Calculator;
+import pl.pilionerzy.lifeline.model.AudienceAnswer;
+import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.*;
 
 import java.lang.reflect.Method;
@@ -27,6 +31,9 @@ import static pl.pilionerzy.model.Prefix.*;
 public class GameServiceTest {
 
     @Mock
+    private Calculator calculator;
+
+    @Mock
     private GameDao gameDao;
 
     @InjectMocks
@@ -37,6 +44,18 @@ public class GameServiceTest {
         Method stopById = GameService.class.getMethod("stopById", Long.class);
 
         assertThat(stopById.isAnnotationPresent(Transactional.class)).isTrue();
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenStoppingInactiveGame() {
+        Game game = new Game();
+        game.setId(1L);
+        game.deactivate();
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.stopById(1L))
+                .withMessage("Inactive game cannot be deactivated");
     }
 
     @Test
@@ -89,11 +108,25 @@ public class GameServiceTest {
         UsedLifeline ata = new UsedLifeline();
         ata.setType(Lifeline.ASK_THE_AUDIENCE);
         Game game = new Game();
+        game.activate();
+        game.setLastAskedQuestion(new Question());
         game.setUsedLifelines(Lists.newArrayList(ata));
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(LifelineException.class)
-                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
+                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L))
+                .withMessageContaining("already used");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToInactiveGame() {
+        Game game = new Game();
+        game.deactivate();
+        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L))
+                .withMessageContaining("inactive");
     }
 
     @Test
@@ -113,9 +146,13 @@ public class GameServiceTest {
         game.setUsedLifelines(Lists.newArrayList(fiftyFifty));
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
+        doReturn(new AudienceAnswer(ImmutableMap.of(
+                C, PartialAudienceAnswer.withVotes(50),
+                D, PartialAudienceAnswer.withVotes(50))
+        )).when(calculator).getAudienceAnswer(question, Sets.newHashSet(A, B));
 
         // when
-        Map<Prefix, AudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L);
+        Map<Prefix, PartialAudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L).getVotesChart();
 
         // then
         assertThat(audienceAnswer).containsOnlyKeys(C, D);
@@ -136,9 +173,15 @@ public class GameServiceTest {
         game.setUsedLifelines(Lists.newArrayList());
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
+        doReturn(new AudienceAnswer(ImmutableMap.of(
+                A, PartialAudienceAnswer.withVotes(25),
+                B, PartialAudienceAnswer.withVotes(25),
+                C, PartialAudienceAnswer.withVotes(25),
+                D, PartialAudienceAnswer.withVotes(25))
+        )).when(calculator).getAudienceAnswer(question, Sets.newHashSet());
 
         // when
-        Map<Prefix, AudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L);
+        Map<Prefix, PartialAudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L).getVotesChart();
 
         // then
         assertThat(audienceAnswer).containsOnlyKeys(A, B, C, D);
