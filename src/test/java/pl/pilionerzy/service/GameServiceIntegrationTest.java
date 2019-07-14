@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.pilionerzy.dto.GameDto;
+import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +49,9 @@ public class GameServiceIntegrationTest {
     public void shouldStopGameAndReturnItWithCorrectAnswer() {
         // given
         GameDto newGame = gameService.startNewGame();
-        Question question = questionService.getNextQuestionByGameId(newGame.getId());
+        questionService.getNextQuestionByGameId(newGame.getId());
+        Game savedGame = gameService.findById(newGame.getId());
+        Question question = savedGame.getLastAskedQuestion();
 
         // when
         GameDto stoppedGame = gameService.stopById(newGame.getId());
