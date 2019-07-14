@@ -16,7 +16,6 @@ import pl.pilionerzy.model.Question;
 
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -63,28 +62,6 @@ public class QuestionServiceTest {
         doReturn(game).when(gameService).findById(gameId);
         doReturn(page).when(questionDao).findByActive(isA(Boolean.class), isA(Pageable.class));
         doReturn(1L).when(questionDao).countByActive(true);
-    }
-
-    @Test
-    public void shouldSaveQuestion() {
-        questionService.save(question);
-
-        verify(questionDao).save(question);
-    }
-
-    @Test
-    public void shouldUpdateLastQuestion() {
-        Question otherQuestion = new Question();
-        otherQuestion.setId(2L);
-        doReturn(true).when(page).hasContent();
-        doReturn(Collections.singletonList(otherQuestion)).when(page).getContent();
-
-        Question actualQuestion = questionService.getNextQuestionByGameId(gameId);
-
-        verify(gameService)
-                .updateLastQuestion(game, otherQuestion);
-        assertThat(actualQuestion)
-                .isEqualTo(otherQuestion);
     }
 
     @Test
