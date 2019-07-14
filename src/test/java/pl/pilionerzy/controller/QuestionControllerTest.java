@@ -9,14 +9,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import pl.pilionerzy.model.Question;
+import pl.pilionerzy.dto.NewQuestionDto;
+import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.service.QuestionService;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -80,23 +81,20 @@ public class QuestionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validJson))
                 .andExpect(status().isOk());
-        verify(questionService).save(isA(Question.class));
+        verify(questionService).saveNew(isA(NewQuestionDto.class));
     }
 
     @Test
     public void shouldResponseWithCorrectJson() throws Exception {
-        Question question = new Question();
+        QuestionDto question = new QuestionDto();
         question.setContent("What is bad?");
         doReturn(question).when(questionService).getNextQuestionByGameId(1L);
 
-        String responseContent = mvc.perform(get("/questions")
+        mvc.perform(get("/questions")
                 .param("game-id", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        assertThat(responseContent)
-                .contains("\"content\":\"What is bad?\"")
-                .doesNotContain("correctAnswer");
+                .andExpect(jsonPath("$.content").value("What is bad?"))
+                .andExpect(jsonPath("$.correctAnswer").doesNotExist());
     }
-
 }
