@@ -576,15 +576,15 @@
     "answers": [
       {
         "prefix": "A",
-        "content": "8"
+        "content": "\\(8\\)"
       },
       {
         "prefix": "B",
-        "content": "10"
+        "content": "\\(10\\)"
       },
       {
         "prefix": "C",
-        "content": "12"
+        "content": "\\(12\\)"
       },
       {
         "prefix": "D",
@@ -620,19 +620,19 @@
     "answers": [
       {
         "prefix": "A",
-        "content": "2 tony"
+        "content": "\\(2\\) tony"
       },
       {
         "prefix": "B",
-        "content": "7 ton"
+        "content": "\\(7\\) ton"
       },
       {
         "prefix": "C",
-        "content": "13 ton"
+        "content": "\\(13\\) ton"
       },
       {
         "prefix": "D",
-        "content": "19 ton"
+        "content": "\\(19\\) ton"
       }
     ],
     "correctAnswer": "D"
@@ -686,21 +686,43 @@
     "answers": [
       {
         "prefix": "A",
-        "content": "\\(HCOOH\\)"
+        "content": "\\(\\mathrm{HCOOH}\\)"
       },
       {
         "prefix": "B",
-        "content": "\\(CH_3COOH\\)"
+        "content": "\\(\\mathrm{CH_3COOH}\\)"
       },
       {
         "prefix": "C",
-        "content": "\\(C_2H_5COOH\\)"
+        "content": "\\(\\mathrm{C_2H_5COOH}\\)"
       },
       {
         "prefix": "D",
-        "content": "\\(C_3H_7COOH\\)"
+        "content": "\\(\\mathrm{C_3H_7COOH}\\)"
       }
     ],
     "correctAnswer": "A"
+  },
+  {
+    "content": "Jaką prędkość ma ciało swobodnie spadające z wysokości \\(h\\) na wysokości \\(\\frac{h}{2}\\) (\\(g\\) oznacza przyspieszenie ziemskie)?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(\\sqrt{\\frac{gh}{2}}\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(\\sqrt{gh}\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(\\sqrt{2gh}\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(2\\sqrt{gh}\\)"
+      }
+    ],
+    "correctAnswer": "B"
   }
 ]
