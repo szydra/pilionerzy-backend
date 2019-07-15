@@ -724,5 +724,27 @@
       }
     ],
     "correctAnswer": "B"
+  },
+  {
+    "content": "Jeżeli \\(b=\\frac{a}{1+a}\\), to:",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(a=\\frac{b}{1-b}\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(a=\\frac{b}{1+b}\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(a=\\frac{1-b}{b}\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(a=\\frac{1+b}{b}\\)"
+      }
+    ],
+    "correctAnswer": "A"
   }
 ]
