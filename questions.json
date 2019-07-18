@@ -746,5 +746,93 @@
       }
     ],
     "correctAnswer": "A"
+  },
+  {
+    "content": "Nazwa systematyczna tlenku disiarki \\(\\mathrm{S_2O}\\) to:",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "tlenek siarki(I)"
+      },
+      {
+        "prefix": "B",
+        "content": "tlenek siarki(II)"
+      },
+      {
+        "prefix": "C",
+        "content": "tlenek siarki(IV)"
+      },
+      {
+        "prefix": "D",
+        "content": "tlenek(II) siarki"
+      }
+    ],
+    "correctAnswer": "A"
+  },
+  {
+    "content": "Ile przekątnych ma siedmiokąt wypukły?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(7\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(14\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(17\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(21\\)"
+      }
+    ],
+    "correctAnswer": "B"
+  },
+  {
+    "content": "Ile wynosi (w przybliżeniu) prawdopodobieństwo wyrzucenia co najmniej jednej szóstki w sześciu rzutach kością do gry?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "\\(0,67\\)"
+      },
+      {
+        "prefix": "B",
+        "content": "\\(0,83\\)"
+      },
+      {
+        "prefix": "C",
+        "content": "\\(0,92\\)"
+      },
+      {
+        "prefix": "D",
+        "content": "\\(0,99\\)"
+      }
+    ],
+    "correctAnswer": "A"
+  },
+  {
+    "content": "Niech \\(w\\) będzie wielomianem o współczynnikach rzeczywistych. Które z poniższych zdań jest fałszywe?",
+    "answers": [
+      {
+        "prefix": "A",
+        "content": "Jeżeli \\(w\\) jest funkcją monotoniczną, to \\(w\\) ma co najmniej jeden pierwiastek rzeczywisty."
+      },
+      {
+        "prefix": "B",
+        "content": "Jeżeli \\(w^\\prime\\) jest funkcją monotoniczną, to \\(w\\) ma co najmniej jeden pierwiastek rzeczywisty."
+      },
+      {
+        "prefix": "C",
+        "content": "Jeżeli stopień \\(w\\) jest liczbą nieparzystą, to \\(w\\) ma co najmniej jeden pierwiastek rzeczywisty."
+      },
+      {
+        "prefix": "D",
+        "content": "Jeżeli stopień \\(w^\\prime\\) jest liczbą parzystą, to \\(w\\) ma co najmniej jeden pierwiastek rzeczywisty."
+      }
+    ],
+    "correctAnswer": "B"
   }
 ]
