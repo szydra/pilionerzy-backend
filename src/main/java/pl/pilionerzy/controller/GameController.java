@@ -1,5 +1,6 @@
 package pl.pilionerzy.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
@@ -15,15 +16,11 @@ import java.util.Map;
 @CrossOrigin(origins = "${allowed.origins}")
 @RestController
 @RequestMapping("/games")
+@RequiredArgsConstructor
 public class GameController {
 
-    private AnswerService answerService;
-    private GameService gameService;
-
-    public GameController(AnswerService answerService, GameService gameService) {
-        this.answerService = answerService;
-        this.gameService = gameService;
-    }
+    private final AnswerService answerService;
+    private final GameService gameService;
 
     @GetMapping("/start-new")
     public GameDto createNewGame() {

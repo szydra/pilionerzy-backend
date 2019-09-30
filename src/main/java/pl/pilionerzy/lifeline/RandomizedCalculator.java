@@ -1,5 +1,6 @@
 package pl.pilionerzy.lifeline;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
@@ -10,19 +11,12 @@ import pl.pilionerzy.model.Question;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 class RandomizedCalculator implements Calculator {
 
-    private FiftyFiftyCalculator fiftyFiftyCalculator;
-    private PhoneAFriendCalculator phoneAFriendCalculator;
-    private AskTheAudienceCalculator askTheAudienceCalculator;
-
-    RandomizedCalculator(FiftyFiftyCalculator fiftyFiftyCalculator,
-                         PhoneAFriendCalculator phoneAFriendCalculator,
-                         AskTheAudienceCalculator askTheAudienceCalculator) {
-        this.fiftyFiftyCalculator = fiftyFiftyCalculator;
-        this.phoneAFriendCalculator = phoneAFriendCalculator;
-        this.askTheAudienceCalculator = askTheAudienceCalculator;
-    }
+    private final FiftyFiftyCalculator fiftyFiftyCalculator;
+    private final PhoneAFriendCalculator phoneAFriendCalculator;
+    private final AskTheAudienceCalculator askTheAudienceCalculator;
 
     @Override
     public FiftyFiftyResult getFiftyFiftyResult(Question question) {

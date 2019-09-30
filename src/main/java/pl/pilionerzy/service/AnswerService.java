@@ -1,5 +1,6 @@
 package pl.pilionerzy.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.exception.GameException;
@@ -16,13 +17,10 @@ import static pl.pilionerzy.util.LevelUtils.*;
  * Updates game level and marks game as inactive if necessary.
  */
 @Service
+@RequiredArgsConstructor
 public class AnswerService {
 
-    private GameService gameService;
-
-    public AnswerService(GameService gameService) {
-        this.gameService = gameService;
-    }
+    private final GameService gameService;
 
     /**
      * Processes answer request, updates game status and returns correct answer.

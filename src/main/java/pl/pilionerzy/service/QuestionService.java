@@ -1,5 +1,6 @@
 package pl.pilionerzy.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Set;
  * Service that is responsible for operations on questions such as saving or drawing.
  */
 @Service
+@RequiredArgsConstructor
 public class QuestionService {
 
     /**
@@ -31,15 +33,9 @@ public class QuestionService {
     static final int LIMIT = 12;
 
     private final Random random = new Random();
-    private GameService gameService;
-    private DtoMapper mapper;
-    private QuestionDao questionDao;
-
-    public QuestionService(QuestionDao questionDao, DtoMapper mapper, GameService gameService) {
-        this.questionDao = questionDao;
-        this.mapper = mapper;
-        this.gameService = gameService;
-    }
+    private final GameService gameService;
+    private final DtoMapper mapper;
+    private final QuestionDao questionDao;
 
     public NewQuestionDto saveNew(NewQuestionDto newQuestion) {
         Question question = mapper.mapToModel(newQuestion);

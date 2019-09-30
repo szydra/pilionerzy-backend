@@ -1,5 +1,7 @@
 package pl.pilionerzy.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.GameDao;
@@ -26,17 +28,13 @@ import static pl.pilionerzy.util.GameUtils.*;
  * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class GameService {
 
-    private Calculator lifelineCalculator;
-    private DtoMapper mapper;
-    private GameDao gameDao;
-
-    public GameService(Calculator lifelineCalculator, DtoMapper mapper, GameDao gameDao) {
-        this.lifelineCalculator = lifelineCalculator;
-        this.mapper = mapper;
-        this.gameDao = gameDao;
-    }
+    private final Calculator lifelineCalculator;
+    private final DtoMapper mapper;
+    private final GameDao gameDao;
 
     /**
      * Creates and saves a new {@link Game} instance.

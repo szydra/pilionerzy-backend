@@ -1,11 +1,11 @@
 package pl.pilionerzy.scheduler;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
 import pl.pilionerzy.dao.GameDao;
 
 import java.time.LocalDateTime;
@@ -17,16 +17,13 @@ import java.time.LocalDateTime;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 class OutdatedGamesDeactivator {
 
-    private GameDao gameDao;
+    private final GameDao gameDao;
 
     @Value("${game.timeout:60}")
     private int gameTimeout;
-
-    public OutdatedGamesDeactivator(GameDao gameDao) {
-        this.gameDao = gameDao;
-    }
 
     @Scheduled(fixedRate = 60_000)
     @Transactional

@@ -3,6 +3,7 @@ package pl.pilionerzy.init;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,18 +28,14 @@ import java.util.List;
 @Transactional
 @Slf4j
 @SuppressWarnings("UnstableApiUsage")
+@RequiredArgsConstructor
 class InitialQuestionsLoader implements CommandLineRunner {
 
-    private DtoMapper dtoMapper;
-    private Environment environment;
-    private QuestionDao questionDao;
-    private ResourceLoader resourceLoader;
+    private final DtoMapper dtoMapper;
+    private final QuestionDao questionDao;
+    private final ResourceLoader resourceLoader;
 
-    public InitialQuestionsLoader(DtoMapper dtoMapper, QuestionDao questionDao, ResourceLoader resourceLoader) {
-        this.dtoMapper = dtoMapper;
-        this.questionDao = questionDao;
-        this.resourceLoader = resourceLoader;
-    }
+    private Environment environment;
 
     @Override
     public void run(String... args) throws IOException {
