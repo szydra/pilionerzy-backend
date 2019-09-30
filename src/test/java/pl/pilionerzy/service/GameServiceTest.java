@@ -1,6 +1,7 @@
 package pl.pilionerzy.service;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -277,7 +278,7 @@ public class GameServiceTest {
         game.setUsedLifelines(newArrayList(fiftyFifty));
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
-        doReturn(new AudienceAnswer(ImmutableMap.of(
+        doReturn(new AudienceAnswer(Map.of(
                 C, PartialAudienceAnswer.withVotes(50),
                 D, PartialAudienceAnswer.withVotes(50))
         )).when(calculator).getAudienceAnswer(question, newHashSet(A, B));
@@ -304,7 +305,7 @@ public class GameServiceTest {
         game.setUsedLifelines(newArrayList());
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
-        doReturn(new AudienceAnswer(ImmutableMap.of(
+        doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(25),
                 B, PartialAudienceAnswer.withVotes(25),
                 C, PartialAudienceAnswer.withVotes(25),
