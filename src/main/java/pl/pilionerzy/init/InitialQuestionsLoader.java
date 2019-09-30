@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,8 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        String filename = environment.acceptsProfiles("test") ? "classpath:questions-test.yaml" : "file:questions.yaml";
+        boolean testProfile = environment.acceptsProfiles(Profiles.of("test"));
+        String filename = testProfile ? "classpath:questions-test.yaml" : "file:questions.yaml";
         Resource questionsYaml = resourceLoader.getResource(filename);
         if (!questionsYaml.exists()) {
             logger.info("File {} not found. No initial questions will be loaded", questionsYaml.getFilename());
@@ -81,7 +83,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
     }
 
     private void rename(Resource questionsYaml, Resource questionsLoadedYaml) throws IOException {
-        if (environment.acceptsProfiles("dev", "test")) {
+        if (environment.acceptsProfiles(Profiles.of("dev", "test"))) {
             logger.debug("File {} will not be renamed, because application is running in dev or test mode",
                     questionsYaml.getFilename());
             return;
