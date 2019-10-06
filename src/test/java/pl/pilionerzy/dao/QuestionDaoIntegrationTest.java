@@ -8,16 +8,20 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import javax.validation.ConstraintViolationException;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static pl.pilionerzy.assertion.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -37,10 +41,45 @@ public class QuestionDaoIntegrationTest {
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(question))
-                // assertion for answers
-                .withMessageContaining("size must be between 4 and 4")
-                // assertion for active
-                .withMessageContaining("must not be null");
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("active", "must not be null")
+                        .hasViolation("answers", "size must be between 4 and 4"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithoutContent() {
+        Question question = prepareSampleQuestion();
+        question.setActive(true);
+        question.setContent(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "must not be null"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithEmptyContent() {
+        Question question = prepareSampleQuestion();
+        question.setActive(true);
+        question.setContent("");
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "question content length must be between 4 and 1023"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithTooLongContent() {
+        Question question = prepareSampleQuestion();
+        question.setActive(true);
+        question.setContent(randomAlphanumeric(5000));
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "question content length must be between 4 and 1023"));
     }
 
     @Test
@@ -80,9 +119,8 @@ public class QuestionDaoIntegrationTest {
         Optional<Question> foundQuestion = questionDao.findById(id);
 
         assertThat(foundQuestion)
-                .hasValueSatisfying(question ->
-                        assertThat(question.getAnswers())
-                                .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));
+                .hasValueSatisfying(question -> assertThat(question.getAnswers())
+                        .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));
     }
 
     private Question prepareSampleQuestion() {

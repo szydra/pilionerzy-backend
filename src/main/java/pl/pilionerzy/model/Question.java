@@ -1,12 +1,14 @@
 package pl.pilionerzy.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +21,8 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotNull
+    @Length(min = 4, max = 1023, message = "question content length must be between 4 and 1023")
     private String content;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
@@ -48,8 +51,12 @@ public class Question {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Question question = (Question) o;
         return Objects.equals(id, question.id);
     }
@@ -58,5 +65,4 @@ public class Question {
     public int hashCode() {
         return Objects.hash(id);
     }
-
 }
