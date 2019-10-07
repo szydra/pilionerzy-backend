@@ -3,13 +3,12 @@ package pl.pilionerzy.assertion;
 import org.assertj.core.api.AbstractThrowableAssert;
 
 import javax.validation.ConstraintViolationException;
-
 import java.util.Objects;
 
 public class ConstraintViolationExceptionAssert
         extends AbstractThrowableAssert<ConstraintViolationExceptionAssert, ConstraintViolationException> {
 
-    public ConstraintViolationExceptionAssert(ConstraintViolationException actual) {
+    ConstraintViolationExceptionAssert(ConstraintViolationException actual) {
         super(actual, ConstraintViolationExceptionAssert.class);
     }
 
