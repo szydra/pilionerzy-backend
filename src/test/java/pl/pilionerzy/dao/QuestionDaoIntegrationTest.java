@@ -8,20 +8,19 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
+import static pl.pilionerzy.model.Prefix.C;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -36,32 +35,32 @@ public class QuestionDaoIntegrationTest {
 
     @Test
     public void shouldNotSaveIncompleteQuestion() {
-        Question question = prepareSampleQuestion();
+        Question question = prepareRandomQuestion();
         question.getAnswers().remove(0);
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(question))
                 .satisfies(exception -> assertThat(exception)
-                        .hasViolation("active", "must not be null")
-                        .hasViolation("answers", "size must be between 4 and 4"));
+                        .hasViolation("active", "question must be active or inactive")
+                        .hasViolation("answers", "question must have exactly 4 answers"));
     }
 
     @Test
     public void shouldNotSaveQuestionWithoutContent() {
-        Question question = prepareSampleQuestion();
-        question.setActive(true);
+        Question question = prepareRandomQuestion();
+        question.activate();
         question.setContent(null);
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(question))
                 .satisfies(exception -> assertThat(exception)
-                        .hasViolation("content", "must not be null"));
+                        .hasViolation("content", "question must have content"));
     }
 
     @Test
     public void shouldNotSaveQuestionWithEmptyContent() {
-        Question question = prepareSampleQuestion();
-        question.setActive(true);
+        Question question = prepareRandomQuestion();
+        question.activate();
         question.setContent("");
 
         assertThatExceptionOfType(ConstraintViolationException.class)
@@ -72,8 +71,8 @@ public class QuestionDaoIntegrationTest {
 
     @Test
     public void shouldNotSaveQuestionWithTooLongContent() {
-        Question question = prepareSampleQuestion();
-        question.setActive(true);
+        Question question = prepareRandomQuestion();
+        question.activate();
         question.setContent(randomAlphanumeric(5000));
 
         assertThatExceptionOfType(ConstraintViolationException.class)
@@ -83,9 +82,33 @@ public class QuestionDaoIntegrationTest {
     }
 
     @Test
-    public void shouldNotGetInactiveQuestion() {
-        Question question = prepareSampleQuestion();
-        question.setActive(false);
+    public void shouldNotSaveQuestionWithoutAnswers() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.setAnswers(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("answers", "question must have answers"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithoutCorrectAnswer() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.setCorrectAnswer(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("correctAnswer", "question must have correct answer"));
+    }
+
+    @Test
+    public void shouldNotFindInactiveQuestion() {
+        Question question = prepareRandomQuestion();
+        question.deactivate();
 
         questionDao.save(question);
 
@@ -96,8 +119,8 @@ public class QuestionDaoIntegrationTest {
     }
 
     @Test
-    public void shouldGetActiveQuestion() {
-        Question question = prepareSampleQuestion();
+    public void shouldFindActiveQuestion() {
+        Question question = prepareRandomQuestion();
         question.activate();
 
         questionDao.save(question);
@@ -110,39 +133,87 @@ public class QuestionDaoIntegrationTest {
 
     @Test
     public void shouldFindQuestionAndOrderPrefixes() {
-        Question sampleQuestion = prepareSampleQuestion();
-        sampleQuestion.activate();
-        Collections.reverse(sampleQuestion.getAnswers());
+        Question question = prepareRandomQuestion();
+        question.activate();
+        Collections.reverse(question.getAnswers());
 
-        Long id = (Long) entityManager.persistAndGetId(sampleQuestion);
+        Long id = entityManager.persistAndGetId(question, Long.class);
         entityManager.clear();
-        Optional<Question> foundQuestion = questionDao.findById(id);
+        Optional<Question> found = questionDao.findById(id);
 
-        assertThat(foundQuestion)
-                .hasValueSatisfying(question -> assertThat(question.getAnswers())
-                        .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));
+        assertThat(found).hasValueSatisfying(q -> assertThat(q.getAnswers())
+                .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));
     }
 
-    private Question prepareSampleQuestion() {
+    @Test
+    public void shouldNotSaveTheSameQuestionTwice() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        entityManager.persistAndFlush(question);
+        entityManager.detach(question);
+        question.setId(null);
+
+        assertThatExceptionOfType(PersistenceException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithAnswerWithoutContent() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.getAnswers().get(0).setContent(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "answer must have content"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithAnswerWithEmptyContent() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.getAnswers().get(0).setContent("");
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "answer content length must be between 1 and 1023"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithAnswerWithTooLongContent() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.getAnswers().get(0).setContent(randomAlphanumeric(2000));
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("content", "answer content length must be between 1 and 1023"));
+    }
+
+    private Question prepareRandomQuestion() {
         Question question = new Question();
-        List<Answer> answers = prepareAnswers();
+        List<Answer> answers = prepareRandomAnswers();
         answers.forEach(answer -> answer.setQuestion(question));
         question.setAnswers(answers);
-        question.setContent("sample content");
-        question.setCorrectAnswer(Prefix.C);
+        question.setContent(randomAlphanumeric(32));
+        question.setCorrectAnswer(C);
+        question.setBusinessId(randomAlphanumeric(32));
         return question;
     }
 
-    private List<Answer> prepareAnswers() {
+    private List<Answer> prepareRandomAnswers() {
         return Arrays.stream(Prefix.values())
-                .map(this::mapToAnswer)
+                .map(this::getRandomAnswer)
                 .collect(Collectors.toList());
     }
 
-    private Answer mapToAnswer(Prefix prefix) {
+    private Answer getRandomAnswer(Prefix prefix) {
         Answer answer = new Answer();
         answer.setPrefix(prefix);
-        answer.setContent(prefix.toString());
+        answer.setContent(randomAlphanumeric(16));
         return answer;
     }
 }
