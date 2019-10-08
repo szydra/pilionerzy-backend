@@ -17,7 +17,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "businessId")
 public class Question {
 
     @Id
@@ -25,7 +25,6 @@ public class Question {
     private Long id;
 
     @Column(unique = true, length = 32, nullable = false)
-    @EqualsAndHashCode.Include
     private String businessId;
 
     @NotNull(message = "question must have content")
