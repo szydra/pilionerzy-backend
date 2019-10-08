@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Getter
 @Setter
 public class Game {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @CreationTimestamp
@@ -40,14 +44,14 @@ public class Game {
     private List<UsedLifeline> usedLifelines;
 
     public void activate() {
-        if (Boolean.TRUE.equals(active)) {
+        if (TRUE.equals(active)) {
             throw new IllegalStateException("Active game cannot be activated");
         }
         active = true;
     }
 
     public void deactivate() {
-        if (Boolean.FALSE.equals(active)) {
+        if (FALSE.equals(active)) {
             throw new IllegalStateException("Inactive game cannot be deactivated");
         }
         active = false;
