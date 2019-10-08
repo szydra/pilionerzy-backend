@@ -1,5 +1,6 @@
 package pl.pilionerzy.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Objects;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -17,11 +17,16 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Question {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
+    @Column(unique = true, length = 32, nullable = false)
+    @EqualsAndHashCode.Include
+    private String businessId;
 
     @NotNull(message = "question must have content")
     @Size(min = 4, max = 1023, message = "question content length must be between 4 and 1023")
@@ -57,22 +62,5 @@ public class Question {
     @Override
     public String toString() {
         return content;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Question question = (Question) o;
-        return Objects.equals(id, question.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }
