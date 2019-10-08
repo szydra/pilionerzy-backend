@@ -11,8 +11,9 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -138,10 +139,8 @@ public class AnswerServiceTest {
     }
 
     private Set<Question> prepareQuestions(int limit) {
-        Set<Question> questions = new HashSet<>(limit);
-        for (int i = 0; i < limit; i++) {
-            questions.add(prepareQuestion((long) i, D));
-        }
-        return questions;
+        return IntStream.range(0, limit)
+                .mapToObj(i -> prepareQuestion((long) i, D))
+                .collect(Collectors.toSet());
     }
 }
