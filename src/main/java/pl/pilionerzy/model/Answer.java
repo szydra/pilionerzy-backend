@@ -4,9 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
+
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
@@ -14,7 +17,7 @@ import java.util.Objects;
 public class Answer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -22,10 +25,11 @@ public class Answer {
     private Question question;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private Prefix prefix;
 
-    @NotBlank
+    @NotNull(message = "answer must have content")
+    @Size(min = 1, max = 1023, message = "answer content length must be between 1 and 1023")
     private String content;
 
     @Override
