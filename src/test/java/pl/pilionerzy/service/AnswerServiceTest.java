@@ -17,6 +17,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.doReturn;
+import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnswerServiceTest {
@@ -31,21 +32,21 @@ public class AnswerServiceTest {
     private AnswerService answerService;
 
     @Test
-    public void testRequestForInactiveGame() {
+    public void shouldThrowExceptionForInactiveGame() {
         Game inactiveGame = prepareGame(false);
         doReturn(inactiveGame).when(gameService).findById(GAME_ID);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> answerService.doAnswer(GAME_ID, Prefix.A))
+                .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
                 .withMessageContaining("inactive");
     }
 
     @Test
-    public void testRequestWithCorrectAnswer() {
+    public void shouldAcceptCorrectAnswer() {
         Game game = prepareGame(true);
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.doAnswer(GAME_ID, Prefix.A);
+        answerService.doAnswer(GAME_ID, A);
 
         assertThat(game)
                 .hasFieldOrPropertyWithValue("active", true)
@@ -53,11 +54,11 @@ public class AnswerServiceTest {
     }
 
     @Test
-    public void testRequestWithIncorrectAnswer() {
+    public void shouldNotAcceptIncorrectAnswer() {
         Game game = prepareGame(true);
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.doAnswer(GAME_ID, Prefix.B);
+        answerService.doAnswer(GAME_ID, B);
 
         assertThat(game)
                 .hasFieldOrPropertyWithValue("active", false)
@@ -65,22 +66,61 @@ public class AnswerServiceTest {
     }
 
     @Test
-    public void testHighestAward() {
+    public void shouldDeactivateGameOnHighestLevel() {
         Game game = prepareGame(true);
         game.setLevel(11);
-        game.setLastAskedQuestion(prepareQuestion(11L, Prefix.D));
-        game.setAskedQuestions(prepare12Questions());
+        game.setLastAskedQuestion(prepareQuestion(11L, D));
+        game.setAskedQuestions(prepareQuestions(12));
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.doAnswer(GAME_ID, Prefix.D);
+        answerService.doAnswer(GAME_ID, D);
 
         assertThat(game)
                 .hasFieldOrPropertyWithValue("active", false)
                 .hasFieldOrPropertyWithValue("level", 12);
     }
 
+    @Test
+    public void shouldThrowExceptionForGameWithoutLastQuestion() {
+        Game game = prepareGame(true);
+        game.setLastAskedQuestion(null);
+        doReturn(game).when(gameService).findById(GAME_ID);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
+                .withMessage("Game does not have last asked question");
+    }
+
+    @Test
+    public void shouldIncreaseLevelWhenAnswerIsCorrect() {
+        Game game = prepareGame(true);
+        game.setLevel(5);
+        game.setLastAskedQuestion(prepareQuestion(5L, B));
+        doReturn(game).when(gameService).findById(GAME_ID);
+
+        answerService.doAnswer(GAME_ID, B);
+
+        assertThat(game)
+                .hasFieldOrPropertyWithValue("active", true)
+                .hasFieldOrPropertyWithValue("level", 6);
+    }
+
+    @Test
+    public void shouldDecreaseLevelWhenAnswerIsIncorrect() {
+        Game game = prepareGame(true);
+        game.setLevel(5);
+        game.setLastAskedQuestion(prepareQuestion(5L, B));
+        doReturn(game).when(gameService).findById(GAME_ID);
+
+        answerService.doAnswer(GAME_ID, C);
+
+        assertThat(game)
+                .hasFieldOrPropertyWithValue("active", false)
+                .hasFieldOrPropertyWithValue("level", 2);
+    }
+
     private Game prepareGame(Boolean active) {
-        Question question = prepareQuestion(QUESTION_ID, Prefix.A);
+        Question question = prepareQuestion(QUESTION_ID, A);
         Game game = new Game();
         game.setId(GAME_ID);
         game.setActive(active);
@@ -97,13 +137,11 @@ public class AnswerServiceTest {
         return question;
     }
 
-    private Set<Question> prepare12Questions() {
-        Set<Question> questions = new HashSet<>(12);
-        for (int i = 0; i < 12; i++) {
-            Question question = prepareQuestion((long) i, Prefix.D);
-            questions.add(question);
+    private Set<Question> prepareQuestions(int limit) {
+        Set<Question> questions = new HashSet<>(limit);
+        for (int i = 0; i < limit; i++) {
+            questions.add(prepareQuestion((long) i, D));
         }
         return questions;
     }
-
 }
