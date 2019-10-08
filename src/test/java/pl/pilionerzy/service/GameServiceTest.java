@@ -70,8 +70,10 @@ public class GameServiceTest {
     public void shouldUpdateLastQuestion() {
         Question question1 = new Question();
         question1.setId(11L);
+        question1.setBusinessId("abc");
         Question question2 = new Question();
         question2.setId(12L);
+        question2.setBusinessId("def");
         Game game = new Game();
         game.setId(1L);
         game.setLastAskedQuestion(question1);

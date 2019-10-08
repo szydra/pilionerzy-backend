@@ -1,19 +1,21 @@
 package pl.pilionerzy.util;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import pl.pilionerzy.exception.GameException;
-import pl.pilionerzy.model.*;
+import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Lifeline;
+import pl.pilionerzy.model.Question;
+import pl.pilionerzy.model.UsedLifeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.*;
 import static pl.pilionerzy.model.Lifeline.*;
-import static pl.pilionerzy.model.Prefix.A;
-import static pl.pilionerzy.model.Prefix.C;
+import static pl.pilionerzy.model.Prefix.*;
 import static pl.pilionerzy.util.GameUtils.*;
 import static pl.pilionerzy.util.RequestType.*;
 
@@ -24,11 +26,13 @@ public class GameUtilsTest {
     private void prepareQuestions() {
         Question q1 = new Question();
         q1.setId(1L);
+        q1.setBusinessId("abc");
         q1.setCorrectAnswer(A);
         Question q2 = new Question();
         q2.setId(2L);
-        q2.setCorrectAnswer(Prefix.B);
-        game.setAskedQuestions(Sets.newHashSet(q1, q2));
+        q2.setBusinessId("def");
+        q2.setCorrectAnswer(B);
+        game.setAskedQuestions(newHashSet(q1, q2));
         game.setLastAskedQuestion(q2);
     }
 
