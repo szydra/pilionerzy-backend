@@ -25,6 +25,7 @@ public class Game {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @NotNull(message = "game must have business id")
     @Column(unique = true, length = 32, nullable = false)
     private String businessId;
 
