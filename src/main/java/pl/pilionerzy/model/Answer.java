@@ -1,12 +1,12 @@
 package pl.pilionerzy.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Objects;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -14,6 +14,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(of = {"prefix", "question"})
 public class Answer {
 
     @Id
@@ -21,11 +22,11 @@ public class Answer {
     private Long id;
 
     @ManyToOne
-    @NotNull
+    @NotNull(message = "answer must be linked with a question")
     private Question question;
 
-    @NotNull
     @Enumerated(STRING)
+    @NotNull(message = "answer must have prefix")
     private Prefix prefix;
 
     @NotNull(message = "answer must have content")
@@ -36,18 +37,4 @@ public class Answer {
     public String toString() {
         return content;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Answer answer = (Answer) o;
-        return Objects.equals(id, answer.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
 }

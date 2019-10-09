@@ -1,41 +1,34 @@
 package pl.pilionerzy.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import pl.pilionerzy.model.converter.RejectedAnswersConverter;
 
-import javax.persistence.*;
+import javax.persistence.Convert;
+import javax.persistence.Embeddable;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
-import java.util.Objects;
+
+import static javax.persistence.EnumType.STRING;
 
 @Embeddable
 @Getter
 @Setter
+@EqualsAndHashCode(of = {"type", "question"})
 public class UsedLifeline {
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
+    @NotNull(message = "lifeline must have type")
+    @Enumerated(STRING)
     private Lifeline type;
 
-    @NotNull
+    @NotNull(message = "lifeline must be linked with a question")
     @ManyToOne
     private Question question;
 
     @Convert(converter = RejectedAnswersConverter.class)
     private Collection<Prefix> rejectedAnswers;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UsedLifeline that = (UsedLifeline) o;
-        return type == that.type &&
-                Objects.equals(question, that.question);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, question);
-    }
 }

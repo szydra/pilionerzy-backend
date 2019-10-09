@@ -1,5 +1,6 @@
 package pl.pilionerzy.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.lang.Boolean.FALSE;
@@ -18,19 +18,23 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(of = "businessId")
 public class Game {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(unique = true, length = 32, nullable = false)
+    private String businessId;
+
     @CreationTimestamp
     private LocalDateTime startTime;
 
-    @NotNull
+    @NotNull(message = "game must be active or inactive")
     private Boolean active;
 
-    @NotNull
+    @NotNull(message = "game must have level")
     private Integer level;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -68,18 +72,4 @@ public class Game {
     public String toString() {
         return "Game with id " + id;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Game game = (Game) o;
-        return Objects.equals(id, game.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
 }
