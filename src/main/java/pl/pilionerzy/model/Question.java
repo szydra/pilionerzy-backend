@@ -14,6 +14,14 @@ import static java.lang.Boolean.TRUE;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 
+/**
+ * <p>An {@link Entity} class which represents a question that can be used during a game play.
+ * It is asked only when marked as active. A newly created one is marked as inactive and has
+ * to be activated manually.</p>
+ *
+ * <p>Two {@link Question} objects are consider equal when they have the same business id that
+ * is calculated as a hash of its contents and its answers' contents.</p>
+ */
 @Entity
 @Getter
 @Setter
