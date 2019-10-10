@@ -158,6 +158,18 @@ public class QuestionDaoIntegrationTest {
     }
 
     @Test
+    public void shouldNotSaveQuestionWithoutBusinessId() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.setBusinessId(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("businessId", "question must have business id"));
+    }
+
+    @Test
     public void shouldNotSaveQuestionWithAnswerWithoutContent() {
         Question question = prepareRandomQuestion();
         question.activate();

@@ -24,6 +24,7 @@ public class Question {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @NotNull(message = "question must have business id")
     @Column(unique = true, length = 32, nullable = false)
     private String businessId;
 
