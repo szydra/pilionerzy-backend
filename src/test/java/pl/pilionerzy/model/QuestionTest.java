@@ -2,8 +2,8 @@ package pl.pilionerzy.model;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static pl.pilionerzy.assertion.Assertions.assertThat;
 
 public class QuestionTest {
 
@@ -15,7 +15,7 @@ public class QuestionTest {
 
         question.activate();
 
-        assertThat(question.getActive()).isTrue();
+        assertThat(question).isActive();
     }
 
     @Test
@@ -33,7 +33,7 @@ public class QuestionTest {
 
         question.deactivate();
 
-        assertThat(question.getActive()).isFalse();
+        assertThat(question).isInactive();
     }
 
     @Test

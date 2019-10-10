@@ -8,7 +8,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.pilionerzy.dao.QuestionDao;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static pl.pilionerzy.assertion.Assertions.assertThat;
+
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -23,7 +24,7 @@ public class InitialQuestionsLoaderIntegrationTest {
         assertThat(questionDao.findAll())
                 .hasSize(5)
                 .allSatisfy(question ->
-                        assertThat(question.getActive()).isTrue()
+                        assertThat(question).isActive()
                 );
     }
 }
