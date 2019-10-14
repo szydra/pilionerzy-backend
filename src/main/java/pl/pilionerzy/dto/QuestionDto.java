@@ -21,5 +21,4 @@ public class QuestionDto {
     public String toString() {
         return content;
     }
-
 }

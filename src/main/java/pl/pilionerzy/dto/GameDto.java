@@ -28,5 +28,4 @@ public class GameDto {
     public String toString() {
         return "Game with id " + id;
     }
-
 }
