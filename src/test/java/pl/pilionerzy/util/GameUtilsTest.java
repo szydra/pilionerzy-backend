@@ -69,6 +69,16 @@ public class GameUtilsTest {
     }
 
     @Test
+    public void shouldThrowExceptionForTooManyRequestsForAnswer() {
+        prepareQuestions();
+        game.setLevel(2);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validate(game, ANSWER))
+                .withMessageContaining("Invalid number of requests");
+    }
+
+    @Test
     public void testValidRequestForQuestion() {
         prepareQuestions();
         game.setLevel(2);

@@ -10,18 +10,22 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.FALSE;
 import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
+import static pl.pilionerzy.util.LevelUtils.getNextLevel;
 
 public class GameUtils {
 
     public static void validate(Game game, RequestType requestType) {
-        if (Boolean.FALSE.equals(game.getActive())) {
+        if (FALSE.equals(game.getActive())) {
             throw new GameException(String.format("Game with id %s is inactive", game.getId()));
         }
         switch (requestType) {
             case ANSWER:
                 if (game.getLastAskedQuestion() == null) {
                     throw new GameException("Game does not have last asked question");
+                } else if (game.getAskedQuestions().size() != getNextLevel(game.getLevel())) {
+                    throw new GameException("Invalid number of requests for game with id " + game.getId());
                 }
                 break;
             case LIFELINE:
