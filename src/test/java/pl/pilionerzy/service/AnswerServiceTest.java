@@ -15,9 +15,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.doReturn;
+import static pl.pilionerzy.assertion.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,7 +40,7 @@ public class AnswerServiceTest {
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
-                .withMessageContaining("inactive");
+                .withMessage("Game with id %s is inactive", GAME_ID);
     }
 
     @Test
@@ -50,8 +51,8 @@ public class AnswerServiceTest {
         answerService.doAnswer(GAME_ID, A);
 
         assertThat(game)
-                .hasFieldOrPropertyWithValue("active", true)
-                .hasFieldOrPropertyWithValue("level", 1);
+                .isActive()
+                .hasLevel(1);
     }
 
     @Test
@@ -62,23 +63,22 @@ public class AnswerServiceTest {
         answerService.doAnswer(GAME_ID, B);
 
         assertThat(game)
-                .hasFieldOrPropertyWithValue("active", false)
-                .hasFieldOrPropertyWithValue("level", 0);
+                .isInactive()
+                .hasLevel(0);
     }
 
     @Test
     public void shouldDeactivateGameOnHighestLevel() {
         Game game = prepareGame(true);
         game.setLevel(11);
-        game.setLastAskedQuestion(prepareQuestion(11L, D));
         game.setAskedQuestions(prepareQuestions(12));
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.doAnswer(GAME_ID, D);
+        answerService.doAnswer(GAME_ID, A);
 
         assertThat(game)
-                .hasFieldOrPropertyWithValue("active", false)
-                .hasFieldOrPropertyWithValue("level", 12);
+                .isInactive()
+                .hasLevel(12);
     }
 
     @Test
@@ -96,28 +96,46 @@ public class AnswerServiceTest {
     public void shouldIncreaseLevelWhenAnswerIsCorrect() {
         Game game = prepareGame(true);
         game.setLevel(5);
-        game.setLastAskedQuestion(prepareQuestion(5L, B));
+        game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findById(GAME_ID);
 
-        answerService.doAnswer(GAME_ID, B);
+        answerService.doAnswer(GAME_ID, A);
 
         assertThat(game)
-                .hasFieldOrPropertyWithValue("active", true)
-                .hasFieldOrPropertyWithValue("level", 6);
+                .isActive()
+                .hasLevel(6);
     }
 
     @Test
     public void shouldDecreaseLevelWhenAnswerIsIncorrect() {
         Game game = prepareGame(true);
         game.setLevel(5);
-        game.setLastAskedQuestion(prepareQuestion(5L, B));
+        game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findById(GAME_ID);
 
         answerService.doAnswer(GAME_ID, C);
 
         assertThat(game)
-                .hasFieldOrPropertyWithValue("active", false)
-                .hasFieldOrPropertyWithValue("level", 2);
+                .isInactive()
+                .hasLevel(2);
+    }
+
+    @Test
+    public void shouldNotIncreaseLevelTwice() {
+        Game game = prepareGame(true);
+        game.setLevel(5);
+        game.setAskedQuestions(prepareQuestions(6));
+        doReturn(game).when(gameService).findById(GAME_ID);
+
+        answerService.doAnswer(GAME_ID, A);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
+                .withMessage("Invalid number of requests for game with id %s", GAME_ID);
+
+        assertThat(game)
+                .isActive()
+                .hasLevel(6);
     }
 
     private Game prepareGame(Boolean active) {
@@ -134,6 +152,7 @@ public class AnswerServiceTest {
     private Question prepareQuestion(Long questionId, Prefix correctAnswer) {
         Question question = new Question();
         question.setId(questionId);
+        question.setBusinessId(randomAlphanumeric(32));
         question.setCorrectAnswer(correctAnswer);
         return question;
     }
