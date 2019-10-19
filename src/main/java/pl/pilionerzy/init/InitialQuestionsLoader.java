@@ -41,23 +41,23 @@ class InitialQuestionsLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
         String filename = environment.acceptsProfiles("test") ? "classpath:questions-test.yaml" : "file:questions.yaml";
-        Resource questionsJson = resourceLoader.getResource(filename);
-        if (!questionsJson.exists()) {
-            logger.info("File {} not found. No initial questions will be loaded", questionsJson.getFilename());
+        Resource questionsYaml = resourceLoader.getResource(filename);
+        if (!questionsYaml.exists()) {
+            logger.info("File {} not found. No initial questions will be loaded", questionsYaml.getFilename());
         } else {
-            logger.debug("File {} found", questionsJson.getFilename());
-            loadInitialQuestions(questionsJson);
+            logger.debug("File {} found", questionsYaml.getFilename());
+            loadInitialQuestions(questionsYaml);
         }
     }
 
-    private void loadInitialQuestions(Resource questionsJson) throws IOException {
-        String changedFilename = getChangedFilename(questionsJson.getFilename());
-        Resource questionsLoadedJson = resourceLoader.getResource("file:" + changedFilename);
-        if (questionsLoadedJson.exists()) {
+    private void loadInitialQuestions(Resource questionsYaml) throws IOException {
+        String changedFilename = getChangedFilename(questionsYaml.getFilename());
+        Resource questionsLoadedYaml = resourceLoader.getResource("file:" + changedFilename);
+        if (questionsLoadedYaml.exists()) {
             logger.warn("File {} found. Initial questions will not be added", changedFilename);
         } else {
-            logger.info("Initial questions from file {} will be loaded", questionsJson.getFilename());
-            List<NewQuestionDto> initialQuestions = readQuestions(questionsJson);
+            logger.info("Initial questions from file {} will be loaded", questionsYaml.getFilename());
+            List<NewQuestionDto> initialQuestions = readQuestions(questionsYaml);
             initialQuestions.stream()
                     .map(dtoMapper::mapToModel)
                     .forEach(question -> {
@@ -65,7 +65,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
                         questionDao.save(question);
                     });
             logger.info("{} initial questions saved", initialQuestions.size());
-            rename(questionsJson, questionsLoadedJson);
+            rename(questionsYaml, questionsLoadedYaml);
         }
     }
 
@@ -75,19 +75,19 @@ class InitialQuestionsLoader implements CommandLineRunner {
         return nameWithoutExtension + "_loaded." + fileExtension;
     }
 
-    private List<NewQuestionDto> readQuestions(Resource questionsJson) throws IOException {
+    private List<NewQuestionDto> readQuestions(Resource questionsYaml) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
-        return objectMapper.readValue(questionsJson.getFile(), new QuestionList());
+        return objectMapper.readValue(questionsYaml.getFile(), new QuestionList());
     }
 
-    private void rename(Resource questionsJson, Resource questionsLoadedJson) throws IOException {
+    private void rename(Resource questionsYaml, Resource questionsLoadedYaml) throws IOException {
         if (environment.acceptsProfiles("dev", "test")) {
             logger.debug("File {} will not be renamed, because application is running in dev or test mode",
-                    questionsJson.getFilename());
+                    questionsYaml.getFilename());
             return;
         }
-        Files.move(questionsJson.getFile(), questionsLoadedJson.getFile());
-        logger.info("File {} renamed to {}", questionsJson.getFilename(), questionsLoadedJson.getFilename());
+        Files.move(questionsYaml.getFile(), questionsLoadedYaml.getFile());
+        logger.info("File {} renamed to {}", questionsYaml.getFilename(), questionsLoadedYaml.getFilename());
     }
 
     @Autowired
