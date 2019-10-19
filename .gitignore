@@ -1,6 +1,6 @@
 target/
 *.jar
-questions_loaded.json
+questions_loaded.yaml
 
 ### STS ###
 .apt_generated

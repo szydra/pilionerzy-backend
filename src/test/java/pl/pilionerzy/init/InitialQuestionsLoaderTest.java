@@ -47,7 +47,7 @@ public class InitialQuestionsLoaderTest {
         questionsLoader.setEnvironment(environment);
         doReturn(resourceToLoad).when(resourceLoader).getResource(not(find("loaded")));
         doReturn(loadedResource).when(resourceLoader).getResource(find("loaded"));
-        doReturn("questions.json").when(resourceToLoad).getFilename();
+        doReturn("questions.yaml").when(resourceToLoad).getFilename();
     }
 
     @Test
@@ -73,7 +73,7 @@ public class InitialQuestionsLoaderTest {
 
     @Test
     public void shouldPrepareChangedFilename() {
-        assertThat(questionsLoader.getChangedFilename("questions.json"))
-                .isEqualTo("questions_loaded.json");
+        assertThat(questionsLoader.getChangedFilename("questions.yaml"))
+                .isEqualTo("questions_loaded.yaml");
     }
 }

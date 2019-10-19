@@ -2,6 +2,7 @@ package pl.pilionerzy.init;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +22,8 @@ import java.util.List;
 
 /**
  * Runs at application startup and loads initial questions into the database.
- * It looks for a file named <code>questions.json</code> in the current directory
- * and after successful import renames it to <code>questions_loaded.json</code>.
+ * It looks for a file named <code>questions.yaml</code> in the current directory
+ * and after successful import renames it to <code>questions_loaded.yaml</code>.
  */
 @Component
 @Transactional
@@ -39,7 +40,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        String filename = environment.acceptsProfiles("test") ? "classpath:questions-test.json" : "file:questions.json";
+        String filename = environment.acceptsProfiles("test") ? "classpath:questions-test.yaml" : "file:questions.yaml";
         Resource questionsJson = resourceLoader.getResource(filename);
         if (!questionsJson.exists()) {
             logger.info("File {} not found. No initial questions will be loaded", questionsJson.getFilename());
@@ -75,7 +76,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
     }
 
     private List<NewQuestionDto> readQuestions(Resource questionsJson) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(questionsJson.getFile(), new QuestionList());
     }
 

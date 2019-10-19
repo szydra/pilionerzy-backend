@@ -1,0 +1,432 @@
+---
+- content: Wybierz fałszywą równość.
+  answers:
+  - prefix: A
+    content: \(\cos\frac{\pi}{2}=0\)
+  - prefix: B
+    content: \(\mathrm{e}^{\pi\mathrm{i}}=1\)
+  - prefix: C
+    content: \(2\cos\pi\mathrm{i}=\mathrm{e}^{\pi}+\mathrm{e}^{-\pi}\)
+  - prefix: D
+    content: \(1+\cos2x=2\cos^2x\)
+  correctAnswer: B
+- content: Ile wynosi \(\int_0^1x^2\mathrm{d}x\)?
+  answers:
+  - prefix: A
+    content: \(0\)
+  - prefix: B
+    content: \(1/4\)
+  - prefix: C
+    content: \(1/3\)
+  - prefix: D
+    content: \(1/2\)
+  correctAnswer: C
+- content: Która z poniższych deklaracji metody main w Javie jest niepoprawna?
+  answers:
+  - prefix: A
+    content: public static synchronized void main(String[] args)
+  - prefix: B
+    content: public static final void main(String[] args)
+  - prefix: C
+    content: public static void main(String[] args)
+  - prefix: D
+    content: abstract static void main(String[] args)
+  correctAnswer: D
+- content: Ile wynosi \((a+b)^3\)?
+  answers:
+  - prefix: A
+    content: \(a^3+b^3\)
+  - prefix: B
+    content: \(a^3+3ab+b^3\)
+  - prefix: C
+    content: \(a^3+6ab+b^3\)
+  - prefix: D
+    content: \(a^3+3a^2b+3ab^2+b^3\)
+  correctAnswer: D
+- content: Ile wynosi \(\log_{2\sqrt2}2\)?
+  answers:
+  - prefix: A
+    content: \(2/3\)
+  - prefix: B
+    content: \(3/2\)
+  - prefix: C
+    content: \(-2/3\)
+  - prefix: D
+    content: \(-3/2\)
+  correctAnswer: A
+- content: Która z podanych liczb może być liczbą boków wielokąta foremnego,
+    który da się skonstruować przy użyciu cyrkla i linijki?
+  answers:
+  - prefix: A
+    content: \(33\)
+  - prefix: B
+    content: \(34\)
+  - prefix: C
+    content: \(35\)
+  - prefix: D
+    content: \(36\)
+  correctAnswer: B
+- content: Jak nazywa się najgorsza przeglądarka internetowa?
+  answers:
+  - prefix: A
+    content: Mozilla Firefox
+  - prefix: B
+    content: Chromium
+  - prefix: C
+    content: Internet Explorer
+  - prefix: D
+    content: Safari
+  correctAnswer: C
+- content: Która z poniższych bibliotek w Javie nie służy do tworzenia/wspomagania testów jednostkowych?
+  answers:
+  - prefix: A
+    content: JUnit
+  - prefix: B
+    content: Mockito
+  - prefix: C
+    content: PowerMockito
+  - prefix: D
+    content: Jackson
+  correctAnswer: D
+- content: Jak nazywa się najgorszy serwer aplikacji?
+  answers:
+  - prefix: A
+    content: GlassFish
+  - prefix: B
+    content: WebSphere
+  - prefix: C
+    content: JBoss
+  - prefix: D
+    content: WildFly
+  correctAnswer: B
+- content: Który z podanych frameworków nie jest frameworkiem JavaScript?
+  answers:
+  - prefix: A
+    content: jQuery
+  - prefix: B
+    content: Angular
+  - prefix: C
+    content: Vue
+  - prefix: D
+    content: Django
+  correctAnswer: D
+- content: Jak brzmi twierdzenie odwrotne do twierdzenia Pitagorasa?
+  answers:
+  - prefix: A
+    content: Jeżeli w pewnym trójkącie suma kwadratów dwóch boków jest równa kwadratowi
+      trzeciego boku, to trójkąt ten jest prostokątny.
+  - prefix: B
+    content: Jeżeli trójkąt nie jest prostokątny, to suma kwadratów dowolnych dwóch
+      boków jest różna od kwadratu trzeciego boku.
+  - prefix: C
+    content: W trójkącie prostokątnym istnieje dokładnie jedna para boków o tej własności,
+      że suma ich kwadratów jest równa kwadratowi trzeciego boku.
+  - prefix: D
+    content: Jeżeli suma kwadratów dowolnych dwóch boków trójkąta jest różna od kwadratu
+      trzeciego boku, to trójkąt ten nie jest prostokątny.
+  correctAnswer: A
+- content: Który z podanych szeregów jest rozbieżny?
+  answers:
+  - prefix: A
+    content: \(\sum_{n=1}^\infty\frac{1}{n\sqrt n}\)
+  - prefix: B
+    content: \(\sum_{n=1}^\infty\frac{\log(n+1)}{n^2}\)
+  - prefix: C
+    content: \(\sum_{n=1}^\infty\frac{1}{n\log(n+1)}\)
+  - prefix: D
+    content: \(\sum_{n=1}^\infty\frac{\sqrt[n]{n}}{n^2}\)
+  correctAnswer: C
+- content: Jakim symbolem oznacza się najmniejszą nieskończoną liczbę porządkową?
+  answers:
+  - prefix: A
+    content: \(\omega\)
+  - prefix: B
+    content: \(\aleph_1\)
+  - prefix: C
+    content: \(\mathfrak{c}\)
+  - prefix: D
+    content: \(\zeta\)
+  correctAnswer: A
+- content: Jak inaczej nazywa się podstawa logarytmu naturalnego?
+  answers:
+  - prefix: A
+    content: stała Eulera
+  - prefix: B
+    content: stała Neppera
+  - prefix: C
+    content: stała Galileusza
+  - prefix: D
+    content: stała Bernoulliego
+  correctAnswer: B
+- content: Która z podanych przestrzeni Banacha jest nieośrodkowa?
+  answers:
+  - prefix: A
+    content: \(\ell_1\)
+  - prefix: B
+    content: \(\mathcal{C}([0,1])\)
+  - prefix: C
+    content: \(\ell_2\oplus\ell_3\)
+  - prefix: D
+    content: \(\ell_\infty\)
+  correctAnswer: D
+- content: Która z podanych liczb po podniesieniu do kwadratu daje jednostkę urojoną?
+  answers:
+  - prefix: A
+    content: \(\frac{1-\mathrm{i}}{\sqrt2}\)
+  - prefix: B
+    content: \(\frac{1+\mathrm{i}}{\sqrt2}\)
+  - prefix: C
+    content: \(\mathrm{e}^{\mathrm{i}/2}\)
+  - prefix: D
+    content: \(\mathrm{e}^{-\mathrm{i}/2}\)
+  correctAnswer: B
+- content: Który z podanych wyjątków w Javie (z pakietu java.lang) to "checked exception"?
+  answers:
+  - prefix: A
+    content: NullPointerException
+  - prefix: B
+    content: SecurityException
+  - prefix: C
+    content: IllegalStateException
+  - prefix: D
+    content: ClassNotFoundException
+  correctAnswer: D
+- content: Ile wynosi \(\int_{-\infty}^{\infty}\frac{\mathrm{d}x}{1+x^2}\)?
+  answers:
+  - prefix: A
+    content: \(0\)
+  - prefix: B
+    content: \(1\)
+  - prefix: C
+    content: \(\pi\)
+  - prefix: D
+    content: \(\infty\)
+  correctAnswer: C
+- content: 'Wzór sumaryczny alkoholu etylowego to:'
+  answers:
+  - prefix: A
+    content: \(\mathrm{CHOH}\)
+  - prefix: B
+    content: \(\mathrm{CH_3OH}\)
+  - prefix: C
+    content: \(\mathrm{C_2H_5OH}\)
+  - prefix: D
+    content: \(\mathrm{C_2H_6OH}\)
+  correctAnswer: C
+- content: 'Liczba Avogadra to około:'
+  answers:
+  - prefix: A
+    content: \(6,02\times10^{14}\)
+  - prefix: B
+    content: \(6,02\times10^{17}\)
+  - prefix: C
+    content: \(6,02\times10^{20}\)
+  - prefix: D
+    content: \(6,02\times10^{23}\)
+  correctAnswer: D
+- content: 'Przyjmuje się, że przyspieszenie ziemskie to około:'
+  answers:
+  - prefix: A
+    content: \(6,81\,\mathrm{m}/\mathrm{s}^2\)
+  - prefix: B
+    content: \(7,81\,\mathrm{m}/\mathrm{s}^2\)
+  - prefix: C
+    content: \(8,81\,\mathrm{m}/\mathrm{s}^2\)
+  - prefix: D
+    content: \(9,81\,\mathrm{m}/\mathrm{s}^2\)
+  correctAnswer: D
+- content: Która z podanych liczb jest największa?
+  answers:
+  - prefix: A
+    content: trylion
+  - prefix: B
+    content: decylion
+  - prefix: C
+    content: centylion
+  - prefix: D
+    content: sekstylion
+  correctAnswer: C
+- content: Ile istnieje wielościanów foremnych (z dokładnością do podobieństwa)?
+  answers:
+  - prefix: A
+    content: Tylko jeden
+  - prefix: B
+    content: Dokładnie \(5\)
+  - prefix: C
+    content: Dokładnie \(7\)
+  - prefix: D
+    content: Nieskończenie wiele
+  correctAnswer: B
+- content: Która z poniższych linii kodu w Javie powoduje błąd kompilacji?
+  answers:
+  - prefix: A
+    content: if (false) { }
+  - prefix: B
+    content: while (false) { }
+  - prefix: C
+    content: do { } while (false);
+  - prefix: D
+    content: for (; ; ) { }
+  correctAnswer: B
+- content: Która z poniższych liczb może być wartością \(\mathrm{i}^\mathrm{i}\,\)?
+  answers:
+  - prefix: A
+    content: \(\mathrm{i}\)
+  - prefix: B
+    content: \(-1\)
+  - prefix: C
+    content: \(\pi/2\)
+  - prefix: D
+    content: \(\mathrm{e}^{-\pi/2}\)
+  correctAnswer: D
+- content: Co nie jest chmurą?
+  answers:
+  - prefix: A
+    content: AWS
+  - prefix: B
+    content: Azure
+  - prefix: C
+    content: Cirrus
+  - prefix: D
+    content: Docker
+  correctAnswer: D
+- content: Andrzej ma 16 lat. To jest dwa razy tyle, ile Jurek miał wtedy, kiedy Andrzej
+    miał tyle, ile Jurek ma teraz. Ile lat ma Jurek?
+  answers:
+  - prefix: A
+    content: \(8\)
+  - prefix: B
+    content: \(10\)
+  - prefix: C
+    content: \(12\)
+  - prefix: D
+    content: Zbyt mało danych, aby to obliczyć
+  correctAnswer: C
+- content: Ile istnieje liczb porządkowych?
+  answers:
+  - prefix: A
+    content: \(\omega\)
+  - prefix: B
+    content: \(\mathfrak{c}\)
+  - prefix: C
+    content: \(2^\mathfrak{c}\)
+  - prefix: D
+    content: Żadna liczba porządkowa nie może tego opisać
+  correctAnswer: D
+- content: Ile wynosi (w przybliżeniu) masa metra sześciennego złota?
+  answers:
+  - prefix: A
+    content: \(2\) tony
+  - prefix: B
+    content: \(7\) ton
+  - prefix: C
+    content: \(13\) ton
+  - prefix: D
+    content: \(19\) ton
+  correctAnswer: D
+- content: 'Najwyższy szczyt Karpat to:'
+  answers:
+  - prefix: A
+    content: Rysy
+  - prefix: B
+    content: Moldoveanu
+  - prefix: C
+    content: Gerlach
+  - prefix: D
+    content: Mnich
+  correctAnswer: C
+- content: Które z podanych liczb mogą być długościami boków trójkąta?
+  answers:
+  - prefix: A
+    content: \(\sqrt{2}\), \(\sqrt{3}\), \(\sqrt{11}\)
+  - prefix: B
+    content: \(\sqrt{3}\), \(\sqrt{5}\), \(\sqrt{17}\)
+  - prefix: C
+    content: \(\sqrt{5}\), \(\sqrt{7}\), \(\sqrt{23}\)
+  - prefix: D
+    content: \(\sqrt{7}\), \(\sqrt{11}\), \(\sqrt{37}\)
+  correctAnswer: C
+- content: 'Zwyczajowo kwasem mrówkowym nazywamy związek o wzorze sumarycznym:'
+  answers:
+  - prefix: A
+    content: \(\mathrm{HCOOH}\)
+  - prefix: B
+    content: \(\mathrm{CH_3COOH}\)
+  - prefix: C
+    content: \(\mathrm{C_2H_5COOH}\)
+  - prefix: D
+    content: \(\mathrm{C_3H_7COOH}\)
+  correctAnswer: A
+- content: Jaką prędkość ma ciało swobodnie spadające z wysokości \(h\) na wysokości
+    \(\frac{h}{2}\) (\(g\) oznacza przyspieszenie ziemskie)?
+  answers:
+  - prefix: A
+    content: \(\sqrt{\frac{gh}{2}}\)
+  - prefix: B
+    content: \(\sqrt{gh}\)
+  - prefix: C
+    content: \(\sqrt{2gh}\)
+  - prefix: D
+    content: \(2\sqrt{gh}\)
+  correctAnswer: B
+- content: 'Jeżeli \(b=\frac{a}{1+a}\), to:'
+  answers:
+  - prefix: A
+    content: \(a=\frac{b}{1-b}\)
+  - prefix: B
+    content: \(a=\frac{b}{1+b}\)
+  - prefix: C
+    content: \(a=\frac{1-b}{b}\)
+  - prefix: D
+    content: \(a=\frac{1+b}{b}\)
+  correctAnswer: A
+- content: 'Nazwa systematyczna tlenku disiarki \(\mathrm{S_2O}\) to:'
+  answers:
+  - prefix: A
+    content: tlenek siarki(I)
+  - prefix: B
+    content: tlenek siarki(II)
+  - prefix: C
+    content: tlenek siarki(IV)
+  - prefix: D
+    content: tlenek(II) siarki
+  correctAnswer: A
+- content: Ile przekątnych ma siedmiokąt wypukły?
+  answers:
+  - prefix: A
+    content: \(7\)
+  - prefix: B
+    content: \(14\)
+  - prefix: C
+    content: \(17\)
+  - prefix: D
+    content: \(21\)
+  correctAnswer: B
+- content: Ile wynosi (w przybliżeniu) prawdopodobieństwo wyrzucenia co najmniej jednej
+    szóstki w sześciu rzutach kością do gry?
+  answers:
+  - prefix: A
+    content: \(0,67\)
+  - prefix: B
+    content: \(0,83\)
+  - prefix: C
+    content: \(0,92\)
+  - prefix: D
+    content: \(0,99\)
+  correctAnswer: A
+- content: Niech \(w\) będzie wielomianem o współczynnikach rzeczywistych. Które z
+    poniższych zdań jest fałszywe?
+  answers:
+  - prefix: A
+    content: Jeżeli \(w\) jest funkcją monotoniczną, to \(w\) ma co najmniej jeden
+      pierwiastek rzeczywisty.
+  - prefix: B
+    content: Jeżeli \(w^\prime\) jest funkcją monotoniczną, to \(w\) ma co najmniej
+      jeden pierwiastek rzeczywisty.
+  - prefix: C
+    content: Jeżeli stopień \(w\) jest liczbą nieparzystą, to \(w\) ma co najmniej
+      jeden pierwiastek rzeczywisty.
+  - prefix: D
+    content: Jeżeli stopień \(w^\prime\) jest liczbą parzystą, to \(w\) ma co najmniej
+      jeden pierwiastek rzeczywisty.
+  correctAnswer: B
