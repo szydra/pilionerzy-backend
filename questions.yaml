@@ -430,3 +430,47 @@
     content: Jeżeli stopień \(w^\prime\) jest liczbą parzystą, to \(w\) ma co najmniej
       jeden pierwiastek rzeczywisty.
   correctAnswer: B
+- content: Kto jest autorem reguły de l'Hospitala?
+  answers:
+  - prefix: A
+    content: Johann Bernoulli
+  - prefix: B
+    content: Leonhard Euler
+  - prefix: C
+    content: Bernhard Riemann
+  - prefix: D
+    content: Issac Barrow
+  correctAnswer: A
+- content: Ile istnieje funkcji trygonometrycznych?
+  answers:
+  - prefix: A
+    content: \(3\)
+  - prefix: B
+    content: \(4\)
+  - prefix: C
+    content: \(5\)
+  - prefix: D
+    content: \(6\)
+  correctAnswer: D
+- content: Ile istnieje zbiorów pustych?
+  answers:
+  - prefix: A
+    content: Zbiór pusty nie istnieje, bo każdy zbiór musi mieć co najmniej jeden element.
+  - prefix: B
+    content: Dokładnie jeden, bo nie należą do niego żadne elementy.
+  - prefix: C
+    content: Nieskończenie wiele, bo każdy zbiór niepusty zawiera zbiór pusty.
+  - prefix: D
+    content: Żadna z powyższych odpowiedzi nie jest poprawna.
+  correctAnswer: B
+- content: 'Niech funkcja \(f\colon\mathbb{R}\to\mathbb{R}\) będzie dana wzorem \(f(x)=x+1\). Wówczas:'
+  answers:
+  - prefix: A
+    content: \((f\circ f)(x)=x+2\)
+  - prefix: B
+    content: \((f\circ f)(x)=2x+1\)
+  - prefix: C
+    content: \((f\circ f)(x)=2x+2\)
+  - prefix: D
+    content: \((f\circ f)(x)=x+1\)
+  correctAnswer: A
