@@ -102,7 +102,7 @@
 - content: Który z podanych frameworków nie jest frameworkiem JavaScript?
   answers:
   - prefix: A
-    content: jQuery
+    content: React
   - prefix: B
     content: Angular
   - prefix: C
