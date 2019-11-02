@@ -43,11 +43,14 @@ public class GameService {
      * @return started game
      */
     public GameDto startNewGame() {
+        logger.debug("Starting a new game");
         Game game = new Game();
         game.setBusinessId(gameIdGenerator.generate());
         game.activate();
         game.initLevel();
-        return mapper.mapToDto(gameDao.save(game));
+        Game startedGame = gameDao.save(game);
+        logger.debug("Started a game with id {}", startedGame.getId());
+        return mapper.mapToDto(startedGame);
     }
 
     /**
@@ -61,10 +64,12 @@ public class GameService {
      */
     @Transactional
     public GameDto stopById(Long gameId) {
+        logger.debug("Stopping the game with id {}", gameId);
         Game game = findById(gameId);
         try {
             game.deactivate();
         } catch (IllegalStateException e) {
+            logger.warn("The game with id {} was already stopped", gameId);
             throw new GameException(e.getMessage());
         }
         return mapper.mapToDto(game);
@@ -81,9 +86,11 @@ public class GameService {
      */
     @Transactional
     public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
+        logger.debug("Applying fifty-fifty lifeline to game with id {}", gameId);
         Game game = findById(gameId);
         validate(game, LIFELINE);
         if (isLifelineUsed(game, FIFTY_FIFTY)) {
+            logger.warn("Requested fifty-fifty lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Fifty-fifty lifeline already used");
         }
         updateUsedLifelines(game, FIFTY_FIFTY);
@@ -103,9 +110,11 @@ public class GameService {
      */
     @Transactional
     public FriendsAnswer getFriendsAnswerByGameId(Long gameId) {
+        logger.debug("Applying phone-a-friend lifeline to game with id {}", gameId);
         Game game = findById(gameId);
         validate(game, LIFELINE);
         if (isLifelineUsed(game, PHONE_A_FRIEND)) {
+            logger.warn("Requested phone-a-friend lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Phone a friend lifeline already used");
         }
         updateUsedLifelines(game, PHONE_A_FRIEND);
@@ -123,9 +132,11 @@ public class GameService {
      */
     @Transactional
     public AudienceAnswer getAudienceAnswerByGameId(Long gameId) {
+        logger.debug("Applying ask-the-audience lifeline to game with id {}", gameId);
         Game game = findById(gameId);
         validate(game, LIFELINE);
         if (isLifelineUsed(game, ASK_THE_AUDIENCE)) {
+            logger.warn("Requested ask-the-audience lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Ask the audience lifeline already used");
         }
         updateUsedLifelines(game, ASK_THE_AUDIENCE);
