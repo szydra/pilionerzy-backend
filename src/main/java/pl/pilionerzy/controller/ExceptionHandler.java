@@ -26,7 +26,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String DATABASE_ERROR = "Database error occurred";
 
     @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleGameException(ConstraintViolationException exception, WebRequest request) {
+    protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
         return handleExceptionInternal(exception, prepareMessage(exception), new HttpHeaders(), BAD_REQUEST, request);
     }
 
