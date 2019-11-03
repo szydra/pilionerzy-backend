@@ -22,17 +22,17 @@ public class NewQuestionDto {
     @JsonProperty(access = READ_ONLY)
     private Long id;
 
-    @NotNull
-    @Size(min = 4, max = 1023)
+    @NotNull(message = "question must have content")
+    @Size(min = 4, max = 1023, message = "question content length must be between 4 and 1023")
     private String content;
 
     @JsonManagedReference
-    @NotNull
-    @Size(min = 4, max = 4)
+    @NotNull(message = "question must have answers")
+    @Size(min = 4, max = 4, message = "question must have exactly 4 answers")
     @Valid
     private List<NewAnswerDto> answers;
 
-    @NotNull
+    @NotNull(message = "question must have correct answer")
     private Prefix correctAnswer;
 
     @Override

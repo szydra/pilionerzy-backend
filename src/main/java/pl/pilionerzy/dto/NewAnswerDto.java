@@ -15,14 +15,14 @@ import javax.validation.constraints.Size;
 public class NewAnswerDto {
 
     @JsonBackReference
-    @NotNull
+    @NotNull(message = "answer must be linked with a question")
     private NewQuestionDto question;
 
-    @NotNull
+    @NotNull(message = "answer must have prefix")
     private Prefix prefix;
 
-    @NotNull
-    @Size(min = 1, max = 1023)
+    @NotNull(message = "answer must have content")
+    @Size(min = 1, max = 1023, message = "answer content length must be between 1 and 1023")
     private String content;
 
     @Override

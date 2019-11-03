@@ -17,8 +17,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = QuestionController.class)
@@ -37,14 +36,15 @@ public class QuestionControllerTest {
                 + "\"answers\": ["
                 + "  {\"prefix\": \"A\",\"content\": \"A\"},"
                 + "  {\"prefix\": \"B\",\"content\": \"B\"},"
-                + "  {\"prefix\": \"C\",\"content\": \"\"},"
+                + "  {\"prefix\": \"C\",\"content\": \"C\"},"
                 + "  {\"prefix\": \"D\",\"content\": \"D\"}"
                 + "]}";
 
         mvc.perform(post("/questions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithoutCorrectAnswer))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Validation errors: question must have correct answer"));
         verifyZeroInteractions(questionService);
     }
 
@@ -62,7 +62,8 @@ public class QuestionControllerTest {
         mvc.perform(post("/questions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonWithInvalidChild))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Validation errors: answer content length must be between 1 and 1023"));
         verifyZeroInteractions(questionService);
     }
 
