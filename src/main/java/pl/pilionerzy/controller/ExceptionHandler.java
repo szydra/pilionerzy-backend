@@ -2,11 +2,13 @@ package pl.pilionerzy.controller;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
@@ -15,10 +17,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import static java.util.stream.Collectors.joining;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
+import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
@@ -34,6 +33,18 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return exception.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(joining(", ", "Constraint violations: ", ""));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
+                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return handleExceptionInternal(exception, prepareMessage(exception), headers, BAD_REQUEST, request);
+    }
+
+    private String prepareMessage(MethodArgumentNotValidException exception) {
+        return exception.getBindingResult().getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(joining(", ", "Validation errors: ", ""));
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(DataAccessException.class)
