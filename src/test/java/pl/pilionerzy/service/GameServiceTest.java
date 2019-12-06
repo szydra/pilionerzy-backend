@@ -13,6 +13,7 @@ import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.lifeline.Calculator;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
+import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
@@ -20,6 +21,7 @@ import pl.pilionerzy.model.Question;
 import pl.pilionerzy.model.UsedLifeline;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -53,10 +55,8 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenStoppingInactiveGame() {
-        Game game = new Game();
-        game.setId(1L);
+        Game game = mockNewGameWithId(1L);
         game.deactivate();
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.stopById(1L))
@@ -92,6 +92,73 @@ public class GameServiceTest {
                 .containsExactlyInAnyOrder(question1, question2);
     }
 
+    // Unit tests for fifty-fifty lifeline
+
+    @Test
+    public void shouldThrowExceptionWhenFiftyFiftyIsAppliedToANonExistingGame() {
+        doReturn(Optional.empty()).when(gameDao).findById(1L);
+
+        assertThatExceptionOfType(NoSuchGameException.class)
+                .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(1L));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFiftyFiftyIsAppliedToAGameWithoutLastAskedQuestion() {
+        mockNewGameWithId(1L);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(1L))
+                .withMessage("Cannot use a lifeline for a game without last asked question");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFiftyFiftyWasAlreadyUsed() {
+        UsedLifeline fiftyFifty = new UsedLifeline();
+        fiftyFifty.setType(FIFTY_FIFTY);
+        Game game = mockNewGameWithId(2L);
+        game.setLastAskedQuestion(new Question());
+        game.setUsedLifelines(newArrayList(fiftyFifty));
+
+        assertThatExceptionOfType(LifelineException.class)
+                .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(2L))
+                .withMessage("Fifty-fifty lifeline already used");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenFiftyIsAppliedToInactiveGame() {
+        Game game = mockNewGameWithId(3L);
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(3L))
+                .withMessage("Game with id 3 is inactive");
+    }
+
+    @Test
+    public void shouldApplyFiftyWhenNoLifelineWasUsed() {
+        // given
+        Game game = mockNewGameWithId(3L);
+        Question question = new Question();
+        game.setLastAskedQuestion(question);
+        game.setUsedLifelines(newArrayList());
+        doReturn(new FiftyFiftyResult(newHashSet(A, B))).when(calculator).getFiftyFiftyResult(question);
+
+        // when
+        Collection<Prefix> incorrectPrefixes = gameService.getTwoIncorrectPrefixes(3L);
+
+        // then
+        assertThat(incorrectPrefixes)
+                .containsExactlyInAnyOrder(A, B);
+        assertThat(game.getUsedLifelines())
+                .hasSize(1)
+                .allMatch(lifeline -> lifeline.getType() == FIFTY_FIFTY)
+                .allSatisfy(usedLifeline ->
+                        assertThat(usedLifeline.getRejectedAnswers())
+                                .hasSameElementsAs(incorrectPrefixes));
+    }
+
+    // Unit tests for ask-the-audience lifeline
+
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToANonExistingGame() {
         doReturn(Optional.empty()).when(gameDao).findById(1L);
@@ -102,9 +169,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToAGameWithoutLastAskedQuestion() {
-        Game game = new Game();
-        game.setUsedLifelines(newArrayList());
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+        mockNewGameWithId(1L);
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
@@ -114,26 +179,23 @@ public class GameServiceTest {
     public void shouldThrowExceptionWhenAskTheAudienceWasAlreadyUsed() {
         UsedLifeline ata = new UsedLifeline();
         ata.setType(ASK_THE_AUDIENCE);
-        Game game = new Game();
-        game.activate();
+        Game game = mockNewGameWithId(1L);
         game.setLastAskedQuestion(new Question());
         game.setUsedLifelines(newArrayList(ata));
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(LifelineException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L))
-                .withMessageContaining("already used");
+                .withMessageContaining("Ask the audience lifeline already used");
     }
 
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToInactiveGame() {
-        Game game = new Game();
+        Game game = mockNewGameWithId(1L);
         game.deactivate();
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L))
-                .withMessageContaining("inactive");
+                .withMessageContaining("Game with id 1 is inactive");
     }
 
     @Test
@@ -195,5 +257,14 @@ public class GameServiceTest {
         assertThat(game.getUsedLifelines())
                 .extracting(UsedLifeline::getType)
                 .containsExactly(ASK_THE_AUDIENCE);
+    }
+
+    private Game mockNewGameWithId(long gameId) {
+        Game game = new Game();
+        game.setId(gameId);
+        game.activate();
+        game.setUsedLifelines(newArrayList());
+        doReturn(Optional.of(game)).when(gameDao).findById(gameId);
+        return game;
     }
 }
