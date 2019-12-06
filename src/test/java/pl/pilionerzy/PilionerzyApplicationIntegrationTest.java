@@ -18,5 +18,4 @@ public class PilionerzyApplicationIntegrationTest {
     public void contextLoads() {
         logger.info("Context loads!");
     }
-
 }

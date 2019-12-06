@@ -26,5 +26,4 @@ public class LevelUtils {
     public static boolean isHighestLevel(int currentLevel) {
         return currentLevel == HIGHEST_LEVEL;
     }
-
 }

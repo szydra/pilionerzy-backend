@@ -1,14 +1,12 @@
 package pl.pilionerzy.lifeline;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import pl.pilionerzy.dao.QuestionDao;
@@ -22,6 +20,7 @@ import pl.pilionerzy.model.Question;
 import java.util.Collection;
 import java.util.Collections;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -68,13 +67,12 @@ public class CalculatorIntegrationTest {
             assertThat(votesChart.keySet()).containsExactly(Prefix.A, Prefix.B, Prefix.C, Prefix.D);
             assertThat(votesChart.values().stream()
                     .mapToInt(PartialAudienceAnswer::getVotes)
-                    .sum()).isEqualTo(100);
-
+                    .sum()
+            ).isEqualTo(100);
         });
     }
 
     private Question getAnyQuestion() {
-        Slice<Question> questionPage = questionDao.findAll(PageRequest.of(0, 1));
-        return Iterables.getOnlyElement(questionPage.getContent());
+        return getOnlyElement(questionDao.findAll(PageRequest.of(0, 1)).getContent());
     }
 }

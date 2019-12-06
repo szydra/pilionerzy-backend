@@ -1,8 +1,6 @@
 package pl.pilionerzy.service;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,15 +14,22 @@ import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.lifeline.Calculator;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
-import pl.pilionerzy.model.*;
+import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Prefix;
+import pl.pilionerzy.model.Question;
+import pl.pilionerzy.model.UsedLifeline;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.doReturn;
+import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
+import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,7 +82,7 @@ public class GameServiceTest {
         Game game = new Game();
         game.setId(1L);
         game.setLastAskedQuestion(question1);
-        game.setAskedQuestions(Sets.newHashSet(question1));
+        game.setAskedQuestions(newHashSet(question1));
 
         gameService.updateLastQuestion(game, question2);
 
@@ -98,7 +103,7 @@ public class GameServiceTest {
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToAGameWithoutLastAskedQuestion() {
         Game game = new Game();
-        game.setUsedLifelines(Lists.newArrayList());
+        game.setUsedLifelines(newArrayList());
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(GameException.class)
@@ -108,11 +113,11 @@ public class GameServiceTest {
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceWasAlreadyUsed() {
         UsedLifeline ata = new UsedLifeline();
-        ata.setType(Lifeline.ASK_THE_AUDIENCE);
+        ata.setType(ASK_THE_AUDIENCE);
         Game game = new Game();
         game.activate();
         game.setLastAskedQuestion(new Question());
-        game.setUsedLifelines(Lists.newArrayList(ata));
+        game.setUsedLifelines(newArrayList(ata));
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(LifelineException.class)
@@ -139,19 +144,19 @@ public class GameServiceTest {
         question.setCorrectAnswer(C);
 
         UsedLifeline fiftyFifty = new UsedLifeline();
-        fiftyFifty.setType(Lifeline.FIFTY_FIFTY);
+        fiftyFifty.setType(FIFTY_FIFTY);
         fiftyFifty.setQuestion(question);
-        fiftyFifty.setRejectedAnswers(Sets.newHashSet(A, B));
+        fiftyFifty.setRejectedAnswers(newHashSet(A, B));
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
-        game.setUsedLifelines(Lists.newArrayList(fiftyFifty));
+        game.setUsedLifelines(newArrayList(fiftyFifty));
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
         doReturn(new AudienceAnswer(ImmutableMap.of(
                 C, PartialAudienceAnswer.withVotes(50),
                 D, PartialAudienceAnswer.withVotes(50))
-        )).when(calculator).getAudienceAnswer(question, Sets.newHashSet(A, B));
+        )).when(calculator).getAudienceAnswer(question, newHashSet(A, B));
 
         // when
         Map<Prefix, PartialAudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L).getVotesChart();
@@ -160,7 +165,7 @@ public class GameServiceTest {
         assertThat(audienceAnswer).containsOnlyKeys(C, D);
         assertThat(game.getUsedLifelines())
                 .extracting(UsedLifeline::getType)
-                .containsExactlyInAnyOrder(Lifeline.ASK_THE_AUDIENCE, Lifeline.FIFTY_FIFTY);
+                .containsExactlyInAnyOrder(ASK_THE_AUDIENCE, FIFTY_FIFTY);
     }
 
     @Test
@@ -172,7 +177,7 @@ public class GameServiceTest {
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
-        game.setUsedLifelines(Lists.newArrayList());
+        game.setUsedLifelines(newArrayList());
 
         doReturn(Optional.of(game)).when(gameDao).findById(1L);
         doReturn(new AudienceAnswer(ImmutableMap.of(
@@ -180,7 +185,7 @@ public class GameServiceTest {
                 B, PartialAudienceAnswer.withVotes(25),
                 C, PartialAudienceAnswer.withVotes(25),
                 D, PartialAudienceAnswer.withVotes(25))
-        )).when(calculator).getAudienceAnswer(question, Sets.newHashSet());
+        )).when(calculator).getAudienceAnswer(question, newHashSet());
 
         // when
         Map<Prefix, PartialAudienceAnswer> audienceAnswer = gameService.getAudienceAnswerByGameId(1L).getVotesChart();
@@ -189,6 +194,6 @@ public class GameServiceTest {
         assertThat(audienceAnswer).containsOnlyKeys(A, B, C, D);
         assertThat(game.getUsedLifelines())
                 .extracting(UsedLifeline::getType)
-                .containsExactly(Lifeline.ASK_THE_AUDIENCE);
+                .containsExactly(ASK_THE_AUDIENCE);
     }
 }

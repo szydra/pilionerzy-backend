@@ -74,7 +74,7 @@ public class QuestionService {
     }
 
     private Question getRandomQuestion() {
-        int numberOfActiveQuestions = (int) questionDao.countByActive(true);
+        int numberOfActiveQuestions = questionDao.countByActive(true);
         if (numberOfActiveQuestions == 0) {
             throw new NotEnoughDataException("No active questions available");
         }

@@ -7,7 +7,7 @@ import pl.pilionerzy.model.Question;
 
 public interface QuestionDao extends PagingAndSortingRepository<Question, Long> {
 
-    long countByActive(Boolean active);
+    Integer countByActive(Boolean active);
 
     Slice<Question> findByActive(Boolean active, Pageable pageable);
 

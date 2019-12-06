@@ -14,8 +14,8 @@ import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 
-import java.util.Collections;
-
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -55,13 +55,13 @@ public class QuestionServiceTest {
         game.setId(gameId);
         game.setLevel(1);
         game.setActive(true);
-        game.setAskedQuestions(Collections.singleton(question));
+        game.setAskedQuestions(singleton(question));
     }
 
     private void prepareMocks() {
         doReturn(game).when(gameService).findById(gameId);
         doReturn(page).when(questionDao).findByActive(isA(Boolean.class), isA(Pageable.class));
-        doReturn(1L).when(questionDao).countByActive(true);
+        doReturn(1).when(questionDao).countByActive(true);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class QuestionServiceTest {
     @Test
     public void shouldThrowExceptionWhenThereAreNotEnoughQuestions() {
         doReturn(true).when(page).hasContent();
-        doReturn(Collections.singletonList(question)).when(page).getContent();
+        doReturn(singletonList(question)).when(page).getContent();
 
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
@@ -87,7 +87,7 @@ public class QuestionServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenThereAreNoQuestions() {
-        doReturn(0L).when(questionDao).countByActive(true);
+        doReturn(0).when(questionDao).countByActive(true);
 
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId))
