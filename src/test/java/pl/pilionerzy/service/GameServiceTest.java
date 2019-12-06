@@ -14,6 +14,7 @@ import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.lifeline.Calculator;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
+import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
@@ -30,8 +31,7 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.doReturn;
-import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
-import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
+import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -155,6 +155,68 @@ public class GameServiceTest {
                 .allSatisfy(usedLifeline ->
                         assertThat(usedLifeline.getRejectedAnswers())
                                 .hasSameElementsAs(incorrectPrefixes));
+    }
+
+    // Unit tests for phone-a-friend lifeline
+
+    @Test
+    public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToANonExistingGame() {
+        doReturn(Optional.empty()).when(gameDao).findById(4L);
+
+        assertThatExceptionOfType(NoSuchGameException.class)
+                .isThrownBy(() -> gameService.getFriendsAnswerByGameId(4L));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToAGameWithoutLastAskedQuestion() {
+        mockNewGameWithId(5L);
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getFriendsAnswerByGameId(5L))
+                .withMessage("Cannot use a lifeline for a game without last asked question");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPhoneAFriendWasAlreadyUsed() {
+        UsedLifeline phoneAFriend = new UsedLifeline();
+        phoneAFriend.setType(PHONE_A_FRIEND);
+        Game game = mockNewGameWithId(6L);
+        game.setLastAskedQuestion(new Question());
+        game.setUsedLifelines(newArrayList(phoneAFriend));
+
+        assertThatExceptionOfType(LifelineException.class)
+                .isThrownBy(() -> gameService.getFriendsAnswerByGameId(6L))
+                .withMessage("Phone a friend lifeline already used");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToInactiveGame() {
+        Game game = mockNewGameWithId(7L);
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> gameService.getFriendsAnswerByGameId(7L))
+                .withMessage("Game with id 7 is inactive");
+    }
+
+    @Test
+    public void shouldApplyPhoneAFriendWhenNoLifelineWasUsed() {
+        // given
+        Game game = mockNewGameWithId(8L);
+        Question question = new Question();
+        game.setLastAskedQuestion(question);
+        game.setUsedLifelines(newArrayList());
+        doReturn(new FriendsAnswer(A, 50)).when(calculator).getFriendsAnswer(question, newHashSet());
+
+        // when
+        FriendsAnswer friendsAnswer = gameService.getFriendsAnswerByGameId(8L);
+
+        // then
+        assertThat(friendsAnswer.getPrefix()).isEqualTo(A);
+        assertThat(friendsAnswer.getWisdom()).isEqualTo("50%");
+        assertThat(game.getUsedLifelines())
+                .hasSize(1)
+                .allMatch(lifeline -> lifeline.getType() == PHONE_A_FRIEND);
     }
 
     // Unit tests for ask-the-audience lifeline
