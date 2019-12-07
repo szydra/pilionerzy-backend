@@ -10,8 +10,9 @@ import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+
+import static java.util.Collections.singletonMap;
 
 @CrossOrigin(origins = "${allowed.origins}")
 @RestController
@@ -30,7 +31,7 @@ public class GameController {
     @GetMapping("/{gameId}/fifty-fifty")
     public Map<String, Collection<Prefix>> getTwoIncorrectPrefixes(@PathVariable Long gameId) {
         Collection<Prefix> incorrectPrefixes = gameService.getTwoIncorrectPrefixes(gameId);
-        return Collections.singletonMap("incorrectPrefixes", incorrectPrefixes);
+        return singletonMap("incorrectPrefixes", incorrectPrefixes);
     }
 
     @GetMapping("/{gameId}/phone-a-friend")
@@ -47,7 +48,7 @@ public class GameController {
     public Map<String, Prefix> sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
         Prefix selected = answer.get("selected");
         Prefix correct = answerService.doAnswer(gameId, selected);
-        return Collections.singletonMap("prefix", correct);
+        return singletonMap("prefix", correct);
     }
 
     @PostMapping("/{gameId}/stop")

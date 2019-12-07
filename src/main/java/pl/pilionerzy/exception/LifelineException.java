@@ -9,5 +9,4 @@ public class LifelineException extends RuntimeException {
     public LifelineException(String message) {
         super(message);
     }
-
 }

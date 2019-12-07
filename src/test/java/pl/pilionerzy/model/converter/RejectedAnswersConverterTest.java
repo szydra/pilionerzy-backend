@@ -1,10 +1,9 @@
 package pl.pilionerzy.model.converter;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
-import java.util.Collections;
-
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.*;
 
@@ -26,13 +25,13 @@ public class RejectedAnswersConverterTest {
 
     @Test
     public void shouldConvertEmptyCollectionToNull() {
-        assertThat(converter.convertToDatabaseColumn(Collections.emptySet()))
+        assertThat(converter.convertToDatabaseColumn(emptySet()))
                 .isNull();
     }
 
     @Test
     public void shouldConvertNonEmptyCollectionToString() {
-        assertThat(converter.convertToDatabaseColumn(Lists.newArrayList(C, D)))
+        assertThat(converter.convertToDatabaseColumn(newArrayList(C, D)))
                 .isEqualTo("C,D");
     }
 }
