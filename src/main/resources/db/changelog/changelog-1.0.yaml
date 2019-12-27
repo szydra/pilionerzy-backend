@@ -1,0 +1,36 @@
+databaseChangeLog:
+
+- changeSet:
+    id: 1
+    author: szydra
+    changes:
+    - createTable:
+        tableName: question
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: business_id
+            type: varchar(32)
+            constraints:
+              nullable: false
+        - column:
+            name: active
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: content
+            type: varchar(1023)
+            constraints:
+              nullable: false
+        - column:
+            name: correct_answer
+            type: char(1)
+            constraints:
+              nullable: false
