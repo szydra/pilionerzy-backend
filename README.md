@@ -35,6 +35,15 @@ By default a newly added question remains inactive and has to be activated manua
 
 ### How to play
 A new game is returned by the endpoint `/games/start-new` with GET method.
+Response body might look like:
+```json
+{
+  "id": 1,
+  "startTime": "2020-02-01T18:37:50.856",
+  "active": true,
+  "level": 0
+}
+```
 Consecutive questions can be get from
 `
 /questions?game-id={game-id}
@@ -47,6 +56,12 @@ Answers are posted to the endpoint `/games/{game-id}/answers` with the request b
 }
 ```
 where `{selected-prefix}` can be `A`, `B`, `C` or `D`.
+In response one will get
+```json
+{
+  "prefix": "{correct-prefix}"
+}
+```
 The game is stopped either by reaching the highest level, by posting a wrong answer
 or, manually, by hitting `/games/{game-id}/stop` using POST method with an empty body.
 
@@ -81,4 +96,6 @@ where `wisdom` cannot exceed 100% and should be interpreted in the following way
 ## Testing
 During a standard build process all integration tests are skipped.
 They are run in `integration-test` maven profile, so in order to execute them one has to run
-`mvn test -Pintegration-test`
+```
+mvn test -Pintegration-test
+```
