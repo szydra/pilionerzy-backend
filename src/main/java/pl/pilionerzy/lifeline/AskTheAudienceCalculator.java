@@ -1,6 +1,5 @@
 package pl.pilionerzy.lifeline;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
@@ -9,6 +8,7 @@ import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,11 +37,9 @@ class AskTheAudienceCalculator {
         answers.put(Iterables.getOnlyElement(remainingAnswers), PartialAudienceAnswer.withVotes(ONE_HUNDRED - usedRate));
     }
 
-    @SuppressWarnings("Guava")
     private List<Prefix> getRemainingAnswers(Map<Prefix, PartialAudienceAnswer> answers, Collection<Prefix> rejected) {
         return Arrays.stream(Prefix.values())
-                .filter(Predicates.not(answers::containsKey))
-                .filter(Predicates.not(rejected::contains))
+                .filter(Predicate.<Prefix>not(answers::containsKey).and(Predicate.not(rejected::contains)))
                 .collect(Collectors.toList());
     }
 }
