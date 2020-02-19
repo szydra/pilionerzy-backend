@@ -2,6 +2,8 @@ package pl.pilionerzy.model;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
@@ -68,5 +70,29 @@ public class QuestionTest {
         otherQuestion.setBusinessId("8h1a2b3c4c5e6f7g");
 
         assertThat(question).isNotEqualTo(otherQuestion);
+    }
+
+    @Test
+    public void shouldReturnCorrectAnswer() {
+        Answer answer = new Answer();
+        answer.setPrefix(Prefix.A);
+        answer.setCorrect(true);
+        answer.setQuestion(question);
+        question.setAnswers(List.of(answer));
+
+        assertThat(question.getCorrectAnswer()).isEqualTo(answer);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenThereIsNoCorrectAnswer() {
+        Answer answer = new Answer();
+        answer.setPrefix(Prefix.A);
+        answer.setCorrect(false);
+        answer.setQuestion(question);
+        question.setAnswers(List.of(answer));
+
+        assertThatIllegalStateException()
+                .isThrownBy(() -> question.getCorrectAnswer())
+                .withMessage("Question 'null' does not have correct answer");
     }
 }
