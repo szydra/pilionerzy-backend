@@ -3,6 +3,7 @@ package pl.pilionerzy.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.pilionerzy.validation.OneCorrectAnswer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "businessId")
+@OneCorrectAnswer
 public class Question {
 
     @Id
