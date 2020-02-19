@@ -25,6 +25,9 @@ public class Answer {
     @NotNull(message = "answer must be linked with a question")
     private Question question;
 
+    @NotNull(message = "answer must be correct or incorrect")
+    private Boolean correct;
+
     @Enumerated(STRING)
     @NotNull(message = "answer must have prefix")
     private Prefix prefix;
