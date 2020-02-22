@@ -35,7 +35,7 @@ public class AnswerService {
     public Prefix doAnswer(Long gameId, Prefix selectedPrefix) {
         Game game = gameService.findById(gameId);
         validate(game, RequestType.ANSWER);
-        Prefix correct = game.getLastAskedQuestion().getCorrectAnswer();
+        Prefix correct = game.getLastAskedQuestion().getCorrectAnswer().getPrefix();
         if (correct != selectedPrefix) {
             updateGameForIncorrect(game);
         } else {

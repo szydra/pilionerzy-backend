@@ -7,10 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -153,7 +155,10 @@ public class AnswerServiceTest {
         Question question = new Question();
         question.setId(questionId);
         question.setBusinessId(randomAlphanumeric(32));
-        question.setCorrectAnswer(correctAnswer);
+        Answer answer = new Answer();
+        answer.setPrefix(correctAnswer);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
         return question;
     }
 
