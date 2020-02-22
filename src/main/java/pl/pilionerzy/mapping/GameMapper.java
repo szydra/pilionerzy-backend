@@ -8,7 +8,7 @@ import pl.pilionerzy.model.Game;
 @Mapper(componentModel = "spring")
 public interface GameMapper {
 
-    @Mapping(source = "lastAskedQuestion.correctAnswer", target = "correctAnswer")
+    @Mapping(source = "lastAskedQuestion.correctAnswer.prefix", target = "correctAnswer")
     GameDto modelToDto(Game game);
 
 }
