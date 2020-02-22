@@ -7,11 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
+import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +26,10 @@ public class PhoneAFriendCalculatorTest {
 
     @Before
     public void setCorrectAnswer() {
-        question.setCorrectAnswer(Prefix.A);
+        Answer answer = new Answer();
+        answer.setPrefix(Prefix.A);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
     }
 
     @Test

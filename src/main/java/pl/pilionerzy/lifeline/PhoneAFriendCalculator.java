@@ -1,6 +1,5 @@
 package pl.pilionerzy.lifeline;
 
-import com.google.common.base.Predicates;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
@@ -19,9 +18,8 @@ class PhoneAFriendCalculator {
     private static final int SUPREME_WISDOM = 100;
     private final Random random = new Random();
 
-    @SuppressWarnings("Guava")
     FriendsAnswer getAnswer(Question question, Set<Prefix> rejectedAnswers) {
-        Prefix correctAnswer = question.getCorrectAnswer();
+        Prefix correctAnswer = question.getCorrectAnswer().getPrefix();
         if (rejectedAnswers.contains(correctAnswer)) {
             throw new IllegalArgumentException("Correct answer prefix cannot be rejected");
         }
@@ -32,7 +30,7 @@ class PhoneAFriendCalculator {
         } else {
             Prefix[] allPrefixes = Prefix.values();
             return Arrays.stream(allPrefixes)
-                    .filter(Predicates.not(rejectedAnswers::contains))
+                    .filter(Predicate.not(rejectedAnswers::contains))
                     .filter(Predicate.isEqual(correctAnswer).negate())
                     .skip(random.nextInt(allPrefixes.length - rejectedAnswers.size() - 1))
                     .findFirst()
