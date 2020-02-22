@@ -20,7 +20,7 @@ class AskTheAudienceCalculator {
     AudienceAnswer getAnswer(Question question, Collection<Prefix> rejectedAnswers) {
         Map<Prefix, PartialAudienceAnswer> answers = new TreeMap<>();
         int correctAnswerRate = random.nextInt(ONE_HUNDRED);
-        answers.put(question.getCorrectAnswer(), PartialAudienceAnswer.withVotes(correctAnswerRate));
+        answers.put(question.getCorrectAnswer().getPrefix(), PartialAudienceAnswer.withVotes(correctAnswerRate));
         setRemainingRates(answers, rejectedAnswers);
         return new AudienceAnswer(answers);
     }
