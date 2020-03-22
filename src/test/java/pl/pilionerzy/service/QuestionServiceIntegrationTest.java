@@ -62,8 +62,8 @@ public class QuestionServiceIntegrationTest {
         // then
         Optional<Question> savedQuestion = questionDao.findById(savedQuestionDto.getId());
         assertThat(savedQuestion).hasValueSatisfying(question -> {
-            assertThat(question)
-                    .isEqualToComparingOnlyGivenFields(newQuestionDto, "content", "correctAnswer");
+            assertThat(question).isEqualToComparingOnlyGivenFields(newQuestionDto, "content");
+            assertThat(question.getCorrectAnswer().getPrefix()).isEqualTo(A);
             assertThat(question.getAnswers())
                     .hasSize(4)
                     .extracting(Answer::getPrefix)

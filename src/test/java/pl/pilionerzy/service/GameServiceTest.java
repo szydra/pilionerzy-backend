@@ -15,10 +15,7 @@ import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.model.Question;
-import pl.pilionerzy.model.UsedLifeline;
+import pl.pilionerzy.model.*;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -264,7 +261,9 @@ public class GameServiceTest {
         // given
         Question question = new Question();
         question.setId(1L);
-        question.setCorrectAnswer(C);
+        Answer answer = new Answer();
+        answer.setPrefix(C);
+        answer.setCorrect(true);
 
         UsedLifeline fiftyFifty = new UsedLifeline();
         fiftyFifty.setType(FIFTY_FIFTY);
@@ -296,7 +295,9 @@ public class GameServiceTest {
         // given
         Question question = new Question();
         question.setId(1L);
-        question.setCorrectAnswer(C);
+        Answer answer = new Answer();
+        answer.setPrefix(C);
+        answer.setCorrect(true);
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
@@ -326,6 +327,7 @@ public class GameServiceTest {
         game.activate();
         game.setUsedLifelines(newArrayList());
         doReturn(Optional.of(game)).when(gameDao).findById(gameId);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithLastQuestionAndAnswers(gameId);
         return game;
     }
 }

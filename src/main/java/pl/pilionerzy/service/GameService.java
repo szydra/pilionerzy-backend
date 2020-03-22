@@ -65,7 +65,7 @@ public class GameService {
     @Transactional
     public GameDto stopById(Long gameId) {
         logger.debug("Stopping the game with id {}", gameId);
-        Game game = findById(gameId);
+        Game game = findByIdWithLastQuestionAndAnswers(gameId);
         try {
             game.deactivate();
         } catch (IllegalStateException e) {
@@ -145,6 +145,11 @@ public class GameService {
 
     Game findById(Long gameId) {
         return gameDao.findById(gameId)
+                .orElseThrow(() -> new NoSuchGameException(gameId));
+    }
+
+    Game findByIdWithLastQuestionAndAnswers(Long gameId) {
+        return gameDao.findByIdWithLastQuestionAndAnswers(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
     }
 

@@ -3,10 +3,7 @@ package pl.pilionerzy.util;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import pl.pilionerzy.exception.GameException;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Lifeline;
-import pl.pilionerzy.model.Question;
-import pl.pilionerzy.model.UsedLifeline;
+import pl.pilionerzy.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +24,15 @@ public class GameUtilsTest {
         Question q1 = new Question();
         q1.setId(1L);
         q1.setBusinessId("abc");
-        q1.setCorrectAnswer(A);
+        Answer answer1 = new Answer();
+        answer1.setPrefix(A);
+        answer1.setCorrect(true);
         Question q2 = new Question();
         q2.setId(2L);
         q2.setBusinessId("def");
-        q2.setCorrectAnswer(B);
+        Answer answer2 = new Answer();
+        answer2.setPrefix(B);
+        answer2.setCorrect(true);
         game.setAskedQuestions(newHashSet(q1, q2));
         game.setLastAskedQuestion(q2);
     }

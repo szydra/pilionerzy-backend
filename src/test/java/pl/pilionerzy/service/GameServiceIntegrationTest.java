@@ -50,7 +50,7 @@ public class GameServiceIntegrationTest {
         // given
         GameDto newGame = gameService.startNewGame();
         questionService.getNextQuestionByGameId(newGame.getId());
-        Game savedGame = gameService.findById(newGame.getId());
+        Game savedGame = gameService.findByIdWithLastQuestionAndAnswers(newGame.getId());
         Question question = savedGame.getLastAskedQuestion();
 
         // when
@@ -60,6 +60,6 @@ public class GameServiceIntegrationTest {
         assertThat(stoppedGame)
                 .hasFieldOrPropertyWithValue("id", newGame.getId())
                 .hasFieldOrPropertyWithValue("active", false)
-                .hasFieldOrPropertyWithValue("correctAnswer", question.getCorrectAnswer());
+                .hasFieldOrPropertyWithValue("correctAnswer", question.getCorrectAnswer().getPrefix());
     }
 }
