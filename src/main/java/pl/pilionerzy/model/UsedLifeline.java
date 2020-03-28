@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
 
 @Embeddable
 @Getter
@@ -25,10 +26,9 @@ public class UsedLifeline {
     private Lifeline type;
 
     @NotNull(message = "lifeline must be linked with a question")
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Question question;
 
     @Convert(converter = RejectedAnswersConverter.class)
     private Collection<Prefix> rejectedAnswers;
-
 }
