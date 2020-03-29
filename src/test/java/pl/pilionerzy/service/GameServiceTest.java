@@ -64,7 +64,7 @@ public class GameServiceTest {
         doReturn(Optional.empty()).when(gameDao).findById(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
-                .isThrownBy(() -> gameService.findById(1L));
+                .isThrownBy(() -> gameService.findByIdWithAskedQuestions(1L));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class GameServiceTest {
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList(fiftyFifty));
 
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
         doReturn(new AudienceAnswer(Map.of(
                 C, PartialAudienceAnswer.withVotes(50),
                 D, PartialAudienceAnswer.withVotes(50))
@@ -303,7 +303,7 @@ public class GameServiceTest {
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList());
 
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
         doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(25),
                 B, PartialAudienceAnswer.withVotes(25),
@@ -328,6 +328,7 @@ public class GameServiceTest {
         game.setUsedLifelines(newArrayList());
         doReturn(Optional.of(game)).when(gameDao).findById(gameId);
         doReturn(Optional.of(game)).when(gameDao).findByIdWithLastQuestionAndAnswers(gameId);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(gameId);
         return game;
     }
 }

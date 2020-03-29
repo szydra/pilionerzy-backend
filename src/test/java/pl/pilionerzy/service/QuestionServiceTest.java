@@ -59,7 +59,7 @@ public class QuestionServiceTest {
     }
 
     private void prepareMocks() {
-        doReturn(game).when(gameService).findById(gameId);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(gameId);
         doReturn(page).when(questionDao).findByActive(isA(Boolean.class), isA(Pageable.class));
         doReturn(1).when(questionDao).countByActive(true);
     }

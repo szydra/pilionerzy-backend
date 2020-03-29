@@ -33,7 +33,7 @@ public class AnswerService {
      */
     @Transactional
     public Prefix doAnswer(Long gameId, Prefix selectedPrefix) {
-        Game game = gameService.findById(gameId);
+        Game game = gameService.findByIdWithAskedQuestions(gameId);
         validate(game, RequestType.ANSWER);
         Prefix correct = game.getLastAskedQuestion().getCorrectAnswer().getPrefix();
         if (correct != selectedPrefix) {

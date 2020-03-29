@@ -53,7 +53,7 @@ public class QuestionService {
      */
     @Transactional
     public QuestionDto getNextQuestionByGameId(Long gameId) {
-        Game game = gameService.findById(gameId);
+        Game game = gameService.findByIdWithAskedQuestions(gameId);
         GameUtils.validate(game, RequestType.QUESTION);
         return mapper.mapToDto(getAnotherQuestion(game));
     }
