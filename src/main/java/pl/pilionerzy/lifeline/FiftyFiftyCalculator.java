@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 class FiftyFiftyCalculator {
 
     FiftyFiftyResult getPrefixesToDiscard(Question question) {
-        Prefix correctAnswerPrefix = question.getCorrectAnswer();
+        Prefix correctAnswerPrefix = question.getCorrectAnswer().getPrefix();
         List<Prefix> incorrectPrefixes = Arrays.stream(Prefix.values())
                 .filter(Predicate.isEqual(correctAnswerPrefix).negate())
                 .collect(Collectors.toList());

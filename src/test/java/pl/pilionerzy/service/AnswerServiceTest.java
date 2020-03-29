@@ -7,10 +7,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -36,7 +38,7 @@ public class AnswerServiceTest {
     @Test
     public void shouldThrowExceptionForInactiveGame() {
         Game inactiveGame = prepareGame(false);
-        doReturn(inactiveGame).when(gameService).findById(GAME_ID);
+        doReturn(inactiveGame).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
@@ -46,7 +48,7 @@ public class AnswerServiceTest {
     @Test
     public void shouldAcceptCorrectAnswer() {
         Game game = prepareGame(true);
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, A);
 
@@ -58,7 +60,7 @@ public class AnswerServiceTest {
     @Test
     public void shouldNotAcceptIncorrectAnswer() {
         Game game = prepareGame(true);
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, B);
 
@@ -72,7 +74,7 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         game.setLevel(11);
         game.setAskedQuestions(prepareQuestions(12));
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, A);
 
@@ -85,7 +87,7 @@ public class AnswerServiceTest {
     public void shouldThrowExceptionForGameWithoutLastQuestion() {
         Game game = prepareGame(true);
         game.setLastAskedQuestion(null);
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
@@ -97,7 +99,7 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, A);
 
@@ -111,7 +113,7 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, C);
 
@@ -125,7 +127,7 @@ public class AnswerServiceTest {
         Game game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
-        doReturn(game).when(gameService).findById(GAME_ID);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
         answerService.doAnswer(GAME_ID, A);
 
@@ -153,7 +155,10 @@ public class AnswerServiceTest {
         Question question = new Question();
         question.setId(questionId);
         question.setBusinessId(randomAlphanumeric(32));
-        question.setCorrectAnswer(correctAnswer);
+        Answer answer = new Answer();
+        answer.setPrefix(correctAnswer);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
         return question;
     }
 

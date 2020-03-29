@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -21,9 +22,12 @@ public class Answer {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @NotNull(message = "answer must be linked with a question")
     private Question question;
+
+    @NotNull(message = "answer must be correct or incorrect")
+    private Boolean correct;
 
     @Enumerated(STRING)
     @NotNull(message = "answer must have prefix")

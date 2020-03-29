@@ -1,6 +1,5 @@
 package pl.pilionerzy.service;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,10 +15,7 @@ import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.model.Question;
-import pl.pilionerzy.model.UsedLifeline;
+import pl.pilionerzy.model.*;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -65,10 +61,10 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionForNonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithAskedQuestions(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
-                .isThrownBy(() -> gameService.findById(1L));
+                .isThrownBy(() -> gameService.findByIdWithAskedQuestions(1L));
     }
 
     @Test
@@ -96,7 +92,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenFiftyFiftyIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(1L));
@@ -161,7 +157,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(4L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(4L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getFriendsAnswerByGameId(4L));
@@ -223,7 +219,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
@@ -265,7 +261,9 @@ public class GameServiceTest {
         // given
         Question question = new Question();
         question.setId(1L);
-        question.setCorrectAnswer(C);
+        Answer answer = new Answer();
+        answer.setPrefix(C);
+        answer.setCorrect(true);
 
         UsedLifeline fiftyFifty = new UsedLifeline();
         fiftyFifty.setType(FIFTY_FIFTY);
@@ -276,8 +274,8 @@ public class GameServiceTest {
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList(fiftyFifty));
 
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
-        doReturn(new AudienceAnswer(ImmutableMap.of(
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(new AudienceAnswer(Map.of(
                 C, PartialAudienceAnswer.withVotes(50),
                 D, PartialAudienceAnswer.withVotes(50))
         )).when(calculator).getAudienceAnswer(question, newHashSet(A, B));
@@ -297,14 +295,16 @@ public class GameServiceTest {
         // given
         Question question = new Question();
         question.setId(1L);
-        question.setCorrectAnswer(C);
+        Answer answer = new Answer();
+        answer.setPrefix(C);
+        answer.setCorrect(true);
 
         Game game = new Game();
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList());
 
-        doReturn(Optional.of(game)).when(gameDao).findById(1L);
-        doReturn(new AudienceAnswer(ImmutableMap.of(
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(25),
                 B, PartialAudienceAnswer.withVotes(25),
                 C, PartialAudienceAnswer.withVotes(25),
@@ -326,7 +326,8 @@ public class GameServiceTest {
         game.setId(gameId);
         game.activate();
         game.setUsedLifelines(newArrayList());
-        doReturn(Optional.of(game)).when(gameDao).findById(gameId);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithLastQuestionAndAnswers(gameId);
+        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(gameId);
         return game;
     }
 }

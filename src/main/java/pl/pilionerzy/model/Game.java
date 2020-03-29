@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -38,10 +39,10 @@ public class Game {
     @NotNull(message = "game must have level")
     private Integer level;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private Set<Question> askedQuestions;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Question lastAskedQuestion;
 
     @ElementCollection

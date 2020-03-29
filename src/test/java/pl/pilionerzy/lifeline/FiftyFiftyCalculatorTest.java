@@ -2,8 +2,11 @@ package pl.pilionerzy.lifeline;
 
 import org.junit.Before;
 import org.junit.Test;
+import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +18,10 @@ public class FiftyFiftyCalculatorTest {
     @Before
     public void initQuestion() {
         question = new Question();
-        question.setCorrectAnswer(Prefix.A);
+        Answer answer = new Answer();
+        answer.setPrefix(Prefix.A);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
     }
 
     @Test

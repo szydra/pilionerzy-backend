@@ -17,8 +17,6 @@ import pl.pilionerzy.model.Question;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static pl.pilionerzy.service.QuestionService.LIMIT;
 
@@ -59,7 +57,7 @@ public class QuestionServiceTest {
     }
 
     private void prepareMocks() {
-        doReturn(game).when(gameService).findById(gameId);
+        doReturn(game).when(gameService).findByIdWithAskedQuestions(gameId);
         doReturn(page).when(questionDao).findByActive(isA(Boolean.class), isA(Pageable.class));
         doReturn(1).when(questionDao).countByActive(true);
     }

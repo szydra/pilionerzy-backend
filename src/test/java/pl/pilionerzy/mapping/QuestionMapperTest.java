@@ -42,6 +42,17 @@ public class QuestionMapperTest {
         assertThat(question.getActive()).isFalse();
     }
 
+    @Test
+    public void shouldSetQuestionInAllAnswers() {
+        NewQuestionDto questionDto = createNewQuestionDto();
+
+        Question question = questionMapper.dtoToModel(questionDto, new LoopAvoidingContext());
+
+        assertThat(question.getAnswers())
+                .hasSize(4)
+                .allMatch(answer -> answer.getQuestion() == question);
+    }
+
     private NewQuestionDto createNewQuestionDto() {
         NewQuestionDto questionDto = new NewQuestionDto();
         questionDto.setContent(randomAlphanumeric(32));
@@ -54,6 +65,7 @@ public class QuestionMapperTest {
             answers.add(answer);
         }
         questionDto.setAnswers(answers);
+        questionDto.setCorrectAnswer(Prefix.A);
         return questionDto;
     }
 }

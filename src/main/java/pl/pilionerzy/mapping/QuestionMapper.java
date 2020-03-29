@@ -8,23 +8,25 @@ import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.model.Question;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.mapstruct.ReportingPolicy.IGNORE;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = IGNORE, uses = {AnswerMapper.class})
+@Mapper(componentModel = "spring", uses = {AnswerMapper.class})
 public interface QuestionMapper {
 
     @Mapping(target = "active", constant = "false")
+    @Mapping(target = "businessId", ignore = true)
+    @Mapping(target = "correctAnswer", ignore = true)
     Question dtoToModel(NewQuestionDto questionDto, @Context LoopAvoidingContext context);
 
-    Question dtoToModel(QuestionDto questionDto, @Context LoopAvoidingContext context);
-
+    @Mapping(source = "correctAnswer.prefix", target = "correctAnswer")
     NewQuestionDto modelToNewDto(Question question, @Context LoopAvoidingContext context);
 
     QuestionDto modelToDto(Question question, @Context LoopAvoidingContext context);
 
     @AfterMapping
-    default void setBusinessId(NewQuestionDto questionDto, @MappingTarget Question question) {
+    default void setBusinessIdAndCorrectAnswer(NewQuestionDto questionDto, @MappingTarget Question question) {
         question.setBusinessId(calculateHash(questionDto));
+        question.getAnswers()
+                .forEach(answer -> answer.setCorrect(answer.getPrefix() == questionDto.getCorrectAnswer()));
     }
 
     @SuppressWarnings("UnstableApiUsage")

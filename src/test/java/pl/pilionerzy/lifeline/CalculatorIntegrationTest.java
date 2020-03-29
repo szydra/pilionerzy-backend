@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dao.QuestionDao;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 public class CalculatorIntegrationTest {
 
     @Autowired
@@ -42,7 +44,7 @@ public class CalculatorIntegrationTest {
 
         assertThat(fiftyFiftyResult.getPrefixesToDiscard())
                 .hasSize(2)
-                .doesNotContain(question.getCorrectAnswer());
+                .doesNotContain(question.getCorrectAnswer().getPrefix());
     }
 
     @Test

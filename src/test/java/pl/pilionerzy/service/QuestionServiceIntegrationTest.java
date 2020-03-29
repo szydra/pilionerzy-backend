@@ -17,6 +17,7 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +39,9 @@ public class QuestionServiceIntegrationTest {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @Transactional
@@ -62,8 +66,8 @@ public class QuestionServiceIntegrationTest {
         // then
         Optional<Question> savedQuestion = questionDao.findById(savedQuestionDto.getId());
         assertThat(savedQuestion).hasValueSatisfying(question -> {
-            assertThat(question)
-                    .isEqualToComparingOnlyGivenFields(newQuestionDto, "content", "correctAnswer");
+            assertThat(question).isEqualToComparingOnlyGivenFields(newQuestionDto, "content");
+            assertThat(question.getCorrectAnswer().getPrefix()).isEqualTo(A);
             assertThat(question.getAnswers())
                     .hasSize(4)
                     .extracting(Answer::getPrefix)
@@ -73,15 +77,20 @@ public class QuestionServiceIntegrationTest {
     }
 
     @Test
+    @Transactional
     public void shouldSetLastQuestion() {
         // given
         GameDto newGame = gameService.startNewGame();
+        entityManager.flush();
+        entityManager.clear();
 
         // when
         QuestionDto questionDto = questionService.getNextQuestionByGameId(newGame.getId());
+        entityManager.flush();
+        entityManager.clear();
 
         // then
-        Game savedGame = gameService.findById(newGame.getId());
+        Game savedGame = gameService.findByIdWithAskedQuestions(newGame.getId());
         assertThat(savedGame.getLastAskedQuestion())
                 .isEqualToComparingOnlyGivenFields(questionDto, "content");
         assertThat(savedGame.getAskedQuestions())

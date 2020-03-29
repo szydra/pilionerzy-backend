@@ -13,7 +13,6 @@ import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.service.QuestionService;
 
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,7 +44,7 @@ public class QuestionControllerTest {
                 .content(jsonWithoutCorrectAnswer))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Validation errors: question must have correct answer"));
-        verifyZeroInteractions(questionService);
+        verifyNoInteractions(questionService);
     }
 
     @Test
@@ -64,7 +63,7 @@ public class QuestionControllerTest {
                 .content(jsonWithInvalidChild))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Validation errors: answer content length must be between 1 and 1023"));
-        verifyZeroInteractions(questionService);
+        verifyNoInteractions(questionService);
     }
 
     @Test

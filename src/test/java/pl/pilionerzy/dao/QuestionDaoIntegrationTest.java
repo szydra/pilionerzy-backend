@@ -97,12 +97,24 @@ public class QuestionDaoIntegrationTest {
     public void shouldNotSaveQuestionWithoutCorrectAnswer() {
         Question question = prepareRandomQuestion();
         question.activate();
-        question.setCorrectAnswer(null);
+        question.getAnswers().forEach(answer -> answer.setCorrect(false));
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(question))
                 .satisfies(exception -> assertThat(exception)
-                        .hasViolation("correctAnswer", "question must have correct answer"));
+                        .hasViolation("", "one correct answer required"));
+    }
+
+    @Test
+    public void shouldNotSaveQuestionWithTwoCorrectAnswers() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.getAnswers().get(0).setCorrect(true);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("", "one correct answer required"));
     }
 
     @Test
@@ -205,13 +217,24 @@ public class QuestionDaoIntegrationTest {
                         .hasViolation("content", "answer content length must be between 1 and 1023"));
     }
 
+    @Test
+    public void shouldNotSaveQuestionWithAnswerWithoutCorrectFlag() {
+        Question question = prepareRandomQuestion();
+        question.activate();
+        question.getAnswers().get(0).setCorrect(null);
+
+        assertThatExceptionOfType(ConstraintViolationException.class)
+                .isThrownBy(() -> entityManager.persistAndFlush(question))
+                .satisfies(exception -> assertThat(exception)
+                        .hasViolation("correct", "answer must be correct or incorrect"));
+    }
+
     private Question prepareRandomQuestion() {
         Question question = new Question();
         List<Answer> answers = prepareRandomAnswers();
         answers.forEach(answer -> answer.setQuestion(question));
         question.setAnswers(answers);
         question.setContent(randomAlphanumeric(32));
-        question.setCorrectAnswer(C);
         question.setBusinessId(randomAlphanumeric(32));
         return question;
     }
@@ -226,6 +249,7 @@ public class QuestionDaoIntegrationTest {
         Answer answer = new Answer();
         answer.setPrefix(prefix);
         answer.setContent(randomAlphanumeric(16));
+        answer.setCorrect(prefix == C);
         return answer;
     }
 }

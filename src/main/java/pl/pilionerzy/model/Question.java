@@ -3,6 +3,7 @@ package pl.pilionerzy.model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import pl.pilionerzy.validation.OneCorrectAnswer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static javax.persistence.EnumType.STRING;
+import static java.lang.String.format;
 import static javax.persistence.GenerationType.IDENTITY;
 
 /**
@@ -26,6 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "businessId")
+@OneCorrectAnswer
 public class Question {
 
     @Id
@@ -46,10 +48,6 @@ public class Question {
     @OrderBy("prefix ASC")
     private List<Answer> answers;
 
-    @NotNull(message = "question must have correct answer")
-    @Enumerated(STRING)
-    private Prefix correctAnswer;
-
     @NotNull(message = "question must be active or inactive")
     private Boolean active;
 
@@ -65,6 +63,13 @@ public class Question {
             throw new IllegalStateException("Inactive question cannot be deactivated");
         }
         active = false;
+    }
+
+    public Answer getCorrectAnswer() {
+        return answers.stream()
+                .filter(answer -> TRUE.equals(answer.getCorrect()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException(format("Question '%s' does not have correct answer", this)));
     }
 
     @Override
