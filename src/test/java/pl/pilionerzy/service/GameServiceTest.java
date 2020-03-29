@@ -61,7 +61,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionForNonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithAskedQuestions(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.findByIdWithAskedQuestions(1L));
@@ -92,7 +92,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenFiftyFiftyIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(1L));
@@ -157,7 +157,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(4L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(4L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getFriendsAnswerByGameId(4L));
@@ -219,7 +219,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findById(1L);
+        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
@@ -326,7 +326,6 @@ public class GameServiceTest {
         game.setId(gameId);
         game.activate();
         game.setUsedLifelines(newArrayList());
-        doReturn(Optional.of(game)).when(gameDao).findById(gameId);
         doReturn(Optional.of(game)).when(gameDao).findByIdWithLastQuestionAndAnswers(gameId);
         doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(gameId);
         return game;
