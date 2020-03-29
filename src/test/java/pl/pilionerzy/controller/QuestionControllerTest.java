@@ -45,7 +45,7 @@ public class QuestionControllerTest {
                 .content(jsonWithoutCorrectAnswer))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Validation errors: question must have correct answer"));
-        verifyZeroInteractions(questionService);
+        verifyNoInteractions(questionService);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class QuestionControllerTest {
                 .content(jsonWithInvalidChild))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Validation errors: answer content length must be between 1 and 1023"));
-        verifyZeroInteractions(questionService);
+        verifyNoInteractions(questionService);
     }
 
     @Test

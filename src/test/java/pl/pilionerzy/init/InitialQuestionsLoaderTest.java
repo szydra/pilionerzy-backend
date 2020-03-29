@@ -57,7 +57,7 @@ public class InitialQuestionsLoaderTest {
         assertThatCode(() -> questionsLoader.run()).doesNotThrowAnyException();
 
         verify(resourceLoader).getResource(isA(String.class));
-        verifyZeroInteractions(dtoMapper, questionDao);
+        verifyNoInteractions(dtoMapper, questionDao);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class InitialQuestionsLoaderTest {
         assertThatCode(() -> questionsLoader.run()).doesNotThrowAnyException();
 
         verify(resourceLoader, times(2)).getResource(isA(String.class));
-        verifyZeroInteractions(dtoMapper, questionDao);
+        verifyNoInteractions(dtoMapper, questionDao);
     }
 
     @Test
