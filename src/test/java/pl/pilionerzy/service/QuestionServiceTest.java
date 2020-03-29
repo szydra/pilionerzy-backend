@@ -17,8 +17,6 @@ import pl.pilionerzy.model.Question;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static pl.pilionerzy.service.QuestionService.LIMIT;
 

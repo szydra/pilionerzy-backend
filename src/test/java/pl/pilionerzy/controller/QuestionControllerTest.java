@@ -13,7 +13,6 @@ import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.service.QuestionService;
 
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
