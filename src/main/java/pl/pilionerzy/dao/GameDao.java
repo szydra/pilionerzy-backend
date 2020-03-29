@@ -23,7 +23,7 @@ public interface GameDao extends CrudRepository<Game, Long> {
     @Query("select game from Game game where game.id = :id")
     Optional<Game> findByIdWithLastQuestionAndAnswers(Long id);
 
-    @EntityGraph(attributePaths = "usedLifelines")
+    @EntityGraph(attributePaths = {"usedLifelines", "lastAskedQuestion", "lastAskedQuestion.answers"})
     @Query("select game from Game game where game.id = :id")
     Optional<Game> findByIdWithUsedLifelines(Long id);
 }
