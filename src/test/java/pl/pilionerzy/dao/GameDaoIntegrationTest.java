@@ -11,6 +11,7 @@ import pl.pilionerzy.model.Game;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -58,6 +59,16 @@ public class GameDaoIntegrationTest {
         int deactivateGames = gameDao.deactivateGamesStartedBefore(fiveMinutesAgo);
 
         assertThat(deactivateGames).isZero();
+    }
+
+    @Test
+    public void shouldFindByIdWithLastAskedQuestionWhenLastAskedQuestionDoesNotExits() {
+        Game game = insertActiveGame();
+
+        entityManager.clear();
+        Optional<Game> foundGame = gameDao.findByIdWithLastQuestionAndAnswers(game.getId());
+
+        assertThat(foundGame).isPresent();
     }
 
     private Game insertActiveGame() {

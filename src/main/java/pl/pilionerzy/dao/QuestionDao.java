@@ -10,5 +10,4 @@ public interface QuestionDao extends PagingAndSortingRepository<Question, Long> 
     Integer countByActive(Boolean active);
 
     Slice<Question> findByActive(Boolean active, Pageable pageable);
-
 }
