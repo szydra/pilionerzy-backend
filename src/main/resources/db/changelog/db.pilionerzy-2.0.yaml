@@ -34,3 +34,44 @@ databaseChangeLog:
     - append:
         dbms: mysql
         value: ' engine=innodb'
+
+- changeSet:
+    id: pil-2
+    author: szydra
+    changes:
+    - createTable:
+        tableName: answer
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: correct
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: prefix
+            type: char(1)
+            constraints:
+              nullable: false
+        - column:
+            name: content
+            type: varchar(1023)
+            constraints:
+              nullable: false
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              references: question(id)
+              foreignKeyName: fk_answer_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
