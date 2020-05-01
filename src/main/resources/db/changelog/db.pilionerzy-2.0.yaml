@@ -1,7 +1,7 @@
 databaseChangeLog:
 
 - changeSet:
-    id: 1
+    id: pil-1
     author: szydra
     changes:
     - createTable:
@@ -19,6 +19,7 @@ databaseChangeLog:
             type: varchar(32)
             constraints:
               nullable: false
+              unique: true
         - column:
             name: active
             type: boolean
@@ -29,8 +30,7 @@ databaseChangeLog:
             type: varchar(1023)
             constraints:
               nullable: false
-        - column:
-            name: correct_answer
-            type: char(1)
-            constraints:
-              nullable: false
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
