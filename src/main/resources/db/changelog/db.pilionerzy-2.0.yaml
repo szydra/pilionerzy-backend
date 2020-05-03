@@ -144,7 +144,7 @@ databaseChangeLog:
               references: game(id)
               foreignKeyName: fk_used_lifeline_game
         - column:
-            name: type
+            name: lifeline_type
             type: varchar(16)
             constraints:
               nullable: false

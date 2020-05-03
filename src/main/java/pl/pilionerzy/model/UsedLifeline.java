@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.pilionerzy.model.converter.RejectedAnswersConverter;
 
-import javax.persistence.Convert;
-import javax.persistence.Embeddable;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -23,6 +20,7 @@ public class UsedLifeline {
 
     @NotNull(message = "lifeline must have type")
     @Enumerated(STRING)
+    @Column(name = "lifeline_type")
     private Lifeline type;
 
     @NotNull(message = "lifeline must be linked with a question")
