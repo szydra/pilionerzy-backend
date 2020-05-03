@@ -40,6 +40,10 @@ public class Game {
     private Integer level;
 
     @ManyToMany
+    @JoinTable(
+            name = "game_asked_question",
+            inverseJoinColumns = @JoinColumn(name = "question_id")
+    )
     private Set<Question> askedQuestions;
 
     @ManyToOne(fetch = LAZY)

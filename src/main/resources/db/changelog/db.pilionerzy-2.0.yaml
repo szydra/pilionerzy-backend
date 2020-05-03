@@ -162,3 +162,31 @@ databaseChangeLog:
     - append:
         dbms: mysql
         value: ' engine=innodb'
+
+- changeSet:
+    id: pil-5
+    author: szydra
+    changes:
+    - createTable:
+        tableName: game_asked_question
+        columns:
+        - column:
+            name: game_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: game(id)
+              foreignKeyName: fk_asked_question_game
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: question(id)
+              foreignKeyName: fk_asked_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
