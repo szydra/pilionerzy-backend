@@ -121,3 +121,44 @@ databaseChangeLog:
     - append:
         dbms: mysql
         value: ' engine=innodb'
+
+- changeSet:
+    id: pil-4
+    author: szydra
+    changes:
+    - createTable:
+        tableName: used_lifeline
+        columns:
+        - column:
+            name: request_order
+            type: tinyint
+            constraints:
+              nullable: false
+              primaryKey: true
+        - column:
+            name: game_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: game(id)
+              foreignKeyName: fk_used_lifeline_game
+        - column:
+            name: type
+            type: varchar(16)
+            constraints:
+              nullable: false
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              references: question(id)
+              foreignKeyName: fk_used_lifeline_question
+        - column:
+            name: rejected_answers
+            type: varchar(3)
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'

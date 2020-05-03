@@ -46,7 +46,8 @@ public class Game {
     private Question lastAskedQuestion;
 
     @ElementCollection
-    @OrderColumn
+    @CollectionTable(name = "used_lifeline")
+    @OrderColumn(name = "request_order")
     private List<UsedLifeline> usedLifelines;
 
     public void activate() {
