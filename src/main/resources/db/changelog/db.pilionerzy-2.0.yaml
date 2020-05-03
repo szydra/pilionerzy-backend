@@ -75,3 +75,49 @@ databaseChangeLog:
     - append:
         dbms: mysql
         value: ' engine=innodb'
+
+- changeSet:
+    id: pil-3
+    author: szydra
+    changes:
+    - createTable:
+        tableName: game
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: business_id
+            type: varchar(32)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: start_time
+            type: datetime(6)
+            constraints:
+              nullable: false
+        - column:
+            name: active
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: level
+            type: tinyint
+            constraints:
+              nullable: false
+        - column:
+            name: last_asked_question_id
+            type: bigint
+            constraints:
+              references: question(id)
+              foreignKeyName: fk_game_last_asked_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
