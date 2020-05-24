@@ -40,13 +40,23 @@ public class Game {
     private Integer level;
 
     @ManyToMany
+    @JoinTable(
+            name = "game_asked_question",
+            joinColumns = @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_asked_question_game")),
+            inverseJoinColumns = @JoinColumn(name = "question_id", foreignKey = @ForeignKey(name = "fk_asked_question"))
+    )
     private Set<Question> askedQuestions;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_game_last_asked_question"))
     private Question lastAskedQuestion;
 
     @ElementCollection
-    @OrderColumn
+    @CollectionTable(
+            name = "used_lifeline",
+            joinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "fk_used_lifeline_game"))
+    )
+    @OrderColumn(name = "request_order")
     private List<UsedLifeline> usedLifelines;
 
     public void activate() {
