@@ -22,8 +22,9 @@ public class Answer {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
     @NotNull(message = "answer must be linked with a question")
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_question"))
     private Question question;
 
     @NotNull(message = "answer must be correct or incorrect")

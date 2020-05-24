@@ -25,6 +25,7 @@ public class UsedLifeline {
 
     @NotNull(message = "lifeline must be linked with a question")
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_used_lifeline_question"))
     private Question question;
 
     @Convert(converter = RejectedAnswersConverter.class)
