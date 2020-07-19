@@ -1,12 +1,15 @@
 package pl.pilionerzy.service;
 
 import com.google.common.collect.Sets;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
+import pl.pilionerzy.mapping.GameMapper;
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
@@ -19,6 +22,8 @@ import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.*;
@@ -30,10 +35,27 @@ public class AnswerServiceTest {
     private static final long QUESTION_ID = 456L;
 
     @Mock
+    private GameMapper gameMapper;
+
+    @Mock
     private GameService gameService;
 
     @InjectMocks
     private AnswerService answerService;
+
+    @Before
+    public void prepareGameMapper() {
+        doAnswer(invocation -> mapToDto(invocation.getArgument(0)))
+                .when(gameMapper)
+                .modelToDto(isA(Game.class));
+    }
+
+    private GameDto mapToDto(Game game) {
+        GameDto gameDto = new GameDto();
+        gameDto.setActive(game.getActive());
+        gameDto.setLevel(game.getLevel());
+        return gameDto;
+    }
 
     @Test
     public void shouldThrowExceptionForInactiveGame() {

@@ -1,5 +1,6 @@
 package pl.pilionerzy.mapping;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.NewQuestionDto;
@@ -8,15 +9,11 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 
 @Component
+@RequiredArgsConstructor
 class MapStructMapper implements DtoMapper {
 
-    private GameMapper gameMapper;
-    private QuestionMapper questionMapper;
-
-    public MapStructMapper(GameMapper gameMapper, QuestionMapper questionMapper) {
-        this.gameMapper = gameMapper;
-        this.questionMapper = questionMapper;
-    }
+    private final GameMapper gameMapper;
+    private final QuestionMapper questionMapper;
 
     @Override
     public GameDto mapToDto(Game game) {

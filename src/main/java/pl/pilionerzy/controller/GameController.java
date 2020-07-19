@@ -45,10 +45,9 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/answers")
-    public Map<String, Prefix> sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
+    public GameDto sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
         Prefix selected = answer.get("selected");
-        Prefix correct = answerService.doAnswer(gameId, selected);
-        return singletonMap("prefix", correct);
+        return answerService.doAnswer(gameId, selected);
     }
 
     @PostMapping("/{gameId}/stop")

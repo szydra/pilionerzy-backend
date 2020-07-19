@@ -52,13 +52,15 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessRequest() throws Exception {
-        doReturn(C).when(answerService).doAnswer(50L, A);
+        GameDto game = new GameDto();
+        game.setCorrectAnswer(C);
+        doReturn(game).when(answerService).doAnswer(50L, A);
 
         mvc.perform(post("/games/50/answers")
                 .contentType(APPLICATION_JSON)
                 .content("{\"selected\":\"A\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.prefix").value("C"));
+                .andExpect(jsonPath("$.correctAnswer").value("C"));
     }
 
     @Test
