@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.mapping.DtoMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ public class InitialQuestionsLoaderTest {
     private ResourceLoader resourceLoader;
 
     @Mock
-    private QuestionDao questionDao;
+    private QuestionRepository questionRepository;
 
     @InjectMocks
     private InitialQuestionsLoader questionsLoader;
@@ -57,7 +57,7 @@ public class InitialQuestionsLoaderTest {
         assertThatCode(() -> questionsLoader.run()).doesNotThrowAnyException();
 
         verify(resourceLoader).getResource(isA(String.class));
-        verifyNoInteractions(dtoMapper, questionDao);
+        verifyNoInteractions(dtoMapper, questionRepository);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class InitialQuestionsLoaderTest {
         assertThatCode(() -> questionsLoader.run()).doesNotThrowAnyException();
 
         verify(resourceLoader, times(2)).getResource(isA(String.class));
-        verifyNoInteractions(dtoMapper, questionDao);
+        verifyNoInteractions(dtoMapper, questionRepository);
     }
 
     @Test

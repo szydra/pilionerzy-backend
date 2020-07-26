@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
@@ -34,7 +34,7 @@ public class CalculatorIntegrationTest {
     private Calculator calculator;
 
     @Autowired
-    private QuestionDao questionDao;
+    private QuestionRepository questionRepository;
 
     @Test
     public void shouldApplyFiftyFifty() {
@@ -75,6 +75,6 @@ public class CalculatorIntegrationTest {
     }
 
     private Question getAnyQuestion() {
-        return getOnlyElement(questionDao.findAll(PageRequest.of(0, 1)).getContent());
+        return getOnlyElement(questionRepository.findAll(PageRequest.of(0, 1)).getContent());
     }
 }

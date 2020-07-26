@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.NewAnswerDto;
 import pl.pilionerzy.dto.NewQuestionDto;
@@ -35,7 +35,7 @@ public class QuestionServiceIntegrationTest {
     private GameService gameService;
 
     @Autowired
-    private QuestionDao questionDao;
+    private QuestionRepository questionRepository;
 
     @Autowired
     private QuestionService questionService;
@@ -64,7 +64,7 @@ public class QuestionServiceIntegrationTest {
         NewQuestionDto savedQuestionDto = questionService.saveNew(newQuestionDto);
 
         // then
-        Optional<Question> savedQuestion = questionDao.findById(savedQuestionDto.getId());
+        Optional<Question> savedQuestion = questionRepository.findById(savedQuestionDto.getId());
         assertThat(savedQuestion).hasValueSatisfying(question -> {
             assertThat(question).isEqualToComparingOnlyGivenFields(newQuestionDto, "content");
             assertThat(question.getCorrectAnswer().getPrefix()).isEqualTo(A);

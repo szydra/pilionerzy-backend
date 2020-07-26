@@ -14,7 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.mapping.DtoMapper;
 
@@ -34,7 +34,7 @@ import java.util.List;
 class InitialQuestionsLoader implements CommandLineRunner {
 
     private final DtoMapper dtoMapper;
-    private final QuestionDao questionDao;
+    private final QuestionRepository questionRepository;
     private final ResourceLoader resourceLoader;
 
     private Environment environment;
@@ -64,7 +64,7 @@ class InitialQuestionsLoader implements CommandLineRunner {
                     .map(dtoMapper::mapToModel)
                     .forEach(question -> {
                         question.activate();
-                        questionDao.save(question);
+                        questionRepository.save(question);
                     });
             logger.info("{} initial questions saved", initialQuestions.size());
             rename(questionsYaml, questionsLoadedYaml);

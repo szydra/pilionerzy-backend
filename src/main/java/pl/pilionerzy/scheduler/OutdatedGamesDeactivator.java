@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.repository.GameRepository;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 class OutdatedGamesDeactivator {
 
-    private final GameDao gameDao;
+    private final GameRepository gameRepository;
 
     @Value("${game.timeout:60}")
     private int gameTimeout;
@@ -28,7 +28,7 @@ class OutdatedGamesDeactivator {
     @Scheduled(fixedRate = 60_000)
     @Transactional
     public void deactivateOldGames() {
-        int deactivatedGames = gameDao.deactivateGamesStartedBefore(LocalDateTime.now().minusMinutes(gameTimeout));
+        int deactivatedGames = gameRepository.deactivateGamesStartedBefore(LocalDateTime.now().minusMinutes(gameTimeout));
         if (deactivatedGames > 0) {
             logger.info("{} games marked as inactive", deactivatedGames);
         } else {

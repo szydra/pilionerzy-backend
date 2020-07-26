@@ -1,4 +1,4 @@
-package pl.pilionerzy.dao;
+package pl.pilionerzy.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,13 +21,13 @@ import static pl.pilionerzy.assertion.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class GameDaoIntegrationTest {
+public class GameRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private GameDao gameDao;
+    private GameRepository gameRepository;
 
     @Test
     public void shouldNotSaveGameWithoutRequiredProperties() {
@@ -46,7 +46,7 @@ public class GameDaoIntegrationTest {
         Game game = insertActiveGame();
 
         LocalDateTime oneHourLater = game.getStartTime().plusMinutes(60);
-        int deactivateGames = gameDao.deactivateGamesStartedBefore(oneHourLater);
+        int deactivateGames = gameRepository.deactivateGamesStartedBefore(oneHourLater);
 
         assertThat(deactivateGames).isOne();
     }
@@ -56,7 +56,7 @@ public class GameDaoIntegrationTest {
         Game game = insertActiveGame();
 
         LocalDateTime fiveMinutesAgo = game.getStartTime().minusMinutes(5);
-        int deactivateGames = gameDao.deactivateGamesStartedBefore(fiveMinutesAgo);
+        int deactivateGames = gameRepository.deactivateGamesStartedBefore(fiveMinutesAgo);
 
         assertThat(deactivateGames).isZero();
     }
@@ -66,7 +66,7 @@ public class GameDaoIntegrationTest {
         Game game = insertActiveGame();
 
         entityManager.clear();
-        Optional<Game> foundGame = gameDao.findByIdWithLastQuestionAndAnswers(game.getId());
+        Optional<Game> foundGame = gameRepository.findByIdWithLastQuestionAndAnswers(game.getId());
 
         assertThat(foundGame).isPresent();
     }

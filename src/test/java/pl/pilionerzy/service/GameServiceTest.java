@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.repository.GameRepository;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
@@ -37,7 +37,7 @@ public class GameServiceTest {
     private Calculator calculator;
 
     @Mock
-    private GameDao gameDao;
+    private GameRepository gameRepository;
 
     @InjectMocks
     private GameService gameService;
@@ -61,7 +61,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionForNonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findByIdWithAskedQuestions(1L);
+        doReturn(Optional.empty()).when(gameRepository).findByIdWithAskedQuestions(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.findByIdWithAskedQuestions(1L));
@@ -92,7 +92,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenFiftyFiftyIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(Optional.empty()).when(gameRepository).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getTwoIncorrectPrefixes(1L));
@@ -157,7 +157,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenPhoneAFriendIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(4L);
+        doReturn(Optional.empty()).when(gameRepository).findByIdWithUsedLifelines(4L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getFriendsAnswerByGameId(4L));
@@ -219,7 +219,7 @@ public class GameServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenAskTheAudienceIsAppliedToANonExistingGame() {
-        doReturn(Optional.empty()).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(Optional.empty()).when(gameRepository).findByIdWithUsedLifelines(1L);
 
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.getAudienceAnswerByGameId(1L));
@@ -274,7 +274,7 @@ public class GameServiceTest {
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList(fiftyFifty));
 
-        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(1L);
         doReturn(new AudienceAnswer(Map.of(
                 C, PartialAudienceAnswer.withVotes(50),
                 D, PartialAudienceAnswer.withVotes(50))
@@ -303,7 +303,7 @@ public class GameServiceTest {
         game.setLastAskedQuestion(question);
         game.setUsedLifelines(newArrayList());
 
-        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(1L);
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(1L);
         doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(25),
                 B, PartialAudienceAnswer.withVotes(25),
@@ -326,8 +326,8 @@ public class GameServiceTest {
         game.setId(gameId);
         game.activate();
         game.setUsedLifelines(newArrayList());
-        doReturn(Optional.of(game)).when(gameDao).findByIdWithLastQuestionAndAnswers(gameId);
-        doReturn(Optional.of(game)).when(gameDao).findByIdWithUsedLifelines(gameId);
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithLastQuestionAndAnswers(gameId);
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(gameId);
         return game;
     }
 }

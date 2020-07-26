@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.GameDao;
+import pl.pilionerzy.repository.GameRepository;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
@@ -34,7 +34,7 @@ public class GameService {
 
     private final Calculator lifelineCalculator;
     private final DtoMapper mapper;
-    private final GameDao gameDao;
+    private final GameRepository gameRepository;
     private final GameIdGenerator gameIdGenerator;
 
     /**
@@ -48,7 +48,7 @@ public class GameService {
         game.setBusinessId(gameIdGenerator.generate());
         game.activate();
         game.initLevel();
-        Game startedGame = gameDao.save(game);
+        Game startedGame = gameRepository.save(game);
         logger.debug("Started a game with id {}", startedGame.getId());
         return mapper.mapToDto(startedGame);
     }
@@ -144,17 +144,17 @@ public class GameService {
     }
 
     Game findByIdWithAskedQuestions(Long gameId) {
-        return gameDao.findByIdWithAskedQuestions(gameId)
+        return gameRepository.findByIdWithAskedQuestions(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
     }
 
     Game findByIdWithUsedLifelines(Long gameId) {
-        return gameDao.findByIdWithUsedLifelines(gameId)
+        return gameRepository.findByIdWithUsedLifelines(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
     }
 
     Game findByIdWithLastQuestionAndAnswers(Long gameId) {
-        return gameDao.findByIdWithLastQuestionAndAnswers(gameId)
+        return gameRepository.findByIdWithLastQuestionAndAnswers(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
     }
 

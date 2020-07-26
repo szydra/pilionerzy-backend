@@ -1,4 +1,4 @@
-package pl.pilionerzy.dao;
+package pl.pilionerzy.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,13 +25,13 @@ import static pl.pilionerzy.model.Prefix.C;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class QuestionDaoIntegrationTest {
+public class QuestionRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
 
     @Autowired
-    private QuestionDao questionDao;
+    private QuestionRepository questionRepository;
 
     @Test
     public void shouldNotSaveIncompleteQuestion() {
@@ -122,11 +122,11 @@ public class QuestionDaoIntegrationTest {
         Question question = prepareRandomQuestion();
         question.deactivate();
 
-        questionDao.save(question);
+        questionRepository.save(question);
 
-        assertThat(questionDao.countByActive(true))
+        assertThat(questionRepository.countByActive(true))
                 .isZero();
-        assertThat(questionDao.findByActive(true, PageRequest.of(0, 1)))
+        assertThat(questionRepository.findByActive(true, PageRequest.of(0, 1)))
                 .isNullOrEmpty();
     }
 
@@ -135,11 +135,11 @@ public class QuestionDaoIntegrationTest {
         Question question = prepareRandomQuestion();
         question.activate();
 
-        questionDao.save(question);
+        questionRepository.save(question);
 
-        assertThat(questionDao.countByActive(true))
+        assertThat(questionRepository.countByActive(true))
                 .isOne();
-        assertThat(questionDao.findByActive(true, PageRequest.of(0, 1)))
+        assertThat(questionRepository.findByActive(true, PageRequest.of(0, 1)))
                 .containsExactly(question);
     }
 
@@ -151,7 +151,7 @@ public class QuestionDaoIntegrationTest {
 
         Long id = entityManager.persistAndGetId(question, Long.class);
         entityManager.clear();
-        Optional<Question> found = questionDao.findById(id);
+        Optional<Question> found = questionRepository.findById(id);
 
         assertThat(found).hasValueSatisfying(q -> assertThat(q.getAnswers())
                 .isSortedAccordingTo(Comparator.comparing(Answer::getPrefix)));

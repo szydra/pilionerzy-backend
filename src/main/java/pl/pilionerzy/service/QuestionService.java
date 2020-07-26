@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.exception.GameException;
@@ -35,11 +35,11 @@ public class QuestionService {
     private final Random random = new Random();
     private final GameService gameService;
     private final DtoMapper mapper;
-    private final QuestionDao questionDao;
+    private final QuestionRepository questionRepository;
 
     public NewQuestionDto saveNew(NewQuestionDto newQuestion) {
         Question question = mapper.mapToModel(newQuestion);
-        return mapper.mapToNewDto(questionDao.save(question));
+        return mapper.mapToNewDto(questionRepository.save(question));
     }
 
     /**
@@ -74,12 +74,12 @@ public class QuestionService {
     }
 
     private Question getRandomQuestion() {
-        int numberOfActiveQuestions = questionDao.countByActive(true);
+        int numberOfActiveQuestions = questionRepository.countByActive(true);
         if (numberOfActiveQuestions == 0) {
             throw new NotEnoughDataException("No active questions available");
         }
         int page = random.nextInt(numberOfActiveQuestions);
-        Slice<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
+        Slice<Question> questionPage = questionRepository.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {

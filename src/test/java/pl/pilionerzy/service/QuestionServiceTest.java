@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import pl.pilionerzy.dao.QuestionDao;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
@@ -26,7 +26,7 @@ public class QuestionServiceTest {
     private final long gameId = 123L;
 
     @Mock
-    private QuestionDao questionDao;
+    private QuestionRepository questionRepository;
 
     @Mock
     private GameService gameService;
@@ -58,8 +58,8 @@ public class QuestionServiceTest {
 
     private void prepareMocks() {
         doReturn(game).when(gameService).findByIdWithAskedQuestions(gameId);
-        doReturn(page).when(questionDao).findByActive(isA(Boolean.class), isA(Pageable.class));
-        doReturn(1).when(questionDao).countByActive(true);
+        doReturn(page).when(questionRepository).findByActive(isA(Boolean.class), isA(Pageable.class));
+        doReturn(1).when(questionRepository).countByActive(true);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class QuestionServiceTest {
 
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
-        verify(questionDao)
+        verify(questionRepository)
                 .findByActive(eq(true), isA(PageRequest.class));
     }
 
@@ -79,13 +79,13 @@ public class QuestionServiceTest {
 
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
-        verify(questionDao, times(LIMIT))
+        verify(questionRepository, times(LIMIT))
                 .findByActive(eq(true), isA(PageRequest.class));
     }
 
     @Test
     public void shouldThrowExceptionWhenThereAreNoQuestions() {
-        doReturn(0).when(questionDao).countByActive(true);
+        doReturn(0).when(questionRepository).countByActive(true);
 
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId))
