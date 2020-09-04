@@ -41,7 +41,7 @@ public class ExceptionHandlerTest {
 
     @Test
     public void shouldHandleConstraintViolation() throws Exception {
-        ConstraintViolationException exception = mock(ConstraintViolationException.class, RETURNS_SMART_NULLS);
+        var exception = mock(ConstraintViolationException.class, RETURNS_SMART_NULLS);
         when(questionController.add(isA(NewQuestionDto.class))).thenThrow(exception);
 
         mvc.perform(post("/questions")

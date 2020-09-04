@@ -37,7 +37,7 @@ public class GameAssert extends AbstractObjectAssert<GameAssert, Game> {
     public GameAssert hasLevel(int expectedLevel) {
         isNotNull();
 
-        Integer actualLevel = actual.getLevel();
+        var actualLevel = actual.getLevel();
         if (!Objects.equals(actualLevel, expectedLevel)) {
             failWithMessage("Expected to have level <%s>, but was <%s>", expectedLevel, actualLevel);
         }

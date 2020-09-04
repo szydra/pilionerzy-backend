@@ -10,8 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import pl.pilionerzy.model.Game;
 
 import javax.validation.ConstraintViolationException;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -31,7 +29,7 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldNotSaveGameWithoutRequiredProperties() {
-        Game game = new Game();
+        var game = new Game();
 
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(game))
@@ -43,9 +41,9 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldDeactivateOldGame() {
-        Game game = insertActiveGame();
+        var game = insertActiveGame();
 
-        LocalDateTime oneHourLater = game.getStartTime().plusMinutes(60);
+        var oneHourLater = game.getStartTime().plusMinutes(60);
         int deactivateGames = gameRepository.deactivateGamesStartedBefore(oneHourLater);
 
         assertThat(deactivateGames).isOne();
@@ -53,9 +51,9 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldNotDeactivateNewGame() {
-        Game game = insertActiveGame();
+        var game = insertActiveGame();
 
-        LocalDateTime fiveMinutesAgo = game.getStartTime().minusMinutes(5);
+        var fiveMinutesAgo = game.getStartTime().minusMinutes(5);
         int deactivateGames = gameRepository.deactivateGamesStartedBefore(fiveMinutesAgo);
 
         assertThat(deactivateGames).isZero();
@@ -63,16 +61,16 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldFindByIdWithLastAskedQuestionWhenLastAskedQuestionDoesNotExits() {
-        Game game = insertActiveGame();
+        var game = insertActiveGame();
 
         entityManager.clear();
-        Optional<Game> foundGame = gameRepository.findByIdWithLastQuestionAndAnswers(game.getId());
+        var foundGame = gameRepository.findByIdWithLastQuestionAndAnswers(game.getId());
 
         assertThat(foundGame).isPresent();
     }
 
     private Game insertActiveGame() {
-        Game game = new Game();
+        var game = new Game();
         game.activate();
         game.setLevel(1);
         game.setBusinessId(random(32, "0123456789abcdef"));

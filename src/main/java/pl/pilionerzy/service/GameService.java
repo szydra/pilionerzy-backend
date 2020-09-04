@@ -4,21 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.repository.GameRepository;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.lifeline.Calculator;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
-import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.*;
+import pl.pilionerzy.repository.GameRepository;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.util.GameUtils.*;
@@ -94,7 +91,7 @@ public class GameService {
             throw new LifelineException("Fifty-fifty lifeline already used");
         }
         updateUsedLifelines(game, FIFTY_FIFTY);
-        FiftyFiftyResult fiftyFifty = lifelineCalculator.getFiftyFiftyResult(game.getLastAskedQuestion());
+        var fiftyFifty = lifelineCalculator.getFiftyFiftyResult(game.getLastAskedQuestion());
         updateRejectedAnswers(game, fiftyFifty.getPrefixesToDiscard());
         return fiftyFifty.getPrefixesToDiscard();
     }
@@ -159,8 +156,8 @@ public class GameService {
     }
 
     private void updateUsedLifelines(Game game, Lifeline lifeline) {
-        List<UsedLifeline> usedLifelines = game.getUsedLifelines();
-        UsedLifeline usedLifeline = new UsedLifeline();
+        var usedLifelines = game.getUsedLifelines();
+        var usedLifeline = new UsedLifeline();
         usedLifeline.setType(lifeline);
         usedLifeline.setQuestion(game.getLastAskedQuestion());
         usedLifelines.add(usedLifeline);
@@ -176,7 +173,7 @@ public class GameService {
     }
 
     void updateLastQuestion(Game game, Question question) {
-        Set<Question> askedQuestions = game.getAskedQuestions();
+        var askedQuestions = game.getAskedQuestions();
         askedQuestions.add(question);
         game.setLastAskedQuestion(question);
     }

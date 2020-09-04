@@ -2,10 +2,8 @@ package pl.pilionerzy.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.exception.GameException;
@@ -14,11 +12,11 @@ import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.util.GameUtils;
 import pl.pilionerzy.util.RequestType;
 
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Service that is responsible for operations on questions such as saving or drawing.
@@ -38,7 +36,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     public NewQuestionDto saveNew(NewQuestionDto newQuestion) {
-        Question question = mapper.mapToModel(newQuestion);
+        var question = mapper.mapToModel(newQuestion);
         return mapper.mapToNewDto(questionRepository.save(question));
     }
 
@@ -59,7 +57,7 @@ public class QuestionService {
     }
 
     private Question getAnotherQuestion(Game game) {
-        Set<Question> askedQuestions = game.getAskedQuestions();
+        var askedQuestions = game.getAskedQuestions();
         Question question;
         int attempts = 0;
         do {
@@ -79,7 +77,7 @@ public class QuestionService {
             throw new NotEnoughDataException("No active questions available");
         }
         int page = random.nextInt(numberOfActiveQuestions);
-        Slice<Question> questionPage = questionRepository.findByActive(true, PageRequest.of(page, 1));
+        var questionPage = questionRepository.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {
