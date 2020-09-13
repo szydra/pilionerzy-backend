@@ -1,21 +1,19 @@
 package pl.pilionerzy.lifeline;
 
-import com.google.common.collect.Maps;
 import org.assertj.core.data.Offset;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
-import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
+import static com.google.common.collect.Maps.asMap;
+import static com.google.common.collect.Maps.newHashMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AskTheAudienceCalculatorTest {
@@ -25,7 +23,7 @@ public class AskTheAudienceCalculatorTest {
 
     @Before
     public void setCorrectAnswer() {
-        Answer answer = new Answer();
+        var answer = new Answer();
         answer.setPrefix(Prefix.A);
         answer.setCorrect(true);
         question.setAnswers(List.of(answer));
@@ -33,19 +31,19 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldContainAllAnswersWhenFiftyFiftyWasNotUsed() {
-        assertThat(calculator.getAnswer(question, Collections.emptySet()).getVotesChart())
+        assertThat(calculator.getAnswer(question, Set.of()).getVotesChart())
                 .containsOnlyKeys(Prefix.A, Prefix.B, Prefix.C, Prefix.D);
     }
 
     @Test
     public void shouldContainOnlyRemainingAnswersWhenFiftyFiftyWasUsed() {
-        assertThat(calculator.getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)).getVotesChart())
+        assertThat(calculator.getAnswer(question, Set.of(Prefix.C, Prefix.D)).getVotesChart())
                 .containsOnlyKeys(Prefix.A, Prefix.B);
     }
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasNotUsed() {
-        int sum = calculator.getAnswer(question, Collections.emptySet()).getVotesChart().values().stream()
+        int sum = calculator.getAnswer(question, Set.of()).getVotesChart().values().stream()
                 .mapToInt(PartialAudienceAnswer::getVotes)
                 .sum();
 
@@ -56,7 +54,7 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasUsed() {
-        int sum = calculator.getAnswer(question, Arrays.asList(Prefix.C, Prefix.D)).getVotesChart().values().stream()
+        int sum = calculator.getAnswer(question, Set.of(Prefix.C, Prefix.D)).getVotesChart().values().stream()
                 .mapToInt(PartialAudienceAnswer::getVotes)
                 .sum();
 
@@ -69,10 +67,10 @@ public class AskTheAudienceCalculatorTest {
     public void shouldBeDistributedUniformly() {
         // Given 1000 draws for audience answer
         int numberOfDraws = 1_000;
-        Map<Prefix, Double> averages = Maps.newHashMap(Maps.asMap(Sets.newSet(Prefix.values()), prefix -> 0.0));
+        var averages = newHashMap(asMap(Set.of(Prefix.values()), prefix -> 0.0));
 
         for (int i = 0; i < numberOfDraws; i++) {
-            AudienceAnswer answer = calculator.getAnswer(question, Collections.emptySet());
+            var answer = calculator.getAnswer(question, Set.of());
             averages.replaceAll((prefix, result) -> result += answer.getVotesChart().get(prefix).getVotes());
         }
 

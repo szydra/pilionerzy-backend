@@ -12,8 +12,6 @@ import pl.pilionerzy.service.GameService;
 import java.util.Collection;
 import java.util.Map;
 
-import static java.util.Collections.singletonMap;
-
 @CrossOrigin(origins = "${allowed.origins}")
 @RestController
 @RequestMapping("/games")
@@ -30,8 +28,7 @@ public class GameController {
 
     @GetMapping("/{gameId}/fifty-fifty")
     public Map<String, Collection<Prefix>> getTwoIncorrectPrefixes(@PathVariable Long gameId) {
-        Collection<Prefix> incorrectPrefixes = gameService.getTwoIncorrectPrefixes(gameId);
-        return singletonMap("incorrectPrefixes", incorrectPrefixes);
+        return Map.of("incorrectPrefixes", gameService.getTwoIncorrectPrefixes(gameId));
     }
 
     @GetMapping("/{gameId}/phone-a-friend")
@@ -46,8 +43,7 @@ public class GameController {
 
     @PostMapping("/{gameId}/answers")
     public GameDto sendAnswer(@PathVariable Long gameId, @RequestBody Map<String, Prefix> answer) {
-        Prefix selected = answer.get("selected");
-        return answerService.doAnswer(gameId, selected);
+        return answerService.doAnswer(gameId, answer.get("selected"));
     }
 
     @PostMapping("/{gameId}/stop")

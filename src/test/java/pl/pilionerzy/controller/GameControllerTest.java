@@ -1,6 +1,5 @@
 package pl.pilionerzy.controller;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +11,12 @@ import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
-import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
 
-import static com.google.common.collect.Lists.newArrayList;
+import java.util.List;
+import java.util.Map;
+
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +40,7 @@ public class GameControllerTest {
 
     @Test
     public void shouldReturnNewGame() throws Exception {
-        GameDto game = new GameDto();
+        var game = new GameDto();
         game.setId(1_487L);
         doReturn(game).when(gameService).startNewGame();
 
@@ -52,7 +52,7 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessRequest() throws Exception {
-        GameDto game = new GameDto();
+        var game = new GameDto();
         game.setCorrectAnswer(C);
         doReturn(game).when(answerService).doAnswer(50L, A);
 
@@ -65,8 +65,8 @@ public class GameControllerTest {
 
     @Test
     public void shouldReturnStoppedGameWithCorrectAnswer() throws Exception {
-        GameDto game = new GameDto();
-        game.setCorrectAnswer(Prefix.D);
+        var game = new GameDto();
+        game.setCorrectAnswer(D);
 
         doReturn(game).when(gameService).stopById(907L);
 
@@ -78,11 +78,11 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessFiftyFiftyLifeline() throws Exception {
-        doReturn(newArrayList(A, B)).when(gameService).getTwoIncorrectPrefixes(25L);
+        doReturn(List.of(A, B)).when(gameService).getTwoIncorrectPrefixes(25L);
 
         mvc.perform(get("/games/25/fifty-fifty"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.incorrectPrefixes").value(newArrayList("A", "B")));
+                .andExpect(jsonPath("$.incorrectPrefixes").value(List.of("A", "B")));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessAskTheAudienceLifeline() throws Exception {
-        doReturn(new AudienceAnswer(ImmutableMap.of(
+        doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(10),
                 B, PartialAudienceAnswer.withVotes(20),
                 C, PartialAudienceAnswer.withVotes(30),
