@@ -13,10 +13,10 @@ import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.repository.QuestionRepository;
-import pl.pilionerzy.util.GameUtils;
-import pl.pilionerzy.util.RequestType;
 
 import java.util.Random;
+
+import static pl.pilionerzy.util.GameUtils.validateForQuestion;
 
 /**
  * Service that is responsible for operations on questions such as saving or drawing.
@@ -52,7 +52,7 @@ public class QuestionService {
     @Transactional
     public QuestionDto getNextQuestionByGameId(Long gameId) {
         Game game = gameService.findByIdWithAskedQuestions(gameId);
-        GameUtils.validate(game, RequestType.QUESTION);
+        validateForQuestion(game);
         return mapper.mapToDto(getAnotherQuestion(game));
     }
 

@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.util.GameUtils.*;
-import static pl.pilionerzy.util.RequestType.LIFELINE;
 
 /**
  * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
@@ -85,7 +84,7 @@ public class GameService {
     public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
         logger.debug("Applying fifty-fifty lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
-        validate(game, LIFELINE);
+        validateForLifeline(game);
         if (isLifelineUsed(game, FIFTY_FIFTY)) {
             logger.warn("Requested fifty-fifty lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Fifty-fifty lifeline already used");
@@ -109,7 +108,7 @@ public class GameService {
     public FriendsAnswer getFriendsAnswerByGameId(Long gameId) {
         logger.debug("Applying phone-a-friend lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
-        validate(game, LIFELINE);
+        validateForLifeline(game);
         if (isLifelineUsed(game, PHONE_A_FRIEND)) {
             logger.warn("Requested phone-a-friend lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Phone a friend lifeline already used");
@@ -131,7 +130,7 @@ public class GameService {
     public AudienceAnswer getAudienceAnswerByGameId(Long gameId) {
         logger.debug("Applying ask-the-audience lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
-        validate(game, LIFELINE);
+        validateForLifeline(game);
         if (isLifelineUsed(game, ASK_THE_AUDIENCE)) {
             logger.warn("Requested ask-the-audience lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Ask the audience lifeline already used");

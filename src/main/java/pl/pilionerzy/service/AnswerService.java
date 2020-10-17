@@ -9,9 +9,8 @@ import pl.pilionerzy.exception.NoSuchGameException;
 import pl.pilionerzy.mapping.GameMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.util.RequestType;
 
-import static pl.pilionerzy.util.GameUtils.validate;
+import static pl.pilionerzy.util.GameUtils.validateForAnswer;
 import static pl.pilionerzy.util.LevelUtils.*;
 
 /**
@@ -37,7 +36,7 @@ public class AnswerService {
     @Transactional
     public GameDto doAnswer(Long gameId, Prefix selectedPrefix) {
         Game game = gameService.findByIdWithAskedQuestions(gameId);
-        validate(game, RequestType.ANSWER);
+        validateForAnswer(game);
         Prefix correct = game.getLastAskedQuestion().getCorrectAnswer().getPrefix();
         if (correct != selectedPrefix) {
             updateGameForIncorrect(game);

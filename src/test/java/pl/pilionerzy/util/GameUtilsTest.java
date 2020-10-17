@@ -1,6 +1,7 @@
 package pl.pilionerzy.util;
 
 import com.google.common.collect.ImmutableSet;
+import org.junit.Before;
 import org.junit.Test;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.model.*;
@@ -14,11 +15,15 @@ import static org.assertj.core.api.Assertions.*;
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 import static pl.pilionerzy.util.GameUtils.*;
-import static pl.pilionerzy.util.RequestType.*;
 
 public class GameUtilsTest {
 
-    private Game game = new Game();
+    private final Game game = new Game();
+
+    @Before
+    public void setGameId() {
+        game.setId(1L);
+    }
 
     private void prepareQuestions() {
         Question q1 = new Question();
@@ -49,14 +54,30 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenGameIsInactive() {
+    public void shouldThrowExceptionForAnswerRequestWhenGameIsInactive() {
         game.deactivate();
 
-        assertThat(RequestType.values()).allSatisfy(requestType ->
-                assertThatExceptionOfType(GameException.class)
-                        .isThrownBy(() -> validate(game, requestType))
-                        .withMessageContaining("inactive")
-        );
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForAnswer(game))
+                .withMessage("Game with id 1 is inactive");
+    }
+
+    @Test
+    public void shouldThrowExceptionForLifelineRequestWhenGameIsInactive() {
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForLifeline(game))
+                .withMessage("Game with id 1 is inactive");
+    }
+
+    @Test
+    public void shouldThrowExceptionForQuestionRequestWhenGameIsInactive() {
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForQuestion(game))
+                .withMessage("Game with id 1 is inactive");
     }
 
     @Test
@@ -65,7 +86,7 @@ public class GameUtilsTest {
         game.setLevel(1);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, QUESTION))
+                .isThrownBy(() -> validateForQuestion(game))
                 .withMessageContaining("Invalid number of requests");
     }
 
@@ -75,7 +96,7 @@ public class GameUtilsTest {
         game.setLevel(2);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, ANSWER))
+                .isThrownBy(() -> validateForAnswer(game))
                 .withMessageContaining("Invalid number of requests");
     }
 
@@ -84,16 +105,8 @@ public class GameUtilsTest {
         prepareQuestions();
         game.setLevel(2);
 
-        assertThatCode(() -> validate(game, QUESTION))
+        assertThatCode(() -> validateForQuestion(game))
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    public void testUnknownRequestType() {
-        game.activate();
-
-        assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, UNKNOWN));
     }
 
     @Test
@@ -101,14 +114,14 @@ public class GameUtilsTest {
         prepareQuestions();
         game.setLevel(1);
 
-        assertThatCode(() -> validate(game, ANSWER))
+        assertThatCode(() -> validateForAnswer(game))
                 .doesNotThrowAnyException();
     }
 
     @Test
     public void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, ANSWER))
+                .isThrownBy(() -> validateForAnswer(game))
                 .withMessageContaining("Game does not have last asked question");
     }
 
@@ -116,14 +129,14 @@ public class GameUtilsTest {
     public void shouldBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         prepareQuestions();
 
-        assertThatCode(() -> validate(game, LIFELINE))
+        assertThatCode(() -> validateForLifeline(game))
                 .doesNotThrowAnyException();
     }
 
     @Test
     public void shouldNotBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, LIFELINE))
+                .isThrownBy(() -> validateForLifeline(game))
                 .withMessage("Cannot use a lifeline for a game without last asked question");
     }
 

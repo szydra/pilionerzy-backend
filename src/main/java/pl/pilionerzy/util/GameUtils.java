@@ -11,12 +11,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.Boolean.FALSE;
+import static java.util.stream.Collectors.toSet;
 import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 import static pl.pilionerzy.util.LevelUtils.getNextLevel;
 
 public class GameUtils {
 
-    public static void validate(Game game, RequestType requestType) {
+    public static void validateForAnswer(Game game) {
+        validate(game, RequestType.ANSWER);
+    }
+
+    public static void validateForLifeline(Game game) {
+        validate(game, RequestType.LIFELINE);
+    }
+
+    public static void validateForQuestion(Game game) {
+        validate(game, RequestType.QUESTION);
+    }
+
+    private static void validate(Game game, RequestType requestType) {
         if (FALSE.equals(game.getActive())) {
             throw new GameException(String.format("Game with id %s is inactive", game.getId()));
         }
@@ -54,6 +67,12 @@ public class GameUtils {
                 .filter(lifeline -> lifeline.getType() == FIFTY_FIFTY)
                 .filter(lifeline -> Objects.equals(lifeline.getQuestion(), game.getLastAskedQuestion()))
                 .flatMap(lifeline -> lifeline.getRejectedAnswers().stream())
-                .collect(Collectors.toSet());
+                .collect(toSet());
+    }
+
+    private enum RequestType {
+        ANSWER,
+        LIFELINE,
+        QUESTION
     }
 }
