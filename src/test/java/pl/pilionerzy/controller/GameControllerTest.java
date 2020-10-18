@@ -17,6 +17,7 @@ import pl.pilionerzy.service.GameService;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -82,7 +83,7 @@ public class GameControllerTest {
 
         mvc.perform(get("/games/25/fifty-fifty"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.incorrectPrefixes").value(List.of("A", "B")));
+                .andExpect(jsonPath("$.incorrectPrefixes").value(contains("A", "B")));
     }
 
     @Test
