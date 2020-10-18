@@ -4,17 +4,17 @@
     <property name="LOGS_DIR" value="./logs"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
+        <encoder>
+            <pattern>
                 %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{50}): %msg%n%throwable
-            </Pattern>
-        </layout>
+            </pattern>
+        </encoder>
     </appender>
 
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS_DIR}/pilionerzy.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d %-5p %C{1.} [%t] %m%n</Pattern>
+        <encoder>
+            <pattern>%d %-5p %C{1.} [%t] %m%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 1 MegaByte -->
