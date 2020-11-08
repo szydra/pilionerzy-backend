@@ -15,7 +15,6 @@ import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
-
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
@@ -29,8 +28,11 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldNotSaveGameWithoutRequiredProperties() {
+        // given: game without required properties
         var game = new Game();
 
+        // when: trying to save the game
+        // then: constraints are violated
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(game))
                 .satisfies(exception -> assertThat(exception)
@@ -41,32 +43,28 @@ public class GameRepositoryIntegrationTest {
 
     @Test
     public void shouldDeactivateOldGame() {
+        // given: active game
         var game = insertActiveGame();
 
+        // when: deactivating games started before a moment in the future
         var oneHourLater = game.getStartTime().plusMinutes(60);
         int deactivateGames = gameRepository.deactivateGamesStartedBefore(oneHourLater);
 
+        // then: the game was deactivated
         assertThat(deactivateGames).isOne();
     }
 
     @Test
     public void shouldNotDeactivateNewGame() {
+        // given: active game
         var game = insertActiveGame();
 
+        // when: deactivating games started before a moment in the past
         var fiveMinutesAgo = game.getStartTime().minusMinutes(5);
         int deactivateGames = gameRepository.deactivateGamesStartedBefore(fiveMinutesAgo);
 
+        // then: the game was not deactivated
         assertThat(deactivateGames).isZero();
-    }
-
-    @Test
-    public void shouldFindByIdWithLastAskedQuestionWhenLastAskedQuestionDoesNotExits() {
-        var game = insertActiveGame();
-
-        entityManager.clear();
-        var foundGame = gameRepository.findByIdWithLastQuestionAndAnswers(game.getId());
-
-        assertThat(foundGame).isPresent();
     }
 
     private Game insertActiveGame() {
