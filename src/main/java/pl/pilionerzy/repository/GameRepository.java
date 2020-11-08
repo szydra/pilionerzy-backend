@@ -23,7 +23,6 @@ public interface GameRepository extends CrudRepository<Game, Long> {
     @Query("select game from Game game where game.id = :id")
     Optional<Game> findByIdWithLastQuestionAndAnswers(Long id);
 
-    //TODO Check for cartesian product
     @EntityGraph(attributePaths = {"usedLifelines", "lastAskedQuestion", "lastAskedQuestion.answers"})
     @Query("select game from Game game where game.id = :id")
     Optional<Game> findByIdWithUsedLifelines(Long id);
