@@ -9,7 +9,7 @@ import java.util.Map;
 
 class LoopAvoidingContext {
 
-    private Map<Object, Object> knownInstances = new IdentityHashMap<>();
+    private final Map<Object, Object> knownInstances = new IdentityHashMap<>();
 
     @BeforeMapping
     @SuppressWarnings("unchecked")
