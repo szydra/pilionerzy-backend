@@ -15,7 +15,7 @@ import static javax.persistence.FetchType.LAZY;
 @Embeddable
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"type", "question"})
+@EqualsAndHashCode(of = "type")
 public class UsedLifeline {
 
     @NotNull(message = "lifeline must have type")

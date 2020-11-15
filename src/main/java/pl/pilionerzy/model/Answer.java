@@ -15,7 +15,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"prefix", "question"})
+@EqualsAndHashCode(of = "prefix")
 public class Answer {
 
     @Id
