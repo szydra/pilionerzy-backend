@@ -207,18 +207,18 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithoutBusinessId() {
-        // given: active question without business id
+    public void shouldNotSaveQuestionWithoutHash() {
+        // given: active question without hash
         Question question = prepareRandomQuestion();
         question.activate();
-        question.setBusinessId(null);
+        question.setHash(null);
 
         // when: trying to save the question
         // then: constraints are violated
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> entityManager.persistAndFlush(question))
                 .satisfies(exception -> assertThat(exception)
-                        .hasViolation("businessId", "question must have business id"));
+                        .hasViolation("hash", "question must have hash"));
     }
 
     @Test
@@ -287,7 +287,7 @@ public class QuestionRepositoryIntegrationTest {
         answers.forEach(answer -> answer.setQuestion(question));
         question.setAnswers(answers);
         question.setContent(randomAlphanumeric(32));
-        question.setBusinessId(randomAlphanumeric(32));
+        question.setHash(randomAlphanumeric(32));
         return question;
     }
 

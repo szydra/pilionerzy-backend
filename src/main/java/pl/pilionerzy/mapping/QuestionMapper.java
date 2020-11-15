@@ -9,11 +9,11 @@ import pl.pilionerzy.model.Question;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Mapper(componentModel = "spring", uses = {AnswerMapper.class})
+@Mapper(componentModel = "spring", uses = AnswerMapper.class)
 public interface QuestionMapper {
 
     @Mapping(target = "active", constant = "false")
-    @Mapping(target = "businessId", ignore = true)
+    @Mapping(target = "hash", ignore = true)
     @Mapping(target = "correctAnswer", ignore = true)
     Question dtoToModel(NewQuestionDto questionDto, @Context LoopAvoidingContext context);
 
@@ -24,14 +24,15 @@ public interface QuestionMapper {
 
     @AfterMapping
     default void setBusinessIdAndCorrectAnswer(NewQuestionDto questionDto, @MappingTarget Question question) {
-        question.setBusinessId(calculateHash(questionDto));
+        question.setHash(calculateHash(questionDto));
         question.getAnswers()
                 .forEach(answer -> answer.setCorrect(answer.getPrefix() == questionDto.getCorrectAnswer()));
     }
 
     @SuppressWarnings("UnstableApiUsage")
     default String calculateHash(NewQuestionDto questionDto) {
-        Hasher hasher = Hashing.murmur3_128().newHasher().putString(questionDto.getContent(), UTF_8);
+        Hasher hasher = Hashing.murmur3_128().newHasher();
+        hasher.putString(questionDto.getContent(), UTF_8);
         questionDto.getAnswers().forEach(answer -> hasher.putString(answer.getContent(), UTF_8));
         return hasher.hash().toString();
     }

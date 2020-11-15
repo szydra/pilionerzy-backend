@@ -176,7 +176,7 @@ public class AnswerServiceTest {
     private Question prepareQuestion(Long questionId, Prefix correctAnswer) {
         Question question = new Question();
         question.setId(questionId);
-        question.setBusinessId(randomAlphanumeric(32));
+        question.setHash(randomAlphanumeric(32));
         Answer answer = new Answer();
         answer.setPrefix(correctAnswer);
         answer.setCorrect(true);

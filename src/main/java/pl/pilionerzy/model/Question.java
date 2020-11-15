@@ -20,13 +20,13 @@ import static javax.persistence.GenerationType.IDENTITY;
  * It is asked only when marked as active. A newly created one is marked as inactive and has
  * to be activated manually.</p>
  *
- * <p>Two {@link Question} objects are consider equal when they have the same business id that
- * is calculated as a hash of its contents and its answers' contents.</p>
+ * <p>Two {@link Question} objects are consider equal when they have the same hash that
+ * is calculated as a hash of the content and the content of answers.</p>
  */
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = "businessId")
+@EqualsAndHashCode(of = "hash")
 @OneCorrectAnswer
 public class Question {
 
@@ -34,9 +34,9 @@ public class Question {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @NotNull(message = "question must have business id")
+    @NotNull(message = "question must have hash")
     @Column(unique = true, length = 32, nullable = false)
-    private String businessId;
+    private String hash;
 
     @NotNull(message = "question must have content")
     @Size(min = 4, max = 1023, message = "question content length must be between 4 and 1023")

@@ -24,13 +24,13 @@ public class QuestionMapperTest {
     private QuestionMapper questionMapper;
 
     @Test
-    public void shouldCalculateBusinessId() {
+    public void shouldCalculateHash() {
         NewQuestionDto questionDto = createNewQuestionDto();
 
         Question question = questionMapper.dtoToModel(questionDto, new LoopAvoidingContext());
 
         String hash = questionMapper.calculateHash(questionDto);
-        assertThat(question.getBusinessId()).isEqualTo(hash).hasSize(32);
+        assertThat(question.getHash()).isEqualTo(hash).hasSize(32);
     }
 
     @Test

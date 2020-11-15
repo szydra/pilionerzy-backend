@@ -28,13 +28,13 @@ public class GameUtilsTest {
     private void prepareQuestions() {
         Question q1 = new Question();
         q1.setId(1L);
-        q1.setBusinessId("abc");
+        q1.setHash("abc");
         Answer answer1 = new Answer();
         answer1.setPrefix(A);
         answer1.setCorrect(true);
         Question q2 = new Question();
         q2.setId(2L);
-        q2.setBusinessId("def");
+        q2.setHash("def");
         Answer answer2 = new Answer();
         answer2.setPrefix(B);
         answer2.setCorrect(true);

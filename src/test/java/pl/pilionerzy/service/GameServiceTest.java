@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.repository.GameRepository;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
@@ -16,6 +15,7 @@ import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.*;
+import pl.pilionerzy.repository.GameRepository;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -71,10 +71,10 @@ public class GameServiceTest {
     public void shouldUpdateLastQuestion() {
         Question question1 = new Question();
         question1.setId(11L);
-        question1.setBusinessId("abc");
+        question1.setHash("abc");
         Question question2 = new Question();
         question2.setId(12L);
-        question2.setBusinessId("def");
+        question2.setHash("def");
         Game game = new Game();
         game.setId(1L);
         game.setLastAskedQuestion(question1);

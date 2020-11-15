@@ -9,7 +9,7 @@ import static pl.pilionerzy.assertion.Assertions.assertThat;
 
 public class QuestionTest {
 
-    private Question question = new Question();
+    private final Question question = new Question();
 
     @Test
     public void shouldActivateInactiveQuestion() {
@@ -25,7 +25,7 @@ public class QuestionTest {
         question.setActive(true);
 
         assertThatIllegalStateException()
-                .isThrownBy(() -> question.activate())
+                .isThrownBy(question::activate)
                 .withMessage("Active question cannot be activated");
     }
 
@@ -43,19 +43,19 @@ public class QuestionTest {
         question.setActive(false);
 
         assertThatIllegalStateException()
-                .isThrownBy(() -> question.deactivate())
+                .isThrownBy(question::deactivate)
                 .withMessage("Inactive question cannot be deactivated");
     }
 
     @Test
-    public void questionsWithTheSameBusinessIdShouldBeEqual() {
-        String businessId = "1a2b3c4c5e6f7g8h";
-        question.setBusinessId(businessId);
+    public void questionsWithTheSameHashShouldBeEqual() {
+        String hash = "1a2b3c4c5e6f7g8h";
+        question.setHash(hash);
         question.setId(1L);
         question.setContent("content 1");
 
         Question otherQuestion = new Question();
-        otherQuestion.setBusinessId(businessId);
+        otherQuestion.setHash(hash);
         otherQuestion.setId(2L);
         otherQuestion.setContent("content 2");
 
@@ -63,11 +63,11 @@ public class QuestionTest {
     }
 
     @Test
-    public void questionsWithDistinctBusinessIdsShouldNotBeEqual() {
-        question.setBusinessId("1a2b3c4c5e6f7g8h");
+    public void questionsWithDistinctHashesShouldNotBeEqual() {
+        question.setHash("1a2b3c4c5e6f7g8h");
 
         Question otherQuestion = new Question();
-        otherQuestion.setBusinessId("8h1a2b3c4c5e6f7g");
+        otherQuestion.setHash("8h1a2b3c4c5e6f7g");
 
         assertThat(question).isNotEqualTo(otherQuestion);
     }
@@ -92,7 +92,7 @@ public class QuestionTest {
         question.setAnswers(List.of(answer));
 
         assertThatIllegalStateException()
-                .isThrownBy(() -> question.getCorrectAnswer())
+                .isThrownBy(question::getCorrectAnswer)
                 .withMessage("Question 'null' does not have correct answer");
     }
 }
