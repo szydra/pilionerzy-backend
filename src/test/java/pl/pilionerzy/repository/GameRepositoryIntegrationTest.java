@@ -11,7 +11,6 @@ import pl.pilionerzy.model.Game;
 
 import javax.validation.ConstraintViolationException;
 
-import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
@@ -37,8 +36,7 @@ public class GameRepositoryIntegrationTest {
                 .isThrownBy(() -> entityManager.persistAndFlush(game))
                 .satisfies(exception -> assertThat(exception)
                         .hasViolation("active", "game must be active or inactive")
-                        .hasViolation("level", "game must have level")
-                        .hasViolation("businessId", "game must have business id"));
+                        .hasViolation("level", "game must have level"));
     }
 
     @Test
@@ -71,7 +69,6 @@ public class GameRepositoryIntegrationTest {
         var game = new Game();
         game.activate();
         game.setLevel(1);
-        game.setBusinessId(random(32, "0123456789abcdef"));
         return entityManager.persistAndFlush(game);
     }
 }

@@ -1,6 +1,5 @@
 package pl.pilionerzy.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,16 +18,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = "businessId")
 public class Game {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-
-    @NotNull(message = "game must have business id")
-    @Column(unique = true, length = 32, nullable = false)
-    private String businessId;
 
     @CreationTimestamp
     private LocalDateTime startTime;

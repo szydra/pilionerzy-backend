@@ -31,7 +31,6 @@ public class GameService {
     private final Calculator lifelineCalculator;
     private final DtoMapper mapper;
     private final GameRepository gameRepository;
-    private final GameIdGenerator gameIdGenerator;
 
     /**
      * Creates and saves a new {@link Game} instance.
@@ -41,7 +40,6 @@ public class GameService {
     public GameDto startNewGame() {
         logger.debug("Starting a new game");
         Game game = new Game();
-        game.setBusinessId(gameIdGenerator.generate());
         game.activate();
         game.initLevel();
         Game startedGame = gameRepository.save(game);
