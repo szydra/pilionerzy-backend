@@ -8,7 +8,6 @@ import pl.pilionerzy.model.UsedLifeline;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.lang.Boolean.FALSE;
 import static java.util.stream.Collectors.toSet;

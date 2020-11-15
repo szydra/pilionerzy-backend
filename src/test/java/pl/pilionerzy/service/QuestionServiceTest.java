@@ -9,10 +9,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;

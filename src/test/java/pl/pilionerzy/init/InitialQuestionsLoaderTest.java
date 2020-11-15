@@ -9,8 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.mapping.DtoMapper;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;

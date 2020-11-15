@@ -10,13 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import java.util.Collection;
 import java.util.Collections;

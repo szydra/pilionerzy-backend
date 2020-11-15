@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.repository.QuestionRepository;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.NewAnswerDto;
 import pl.pilionerzy.dto.NewQuestionDto;
@@ -16,6 +15,7 @@ import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
