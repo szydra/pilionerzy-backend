@@ -23,7 +23,7 @@ public interface QuestionMapper {
     QuestionDto modelToDto(Question question, @Context LoopAvoidingContext context);
 
     @AfterMapping
-    default void setBusinessIdAndCorrectAnswer(NewQuestionDto questionDto, @MappingTarget Question question) {
+    default void setHashAndCorrectAnswer(NewQuestionDto questionDto, @MappingTarget Question question) {
         question.setHash(calculateHash(questionDto));
         question.getAnswers()
                 .forEach(answer -> answer.setCorrect(answer.getPrefix() == questionDto.getCorrectAnswer()));
