@@ -200,3 +200,11 @@ databaseChangeLog:
         newColumnName: hash
         oldColumnName: business_id
         tableName: question
+
+- changeSet:
+    id: pil-7
+    author: szydra
+    changes:
+    - dropColumn:
+        columnName: business_id
+        tableName: game
