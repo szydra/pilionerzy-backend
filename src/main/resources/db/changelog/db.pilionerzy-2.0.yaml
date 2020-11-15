@@ -190,3 +190,13 @@ databaseChangeLog:
     - append:
         dbms: mysql
         value: ' engine=innodb'
+
+- changeSet:
+    id: pil-6
+    author: szydra
+    changes:
+    - renameColumn:
+        columnDataType: varchar(32)
+        newColumnName: hash
+        oldColumnName: business_id
+        tableName: question
