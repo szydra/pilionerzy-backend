@@ -75,6 +75,22 @@ public class Game {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        } else if (!(other instanceof Game)) {
+            return false;
+        }
+        Game game = (Game) other;
+        return id != null && id.equals(game.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
     public String toString() {
         return "Game with id " + id;
     }
