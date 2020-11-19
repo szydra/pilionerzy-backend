@@ -3,11 +3,13 @@ package pl.pilionerzy.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.GameDto;
+import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
+import pl.pilionerzy.service.QuestionService;
 
 import java.util.Collection;
 import java.util.Map;
@@ -20,6 +22,7 @@ public class GameController {
 
     private final AnswerService answerService;
     private final GameService gameService;
+    private final QuestionService questionService;
 
     @GetMapping("/start-new")
     public GameDto createNewGame() {
@@ -39,6 +42,11 @@ public class GameController {
     @GetMapping("/{gameId}/ask-the-audience")
     public Map<Prefix, PartialAudienceAnswer> getAudienceAnswer(@PathVariable Long gameId) {
         return gameService.getAudienceAnswerByGameId(gameId).getVotesChart();
+    }
+
+    @GetMapping("/{gameId}/questions")
+    public QuestionDto getByGameId(@PathVariable Long gameId) {
+        return questionService.getNextQuestionByGameId(gameId);
     }
 
     @PostMapping("/{gameId}/answers")

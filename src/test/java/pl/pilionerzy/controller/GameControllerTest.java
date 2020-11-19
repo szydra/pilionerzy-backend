@@ -8,11 +8,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.pilionerzy.dto.GameDto;
+import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
+import pl.pilionerzy.service.QuestionService;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,9 @@ public class GameControllerTest {
 
     @MockBean
     private GameService gameService;
+
+    @MockBean
+    private QuestionService questionService;
 
     @Test
     public void shouldReturnNewGame() throws Exception {
@@ -111,5 +116,17 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.B").value("20%"))
                 .andExpect(jsonPath("$.C").value("30%"))
                 .andExpect(jsonPath("$.D").value("40%"));
+    }
+
+    @Test
+    public void shouldResponseWithCorrectJson() throws Exception {
+        QuestionDto question = new QuestionDto();
+        question.setContent("What is bad?");
+        doReturn(question).when(questionService).getNextQuestionByGameId(1L);
+
+        mvc.perform(get("/games/1/questions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("What is bad?"))
+                .andExpect(jsonPath("$.correctAnswer").doesNotExist());
     }
 }
