@@ -8,13 +8,13 @@ import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import static com.google.common.collect.Maps.asMap;
 import static com.google.common.collect.Maps.newHashMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static pl.pilionerzy.model.Prefix.*;
 
 public class AskTheAudienceCalculatorTest {
 
@@ -24,21 +24,23 @@ public class AskTheAudienceCalculatorTest {
     @Before
     public void setCorrectAnswer() {
         var answer = new Answer();
-        answer.setPrefix(Prefix.A);
+        answer.setPrefix(A);
         answer.setCorrect(true);
         question.setAnswers(List.of(answer));
     }
 
     @Test
     public void shouldContainAllAnswersWhenFiftyFiftyWasNotUsed() {
-        assertThat(calculator.getAnswer(question, Set.of()).getVotesChart())
-                .containsOnlyKeys(Prefix.A, Prefix.B, Prefix.C, Prefix.D);
+        var votesChart = calculator.getAnswer(question, Set.of()).getVotesChart();
+
+        assertThat(votesChart).containsOnlyKeys(A, B, C, D);
     }
 
     @Test
     public void shouldContainOnlyRemainingAnswersWhenFiftyFiftyWasUsed() {
-        assertThat(calculator.getAnswer(question, Set.of(Prefix.C, Prefix.D)).getVotesChart())
-                .containsOnlyKeys(Prefix.A, Prefix.B);
+        var votesChart = calculator.getAnswer(question, Set.of(C, D)).getVotesChart();
+
+        assertThat(votesChart).containsOnlyKeys(A, B);
     }
 
     @Test
@@ -54,7 +56,7 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasUsed() {
-        int sum = calculator.getAnswer(question, Set.of(Prefix.C, Prefix.D)).getVotesChart().values().stream()
+        int sum = calculator.getAnswer(question, Set.of(C, D)).getVotesChart().values().stream()
                 .mapToInt(PartialAudienceAnswer::getVotes)
                 .sum();
 
@@ -78,12 +80,12 @@ public class AskTheAudienceCalculatorTest {
         averages.replaceAll((prefix, result) -> result / numberOfDraws);
 
         // The results should be distributed: A approx. 50% and B, C, D approx. 16.6%
-        assertThat(averages.get(Prefix.A))
+        assertThat(averages.get(A))
                 .withFailMessage("Average result for correct answer is expected to be between" +
-                        " 45%% and 55%%, but was %s%%.", averages.get(Prefix.A))
+                        " 45%% and 55%%, but was %s%%.", averages.get(A))
                 .isCloseTo(50.0, Offset.offset(5.0));
 
-        assertThat(Arrays.asList(averages.get(Prefix.B), averages.get(Prefix.C), averages.get(Prefix.D)))
+        assertThat(List.of(averages.get(B), averages.get(C), averages.get(D)))
                 .allSatisfy(average -> assertThat(average)
                         .withFailMessage("Average result for incorrect answer is expected to be between"
                                 + " 11.6%% and 21.6%%, but was %s%%.", average)
