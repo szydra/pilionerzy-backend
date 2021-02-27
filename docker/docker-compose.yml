@@ -3,7 +3,7 @@ version: '3.6'
 services:
 
   pilionerzy-mysql:
-    image: mysql:5.7.25
+    image: mysql:8
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
     - MYSQL_ROOT_PASSWORD=root
@@ -20,8 +20,9 @@ services:
     - 8080:8080
     restart: unless-stopped
     environment:
-    - "SPRING_DATASOURCE_URL=jdbc:mysql://pilionerzy-mysql/pilionerzy?useSSL=false&\
-        useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true"
+    - "SPRING_DATASOURCE_URL=jdbc:mysql://pilionerzy-mysql/pilionerzy?useSSL=false\
+        &useUnicode=yes&characterEncoding=UTF-8&rewriteBatchedStatements=true\
+        &serverTimezone=UTC&allowPublicKeyRetrieval=true"
     - SPRING_DATASOURCE_USERNAME=pilioner
     - SPRING_DATASOURCE_PASSWORD=pilioner
     - ALLOWED_ORIGINS=*
