@@ -18,7 +18,15 @@ A docker image can be build as well; just run, e.g.,
 ```
 docker build -t pilionerzy-backend .
 ```
-to create an [alpine](https://hub.docker.com/_/openjdk) based image.
+
+to create an [alpine](https://hub.docker.com/_/openjdk) based image. If you want to use MySQL on docker as well, you can
+create an instance with
+
+```
+docker run -d -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=pilionerzy
+  -e MYSQL_USER=pilioner -e MYSQL_PASSWORD=pilioner -p 3306:3306 mysql:8
+  --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+```
 
 ## How to use
 
