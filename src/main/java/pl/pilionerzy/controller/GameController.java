@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.QuestionDto;
-import pl.pilionerzy.lifeline.model.FriendsAnswer;
-import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
+import pl.pilionerzy.model.Lifeline;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
 import pl.pilionerzy.service.QuestionService;
 
-import java.util.Collection;
 import java.util.Map;
 
 @CrossOrigin(origins = "${allowed.origins}")
@@ -29,24 +27,23 @@ public class GameController {
         return gameService.startNewGame();
     }
 
-    @GetMapping("/{gameId}/fifty-fifty")
-    public Map<String, Collection<Prefix>> getTwoIncorrectPrefixes(@PathVariable Long gameId) {
-        return Map.of("incorrectPrefixes", gameService.getTwoIncorrectPrefixes(gameId));
-    }
-
-    @GetMapping("/{gameId}/phone-a-friend")
-    public FriendsAnswer getFriendsAnswer(@PathVariable Long gameId) {
-        return gameService.getFriendsAnswerByGameId(gameId);
-    }
-
-    @GetMapping("/{gameId}/ask-the-audience")
-    public Map<Prefix, PartialAudienceAnswer> getAudienceAnswer(@PathVariable Long gameId) {
-        return gameService.getAudienceAnswerByGameId(gameId).getVotesChart();
-    }
-
     @GetMapping("/{gameId}/questions")
     public QuestionDto getByGameId(@PathVariable Long gameId) {
         return questionService.getNextQuestionByGameId(gameId);
+    }
+
+    @GetMapping("/{gameId}/{lifeline}")
+    public Object getLifelineResult(@PathVariable Long gameId, @PathVariable Lifeline lifeline) {
+        switch (lifeline) {
+            case ASK_THE_AUDIENCE:
+                return gameService.getAudienceAnswerByGameId(gameId).getVotesChart();
+            case FIFTY_FIFTY:
+                return Map.of("incorrectPrefixes", gameService.getTwoIncorrectPrefixes(gameId));
+            case PHONE_A_FRIEND:
+                return gameService.getFriendsAnswerByGameId(gameId);
+            default:
+                throw new IllegalArgumentException("Unknown lifeline: " + lifeline);
+        }
     }
 
     @PostMapping("/{gameId}/answers")

@@ -15,6 +15,7 @@ import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
+import pl.pilionerzy.model.Lifeline;
 import pl.pilionerzy.model.Prefix;
 
 import javax.validation.ConstraintViolationException;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = ExceptionHandler.class)
@@ -90,11 +92,11 @@ public class ExceptionHandlerTest {
 
     @Test
     public void shouldHandleLifelineException() throws Exception {
-        when(gameController.getAudienceAnswer(anyLong())).thenThrow(LifelineException.class);
+        when(gameController.getLifelineResult(anyLong(), isA(Lifeline.class))).thenThrow(LifelineException.class);
 
         mvc.perform(get("/games/1/ask-the-audience"))
                 .andExpect(status().isForbidden());
-        verify(gameController).getAudienceAnswer(1L);
+        verify(gameController).getLifelineResult(1L, ASK_THE_AUDIENCE);
     }
 
     @Test
