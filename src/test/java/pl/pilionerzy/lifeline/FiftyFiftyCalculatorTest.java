@@ -7,12 +7,13 @@ import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FiftyFiftyCalculatorTest {
 
-    private FiftyFiftyCalculator calculator = new FiftyFiftyCalculator();
+    private final FiftyFiftyCalculator calculator = new FiftyFiftyCalculator();
     private Question question;
 
     @Before
@@ -26,7 +27,7 @@ public class FiftyFiftyCalculatorTest {
 
     @Test
     public void shouldDiscardExactlyTwoIncorrectAnswers() {
-        assertThat(calculator.getPrefixesToDiscard(question).getPrefixesToDiscard())
+        assertThat(calculator.getResult(question, Set.of()).getPrefixesToDiscard())
                 .hasSize(2)
                 .doesNotContain(Prefix.A);
     }
