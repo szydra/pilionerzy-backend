@@ -10,21 +10,21 @@ import java.util.Collection;
  */
 public class FiftyFiftyResult {
 
-    private final Collection<Prefix> prefixesToDiscard;
+    private final Collection<Prefix> incorrectPrefixes;
 
-    public FiftyFiftyResult(Collection<Prefix> prefixesToDiscard) {
-        if (prefixesToDiscard.size() != 2) {
-            throw new IllegalArgumentException("Prefixes to discard must have size 2");
+    public FiftyFiftyResult(Collection<Prefix> incorrectPrefixes) {
+        if (incorrectPrefixes.size() != 2) {
+            throw new IllegalArgumentException("Incorrect prefixes must have size 2");
         }
-        this.prefixesToDiscard = ImmutableSortedSet.copyOf(prefixesToDiscard);
+        this.incorrectPrefixes = ImmutableSortedSet.copyOf(incorrectPrefixes);
     }
 
-    public Collection<Prefix> getPrefixesToDiscard() {
-        return prefixesToDiscard;
+    public Collection<Prefix> getIncorrectPrefixes() {
+        return incorrectPrefixes;
     }
 
     @Override
     public String toString() {
-        return "Prefixes to discard: " + prefixesToDiscard;
+        return "Incorrect prefixes: " + incorrectPrefixes;
     }
 }

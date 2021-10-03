@@ -28,7 +28,7 @@ abstract class AbstractLifelineProcessor<T> implements LifelineProcessor<T> {
     private void saveResult(UsedLifeline usedLifeline, T result) {
         // TODO Save results for all lifelines
         if (result instanceof FiftyFiftyResult) {
-            usedLifeline.setRejectedAnswers(((FiftyFiftyResult) result).getPrefixesToDiscard());
+            usedLifeline.setRejectedAnswers(((FiftyFiftyResult) result).getIncorrectPrefixes());
         }
     }
 

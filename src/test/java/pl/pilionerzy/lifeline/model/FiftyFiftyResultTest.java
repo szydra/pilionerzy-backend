@@ -12,13 +12,13 @@ public class FiftyFiftyResultTest {
     @Test
     public void shouldImplementToString() {
         assertThat(new FiftyFiftyResult(Sets.newHashSet(B, C)).toString())
-                .isEqualTo("Prefixes to discard: [B, C]");
+                .isEqualTo("Incorrect prefixes: [B, C]");
     }
 
     @Test
     public void shouldThrowExceptionWhenDiscardingInvalidNumberOfPrefixes() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new FiftyFiftyResult(Sets.newHashSet(A, B, C)))
-                .withMessage("Prefixes to discard must have size 2");
+                .withMessage("Incorrect prefixes must have size 2");
     }
 }

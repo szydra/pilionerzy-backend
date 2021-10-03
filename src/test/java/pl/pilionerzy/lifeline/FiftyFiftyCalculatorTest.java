@@ -27,7 +27,7 @@ public class FiftyFiftyCalculatorTest {
 
     @Test
     public void shouldDiscardExactlyTwoIncorrectAnswers() {
-        assertThat(calculator.getResult(question, Set.of()).getPrefixesToDiscard())
+        assertThat(calculator.getResult(question, Set.of()).getIncorrectPrefixes())
                 .hasSize(2)
                 .doesNotContain(Prefix.A);
     }

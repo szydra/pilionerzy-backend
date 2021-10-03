@@ -53,7 +53,7 @@ public class LifelineProcessorIntegrationTest {
         assertThat(fiftyFiftyResult)
                 .isInstanceOf(FiftyFiftyResult.class)
                 .satisfies(result ->
-                        assertThat(((FiftyFiftyResult) result).getPrefixesToDiscard())
+                        assertThat(((FiftyFiftyResult) result).getIncorrectPrefixes())
                                 .hasSize(2)
                                 .doesNotContain(game.getLastAskedQuestion().getCorrectAnswer().getPrefix())
                 );
@@ -66,7 +66,7 @@ public class LifelineProcessorIntegrationTest {
 
         // when
         var fiftyFiftyResult = getProcessor(FIFTY_FIFTY).process(game);
-        var rejectedAnswers = ((FiftyFiftyResult) fiftyFiftyResult).getPrefixesToDiscard();
+        var rejectedAnswers = ((FiftyFiftyResult) fiftyFiftyResult).getIncorrectPrefixes();
         var friendsAnswer = getProcessor(PHONE_A_FRIEND).process(game);
 
         // then
