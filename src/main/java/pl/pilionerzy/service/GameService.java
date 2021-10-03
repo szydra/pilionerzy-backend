@@ -8,17 +8,18 @@ import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
-import pl.pilionerzy.lifeline.Calculator;
-import pl.pilionerzy.lifeline.model.AudienceAnswer;
-import pl.pilionerzy.lifeline.model.FriendsAnswer;
+import pl.pilionerzy.lifeline.LifelineProcessor;
 import pl.pilionerzy.mapping.DtoMapper;
-import pl.pilionerzy.model.*;
+import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Lifeline;
+import pl.pilionerzy.model.Question;
 import pl.pilionerzy.repository.GameRepository;
 
-import java.util.Collection;
+import java.util.List;
 
 import static pl.pilionerzy.model.Lifeline.*;
-import static pl.pilionerzy.util.GameUtils.*;
+import static pl.pilionerzy.util.GameUtils.isLifelineUsed;
+import static pl.pilionerzy.util.GameUtils.validateForLifeline;
 
 /**
  * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
@@ -28,9 +29,9 @@ import static pl.pilionerzy.util.GameUtils.*;
 @RequiredArgsConstructor
 public class GameService {
 
-    private final Calculator lifelineCalculator;
     private final DtoMapper mapper;
     private final GameRepository gameRepository;
+    private final List<LifelineProcessor<?>> lifelineProcessors;
 
     /**
      * Creates and saves a new {@link Game} instance.
@@ -79,7 +80,7 @@ public class GameService {
      * @throws GameException       if the last asked question is null
      */
     @Transactional
-    public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
+    public Object getTwoIncorrectPrefixes(Long gameId) {
         logger.debug("Applying fifty-fifty lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
         validateForLifeline(game);
@@ -87,10 +88,7 @@ public class GameService {
             logger.warn("Requested fifty-fifty lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Fifty-fifty lifeline already used");
         }
-        updateUsedLifelines(game, FIFTY_FIFTY);
-        var fiftyFifty = lifelineCalculator.getFiftyFiftyResult(game.getLastAskedQuestion());
-        updateRejectedAnswers(game, fiftyFifty.getPrefixesToDiscard());
-        return fiftyFifty.getPrefixesToDiscard();
+        return getLifelineProcessor(FIFTY_FIFTY).process(game);
     }
 
     /**
@@ -103,7 +101,7 @@ public class GameService {
      * @throws GameException       if the last asked question is null
      */
     @Transactional
-    public FriendsAnswer getFriendsAnswerByGameId(Long gameId) {
+    public Object getFriendsAnswerByGameId(Long gameId) {
         logger.debug("Applying phone-a-friend lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
         validateForLifeline(game);
@@ -111,8 +109,7 @@ public class GameService {
             logger.warn("Requested phone-a-friend lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Phone a friend lifeline already used");
         }
-        updateUsedLifelines(game, PHONE_A_FRIEND);
-        return lifelineCalculator.getFriendsAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
+        return getLifelineProcessor(PHONE_A_FRIEND).process(game);
     }
 
     /**
@@ -125,7 +122,7 @@ public class GameService {
      * @throws GameException       if the last asked question is null
      */
     @Transactional
-    public AudienceAnswer getAudienceAnswerByGameId(Long gameId) {
+    public Object getAudienceAnswerByGameId(Long gameId) {
         logger.debug("Applying ask-the-audience lifeline to game with id {}", gameId);
         Game game = findByIdWithUsedLifelines(gameId);
         validateForLifeline(game);
@@ -133,8 +130,20 @@ public class GameService {
             logger.warn("Requested ask-the-audience lifeline to the game with id {} for the second time", gameId);
             throw new LifelineException("Ask the audience lifeline already used");
         }
-        updateUsedLifelines(game, ASK_THE_AUDIENCE);
-        return lifelineCalculator.getAudienceAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
+        return getLifelineProcessor(ASK_THE_AUDIENCE).process(game);
+    }
+
+    @Transactional
+    public Object getLifelineResult(Long gameId, Lifeline lifeline) {
+        Game game = findByIdWithUsedLifelines(gameId);
+        return getLifelineProcessor(lifeline).process(game);
+    }
+
+    private LifelineProcessor<?> getLifelineProcessor(Lifeline lifeline) {
+        return lifelineProcessors.stream()
+                .filter(processor -> processor.type() == lifeline)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Cannot find processor for lifeline: " + lifeline));
     }
 
     Game findByIdWithAskedQuestions(Long gameId) {
@@ -150,23 +159,6 @@ public class GameService {
     Game findByIdWithLastQuestionAndAnswers(Long gameId) {
         return gameRepository.findByIdWithLastQuestionAndAnswers(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
-    }
-
-    private void updateUsedLifelines(Game game, Lifeline lifeline) {
-        var usedLifelines = game.getUsedLifelines();
-        var usedLifeline = new UsedLifeline();
-        usedLifeline.setType(lifeline);
-        usedLifeline.setQuestion(game.getLastAskedQuestion());
-        usedLifelines.add(usedLifeline);
-    }
-
-    private void updateRejectedAnswers(Game game, Collection<Prefix> rejectedAnswers) {
-        game.getUsedLifelines().forEach(
-                usedLifeline -> {
-                    if (usedLifeline.getType() == FIFTY_FIFTY) {
-                        usedLifeline.setRejectedAnswers(rejectedAnswers);
-                    }
-                });
     }
 
     void updateLastQuestion(Game game, Question question) {
