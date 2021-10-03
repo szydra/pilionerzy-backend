@@ -22,7 +22,7 @@ class AskTheAudienceCalculator extends AbstractLifelineProcessor<AudienceAnswer>
     private final Random random = new Random();
 
     @Override
-    public AudienceAnswer getResult(Question question, Collection<Prefix> rejectedAnswers) {
+    protected AudienceAnswer getResult(Question question, Collection<Prefix> rejectedAnswers) {
         Map<Prefix, PartialAudienceAnswer> answers = new TreeMap<>();
         int correctAnswerRate = random.nextInt(ONE_HUNDRED);
         answers.put(question.getCorrectAnswer().getPrefix(), PartialAudienceAnswer.withVotes(correctAnswerRate));
