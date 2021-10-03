@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
+import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
 import pl.pilionerzy.service.AnswerService;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 
 @RunWith(SpringRunner.class)
@@ -63,8 +65,8 @@ public class GameControllerTest {
         doReturn(game).when(answerService).doAnswer(50L, A);
 
         mvc.perform(post("/games/50/answers")
-                .contentType(APPLICATION_JSON)
-                .content("{\"selected\":\"A\"}"))
+                        .contentType(APPLICATION_JSON)
+                        .content("{\"selected\":\"A\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correctAnswer").value("C"));
     }
@@ -77,14 +79,14 @@ public class GameControllerTest {
         doReturn(game).when(gameService).stopById(907L);
 
         mvc.perform(post("/games/907/stop")
-                .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correctAnswer").value("D"));
     }
 
     @Test
     public void shouldProcessFiftyFiftyLifeline() throws Exception {
-        doReturn(List.of(A, B)).when(gameService).getTwoIncorrectPrefixes(25L);
+        doReturn(new FiftyFiftyResult(List.of(A, B))).when(gameService).processLifeline(25L, FIFTY_FIFTY);
 
         mvc.perform(get("/games/25/fifty-fifty"))
                 .andExpect(status().isOk())
@@ -93,7 +95,7 @@ public class GameControllerTest {
 
     @Test
     public void shouldProcessPhoneAFriendLifeline() throws Exception {
-        doReturn(new FriendsAnswer(C, 80)).when(gameService).getFriendsAnswerByGameId(26L);
+        doReturn(new FriendsAnswer(C, 80)).when(gameService).processLifeline(26L, PHONE_A_FRIEND);
 
         mvc.perform(get("/games/26/phone-a-friend"))
                 .andExpect(status().isOk())
@@ -108,14 +110,14 @@ public class GameControllerTest {
                 B, PartialAudienceAnswer.withVotes(20),
                 C, PartialAudienceAnswer.withVotes(30),
                 D, PartialAudienceAnswer.withVotes(40)))
-        ).when(gameService).getAudienceAnswerByGameId(27L);
+        ).when(gameService).processLifeline(27L, ASK_THE_AUDIENCE);
 
         mvc.perform(get("/games/27/ask-the-audience"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.A").value("10%"))
-                .andExpect(jsonPath("$.B").value("20%"))
-                .andExpect(jsonPath("$.C").value("30%"))
-                .andExpect(jsonPath("$.D").value("40%"));
+                .andExpect(jsonPath("$.votesChart.A").value("10%"))
+                .andExpect(jsonPath("$.votesChart.B").value("20%"))
+                .andExpect(jsonPath("$.votesChart.C").value("30%"))
+                .andExpect(jsonPath("$.votesChart.D").value("40%"));
     }
 
     @Test
