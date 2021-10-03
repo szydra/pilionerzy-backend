@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
@@ -52,16 +53,12 @@ public class Question {
     private Boolean active;
 
     public void activate() {
-        if (TRUE.equals(active)) {
-            throw new IllegalStateException("Active question cannot be activated");
-        }
+        checkState(!TRUE.equals(active), "Active question cannot be activated");
         active = true;
     }
 
     public void deactivate() {
-        if (FALSE.equals(active)) {
-            throw new IllegalStateException("Inactive question cannot be deactivated");
-        }
+        checkState(!FALSE.equals(active), "Inactive question cannot be deactivated");
         active = false;
     }
 

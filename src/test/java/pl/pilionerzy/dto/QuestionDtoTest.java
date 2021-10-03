@@ -71,5 +71,4 @@ public class QuestionDtoTest {
         answer.setQuestion(question);
         return question;
     }
-
 }
