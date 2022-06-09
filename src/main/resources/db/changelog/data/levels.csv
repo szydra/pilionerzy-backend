@@ -1,0 +1,14 @@
+id,award,guaranteed
+0,0 zł,true
+1,500 zł,false
+2,1 000 zł,true
+3,2 000 zł,false
+4,5 000 zł,false
+5,10 000 zł,false
+6,20 000 zł,false
+7,40 000 zł,true
+8,75 000 zł,false
+9,125 000 zł,false
+10,250 000 zł,false
+11,500 000 zł,false
+12,1 000 000 zł,true

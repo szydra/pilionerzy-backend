@@ -208,3 +208,39 @@ databaseChangeLog:
     - dropColumn:
         columnName: business_id
         tableName: game
+
+- changeSet:
+    id: pil-8
+    author: szydra
+    changes:
+    - createTable:
+        tableName: level
+        columns:
+        - column:
+            name: id
+            type: tinyint
+            constraints:
+              nullable: false
+              primaryKey: true
+        - column:
+            name: award
+            type: varchar(15)
+            constraints:
+              nullable: false
+        - column:
+            name: guaranteed
+            type: boolean
+            constraints:
+              nullable: false
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-9
+    author: szydra
+    changes:
+    - loadData:
+        file: db/changelog/data/levels.csv
+        tableName: level
