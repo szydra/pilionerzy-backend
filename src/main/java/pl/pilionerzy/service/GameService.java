@@ -8,17 +8,17 @@ import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
 import pl.pilionerzy.exception.NoSuchGameException;
-import pl.pilionerzy.lifeline.Calculator;
-import pl.pilionerzy.lifeline.model.AudienceAnswer;
-import pl.pilionerzy.lifeline.model.FriendsAnswer;
+import pl.pilionerzy.lifeline.LifelineProcessor;
 import pl.pilionerzy.mapping.DtoMapper;
-import pl.pilionerzy.model.*;
+import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Lifeline;
+import pl.pilionerzy.model.Question;
 import pl.pilionerzy.repository.GameRepository;
 
-import java.util.Collection;
+import java.util.List;
 
-import static pl.pilionerzy.model.Lifeline.*;
-import static pl.pilionerzy.util.GameUtils.*;
+import static pl.pilionerzy.util.GameUtils.isLifelineUsed;
+import static pl.pilionerzy.util.GameUtils.validateForLifeline;
 
 /**
  * Service that is responsible for basic operations on a game such as starting, stopping and providing lifelines.
@@ -28,9 +28,9 @@ import static pl.pilionerzy.util.GameUtils.*;
 @RequiredArgsConstructor
 public class GameService {
 
-    private final Calculator lifelineCalculator;
     private final DtoMapper mapper;
     private final GameRepository gameRepository;
+    private final List<LifelineProcessor<?>> lifelineProcessors;
 
     /**
      * Creates and saves a new {@link Game} instance.
@@ -70,71 +70,31 @@ public class GameService {
     }
 
     /**
-     * Processes fifty-fifty lifeline.
+     * Processes the passed lifeline.
      *
      * @param gameId game id
-     * @return prefixes to reject
+     * @return lifeline result
      * @throws NoSuchGameException if no game with the passed id can be found
-     * @throws LifelineException   if fifty-fifty was already used
+     * @throws LifelineException   if the passed lifeline was already used
      * @throws GameException       if the last asked question is null
      */
     @Transactional
-    public Collection<Prefix> getTwoIncorrectPrefixes(Long gameId) {
-        logger.debug("Applying fifty-fifty lifeline to game with id {}", gameId);
+    public Object processLifeline(Long gameId, Lifeline lifeline) {
+        logger.debug("Applying {} lifeline to game with id {}", lifeline, gameId);
         Game game = findByIdWithUsedLifelines(gameId);
         validateForLifeline(game);
-        if (isLifelineUsed(game, FIFTY_FIFTY)) {
-            logger.warn("Requested fifty-fifty lifeline to the game with id {} for the second time", gameId);
-            throw new LifelineException("Fifty-fifty lifeline already used");
+        if (isLifelineUsed(game, lifeline)) {
+            logger.warn("Requested {} lifeline to the game with id {} for the second time", lifeline, gameId);
+            throw new LifelineException(String.format("%s lifeline already used", lifeline));
         }
-        updateUsedLifelines(game, FIFTY_FIFTY);
-        var fiftyFifty = lifelineCalculator.getFiftyFiftyResult(game.getLastAskedQuestion());
-        updateRejectedAnswers(game, fiftyFifty.getPrefixesToDiscard());
-        return fiftyFifty.getPrefixesToDiscard();
+        return getLifelineProcessor(lifeline).process(game);
     }
 
-    /**
-     * Processes phone-a-friend lifeline.
-     *
-     * @param gameId game id
-     * @return friend's answer containing prefix and wisdom
-     * @throws NoSuchGameException if no game with the passed id can be found
-     * @throws LifelineException   if phone-a-friend was already used
-     * @throws GameException       if the last asked question is null
-     */
-    @Transactional
-    public FriendsAnswer getFriendsAnswerByGameId(Long gameId) {
-        logger.debug("Applying phone-a-friend lifeline to game with id {}", gameId);
-        Game game = findByIdWithUsedLifelines(gameId);
-        validateForLifeline(game);
-        if (isLifelineUsed(game, PHONE_A_FRIEND)) {
-            logger.warn("Requested phone-a-friend lifeline to the game with id {} for the second time", gameId);
-            throw new LifelineException("Phone a friend lifeline already used");
-        }
-        updateUsedLifelines(game, PHONE_A_FRIEND);
-        return lifelineCalculator.getFriendsAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
-    }
-
-    /**
-     * Processes ask-the-audience lifeline.
-     *
-     * @param gameId game id
-     * @return audience answers sorted by prefix
-     * @throws NoSuchGameException if no game with the passed id can be found
-     * @throws LifelineException   if ask-the-audience was already used
-     * @throws GameException       if the last asked question is null
-     */
-    @Transactional
-    public AudienceAnswer getAudienceAnswerByGameId(Long gameId) {
-        logger.debug("Applying ask-the-audience lifeline to game with id {}", gameId);
-        Game game = findByIdWithUsedLifelines(gameId);
-        validateForLifeline(game);
-        if (isLifelineUsed(game, ASK_THE_AUDIENCE)) {
-            logger.warn("Requested ask-the-audience lifeline to the game with id {} for the second time", gameId);
-            throw new LifelineException("Ask the audience lifeline already used");
-        }
-        updateUsedLifelines(game, ASK_THE_AUDIENCE);
-        return lifelineCalculator.getAudienceAnswer(game.getLastAskedQuestion(), getRejectedAnswers(game));
+    private LifelineProcessor<?> getLifelineProcessor(Lifeline lifeline) {
+        return lifelineProcessors.stream()
+                .filter(processor -> processor.type() == lifeline)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Cannot find processor for lifeline: " + lifeline));
     }
 
     Game findByIdWithAskedQuestions(Long gameId) {
@@ -150,23 +110,6 @@ public class GameService {
     Game findByIdWithLastQuestionAndAnswers(Long gameId) {
         return gameRepository.findByIdWithLastQuestionAndAnswers(gameId)
                 .orElseThrow(() -> new NoSuchGameException(gameId));
-    }
-
-    private void updateUsedLifelines(Game game, Lifeline lifeline) {
-        var usedLifelines = game.getUsedLifelines();
-        var usedLifeline = new UsedLifeline();
-        usedLifeline.setType(lifeline);
-        usedLifeline.setQuestion(game.getLastAskedQuestion());
-        usedLifelines.add(usedLifeline);
-    }
-
-    private void updateRejectedAnswers(Game game, Collection<Prefix> rejectedAnswers) {
-        game.getUsedLifelines().forEach(
-                usedLifeline -> {
-                    if (usedLifeline.getType() == FIFTY_FIFTY) {
-                        usedLifeline.setRejectedAnswers(rejectedAnswers);
-                    }
-                });
     }
 
     void updateLastQuestion(Game game, Question question) {

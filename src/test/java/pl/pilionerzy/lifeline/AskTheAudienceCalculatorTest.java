@@ -31,21 +31,21 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldContainAllAnswersWhenFiftyFiftyWasNotUsed() {
-        var votesChart = calculator.getAnswer(question, Set.of()).getVotesChart();
+        var votesChart = calculator.getResult(question, Set.of()).getVotesChart();
 
         assertThat(votesChart).containsOnlyKeys(A, B, C, D);
     }
 
     @Test
     public void shouldContainOnlyRemainingAnswersWhenFiftyFiftyWasUsed() {
-        var votesChart = calculator.getAnswer(question, Set.of(C, D)).getVotesChart();
+        var votesChart = calculator.getResult(question, Set.of(C, D)).getVotesChart();
 
         assertThat(votesChart).containsOnlyKeys(A, B);
     }
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasNotUsed() {
-        int sum = calculator.getAnswer(question, Set.of()).getVotesChart().values().stream()
+        int sum = calculator.getResult(question, Set.of()).getVotesChart().values().stream()
                 .mapToInt(PartialAudienceAnswer::getVotes)
                 .sum();
 
@@ -56,7 +56,7 @@ public class AskTheAudienceCalculatorTest {
 
     @Test
     public void shouldSumUpTo100PercentWhenFiftyFiftyWasUsed() {
-        int sum = calculator.getAnswer(question, Set.of(C, D)).getVotesChart().values().stream()
+        int sum = calculator.getResult(question, Set.of(C, D)).getVotesChart().values().stream()
                 .mapToInt(PartialAudienceAnswer::getVotes)
                 .sum();
 
@@ -72,7 +72,7 @@ public class AskTheAudienceCalculatorTest {
         var averages = newHashMap(asMap(Set.of(Prefix.values()), prefix -> 0.0));
 
         for (int i = 0; i < numberOfDraws; i++) {
-            var answer = calculator.getAnswer(question, Set.of());
+            var answer = calculator.getResult(question, Set.of());
             averages.replaceAll((prefix, result) -> result += answer.getVotesChart().get(prefix).getVotes());
         }
 

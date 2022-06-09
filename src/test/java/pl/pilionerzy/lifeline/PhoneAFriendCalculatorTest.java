@@ -39,7 +39,7 @@ public class PhoneAFriendCalculatorTest {
 
         // When summing up the answers
         for (int i = 0; i < numberOfDraws; i++) {
-            FriendsAnswer answer = calculator.getAnswer(question, Set.of(C, D));
+            FriendsAnswer answer = calculator.getResult(question, Set.of(C, D));
             Integer numberOfAnswers = prefixesToNumberOfAnswers.get(answer.getPrefix());
             prefixesToNumberOfAnswers.put(answer.getPrefix(), ++numberOfAnswers);
         }
@@ -71,7 +71,7 @@ public class PhoneAFriendCalculatorTest {
 
         // When summing up the answers
         for (int i = 0; i < numberOfDraws; i++) {
-            FriendsAnswer answer = calculator.getAnswer(question, Set.of());
+            FriendsAnswer answer = calculator.getResult(question, Set.of());
             Integer numberOfAnswers = prefixesToNumberOfAnswers.get(answer.getPrefix());
             prefixesToNumberOfAnswers.put(answer.getPrefix(), ++numberOfAnswers);
         }
@@ -93,7 +93,7 @@ public class PhoneAFriendCalculatorTest {
     @Test
     public void shouldThrowExceptionWhenCorrectAnswerWasRejected() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> calculator.getAnswer(question, Set.of(A, B)))
+                .isThrownBy(() -> calculator.getResult(question, Set.of(A, B)))
                 .withMessage("Correct answer prefix cannot be rejected");
     }
 }

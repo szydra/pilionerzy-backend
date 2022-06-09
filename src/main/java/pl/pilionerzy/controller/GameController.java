@@ -34,16 +34,7 @@ public class GameController {
 
     @GetMapping("/{gameId}/{lifeline}")
     public Object getLifelineResult(@PathVariable Long gameId, @PathVariable Lifeline lifeline) {
-        switch (lifeline) {
-            case ASK_THE_AUDIENCE:
-                return gameService.getAudienceAnswerByGameId(gameId).getVotesChart();
-            case FIFTY_FIFTY:
-                return Map.of("incorrectPrefixes", gameService.getTwoIncorrectPrefixes(gameId));
-            case PHONE_A_FRIEND:
-                return gameService.getFriendsAnswerByGameId(gameId);
-            default:
-                throw new IllegalArgumentException("Unknown lifeline: " + lifeline);
-        }
+        return gameService.processLifeline(gameId, lifeline);
     }
 
     @PostMapping("/{gameId}/answers")
