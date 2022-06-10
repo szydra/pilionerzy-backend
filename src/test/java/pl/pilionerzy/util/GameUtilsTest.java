@@ -185,4 +185,10 @@ public class GameUtilsTest {
 
         assertThat(getRejectedAnswers(game)).containsExactlyInAnyOrder(A, C);
     }
+
+    @Test
+    public void testNextLevel() {
+        int nextLevel = GameUtils.getNextLevel(3);
+        assertThat(nextLevel).isEqualTo(4);
+    }
 }

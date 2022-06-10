@@ -12,7 +12,6 @@ import java.util.Set;
 import static java.lang.Boolean.FALSE;
 import static java.util.stream.Collectors.toSet;
 import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
-import static pl.pilionerzy.util.LevelUtils.getNextLevel;
 
 public class GameUtils {
 
@@ -67,6 +66,10 @@ public class GameUtils {
                 .filter(lifeline -> Objects.equals(lifeline.getQuestion(), game.getLastAskedQuestion()))
                 .flatMap(lifeline -> lifeline.getRejectedAnswers().stream())
                 .collect(toSet());
+    }
+
+    public static int getNextLevel(int currentLevel) {
+        return currentLevel + 1;
     }
 
     private enum RequestType {
