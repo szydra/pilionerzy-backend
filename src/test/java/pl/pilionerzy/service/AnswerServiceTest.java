@@ -40,6 +40,9 @@ public class AnswerServiceTest {
     @Mock
     private GameService gameService;
 
+    @Mock
+    private LevelService levelService;
+
     @InjectMocks
     private AnswerService answerService;
 
@@ -83,6 +86,7 @@ public class AnswerServiceTest {
     public void shouldNotAcceptIncorrectAnswer() {
         Game game = prepareGame(true);
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
+        doReturn(0).when(levelService).getGuaranteedLevel(0);
 
         answerService.doAnswer(GAME_ID, B);
 
@@ -136,6 +140,7 @@ public class AnswerServiceTest {
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
+        doReturn(2).when(levelService).getGuaranteedLevel(5);
 
         answerService.doAnswer(GAME_ID, C);
 

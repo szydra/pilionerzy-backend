@@ -10,8 +10,8 @@ import pl.pilionerzy.mapping.GameMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 
+import static pl.pilionerzy.util.GameUtils.getNextLevel;
 import static pl.pilionerzy.util.GameUtils.validateForAnswer;
-import static pl.pilionerzy.util.LevelUtils.*;
 
 /**
  * Processes player's answers during a game.
@@ -23,6 +23,7 @@ public class AnswerService {
 
     private final GameMapper gameMapper;
     private final GameService gameService;
+    private final LevelService levelService;
 
     /**
      * Processes answer request, updates game status and returns game with the correct answer.
@@ -49,7 +50,7 @@ public class AnswerService {
     private void updateGameForCorrect(Game game) {
         int currentLevel = game.getLevel();
         game.setLevel(getNextLevel(currentLevel));
-        if (isHighestLevel(game.getLevel())) {
+        if (levelService.isHighestLevel(game.getLevel())) {
             game.deactivate();
         }
     }
@@ -57,6 +58,6 @@ public class AnswerService {
     private void updateGameForIncorrect(Game game) {
         int currentLevel = game.getLevel();
         game.deactivate();
-        game.setLevel(getGuaranteedLevel(currentLevel));
+        game.setLevel(levelService.getGuaranteedLevel(currentLevel));
     }
 }
