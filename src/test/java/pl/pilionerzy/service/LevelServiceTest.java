@@ -67,6 +67,16 @@ public class LevelServiceTest {
         assertThatIllegalStateException().isThrownBy(() -> levelService.getGuaranteedLevel(1));
     }
 
+    @Test
+    public void testHighestLevel() {
+        assertThat(levelService.isHighestLevel(12)).isTrue();
+    }
+
+    @Test
+    public void testNonHighestLevel() {
+        assertThat(levelService.isHighestLevel(11)).isFalse();
+    }
+
     private List<Level> mockLevels() {
         return List.of(
                 level(0, true),

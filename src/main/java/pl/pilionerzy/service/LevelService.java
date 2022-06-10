@@ -33,4 +33,9 @@ public class LevelService {
         }
         return currentLevel;
     }
+
+    public boolean isHighestLevel(int currentLevel) {
+        var highestLevel = getAllLevels().stream().max(comparingInt(Level::getId)).orElseThrow();
+        return currentLevel == highestLevel.getId();
+    }
 }
