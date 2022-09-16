@@ -13,8 +13,10 @@ import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.lifeline.model.PartialAudienceAnswer;
+import pl.pilionerzy.model.Level;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
+import pl.pilionerzy.service.LevelService;
 import pl.pilionerzy.service.QuestionService;
 
 import java.util.List;
@@ -39,6 +41,9 @@ public class GameControllerTest {
 
     @MockBean
     private AnswerService answerService;
+
+    @MockBean
+    private LevelService levelService;
 
     @MockBean
     private GameService gameService;
@@ -130,5 +135,29 @@ public class GameControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("What is bad?"))
                 .andExpect(jsonPath("$.correctAnswer").doesNotExist());
+    }
+
+    @Test
+    public void shouldReturnAllLevels() throws Exception {
+        var level1 = new Level();
+        level1.setId(1);
+        level1.setAward("100 zł");
+        level1.setGuaranteed(false);
+
+        var level2 = new Level();
+        level2.setId(2);
+        level2.setAward("200 zł");
+        level2.setGuaranteed(true);
+
+        doReturn(List.of(level1, level2)).when(levelService).getAllLevels();
+
+        mvc.perform(get("/games/levels"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].award").value("100 zł"))
+                .andExpect(jsonPath("$[0].guaranteed").value(false))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].award").value("200 zł"))
+                .andExpect(jsonPath("$[1].guaranteed").value(true));
     }
 }
