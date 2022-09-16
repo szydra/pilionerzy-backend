@@ -101,6 +101,7 @@ public class AnswerServiceTest {
         game.setLevel(11);
         game.setAskedQuestions(prepareQuestions(12));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
+        doReturn(true).when(levelService).isHighestLevel(12);
 
         answerService.doAnswer(GAME_ID, A);
 
