@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.QuestionDto;
+import pl.pilionerzy.model.Level;
 import pl.pilionerzy.model.Lifeline;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.service.AnswerService;
 import pl.pilionerzy.service.GameService;
+import pl.pilionerzy.service.LevelService;
 import pl.pilionerzy.service.QuestionService;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "${allowed.origins}")
@@ -20,6 +23,7 @@ public class GameController {
 
     private final AnswerService answerService;
     private final GameService gameService;
+    private final LevelService levelService;
     private final QuestionService questionService;
 
     @GetMapping("/start-new")
@@ -45,5 +49,10 @@ public class GameController {
     @PostMapping("/{gameId}/stop")
     public GameDto stopGame(@PathVariable Long gameId) {
         return gameService.stopById(gameId);
+    }
+
+    @GetMapping("/levels")
+    public List<Level> getAllLevels() {
+        return levelService.getAllLevels();
     }
 }
