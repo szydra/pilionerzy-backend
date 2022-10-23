@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static pl.pilionerzy.model.Lifeline.ASK_THE_AUDIENCE;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = ExceptionHandler.class)
-public class ExceptionHandlerTest {
+@WebMvcTest(controllers = MainExceptionHandler.class)
+public class MainExceptionHandlerTest {
 
     @Autowired
     private MockMvc mvc;
