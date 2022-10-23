@@ -27,7 +27,7 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
-        return handleExceptionInternal(exception, prepareMessage(exception), new HttpHeaders(), BAD_REQUEST, request);
+        return doHandleWithMessage(exception, request, BAD_REQUEST, prepareMessage(exception));
     }
 
     private String prepareMessage(ConstraintViolationException exception) {
@@ -39,7 +39,7 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleExceptionInternal(exception, prepareMessage(exception), headers, BAD_REQUEST, request);
+        return doHandleWithMessage(exception, request, BAD_REQUEST, prepareMessage(exception));
     }
 
     private String prepareMessage(MethodArgumentNotValidException exception) {
@@ -51,21 +51,29 @@ public class MainExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataAccessException.class)
     protected ResponseEntity<Object> handleDataAccessException(DataAccessException exception, WebRequest request) {
         logger.error(DATABASE_ERROR, exception);
-        return handleExceptionInternal(exception, DATABASE_ERROR, new HttpHeaders(), SERVICE_UNAVAILABLE, request);
+        return doHandleWithMessage(exception, request, SERVICE_UNAVAILABLE, DATABASE_ERROR);
     }
 
     @ExceptionHandler(GameException.class)
     protected ResponseEntity<Object> handleGameException(GameException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), BAD_REQUEST, request);
+        return doHandle(exception, request, BAD_REQUEST);
     }
 
     @ExceptionHandler(LifelineException.class)
     protected ResponseEntity<Object> handleLifelineException(LifelineException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), FORBIDDEN, request);
+        return doHandle(exception, request, FORBIDDEN);
     }
 
     @ExceptionHandler(NoSuchGameException.class)
     protected ResponseEntity<Object> handleNoSuchGameException(NoSuchGameException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), NOT_FOUND, request);
+        return doHandle(exception, request, NOT_FOUND);
+    }
+
+    private ResponseEntity<Object> doHandle(Exception exception, WebRequest request, HttpStatus status) {
+        return doHandleWithMessage(exception, request, status, exception.getMessage());
+    }
+
+    private ResponseEntity<Object> doHandleWithMessage(Exception exception, WebRequest request, HttpStatus status, String message) {
+        return handleExceptionInternal(exception, message, new HttpHeaders(), status, request);
     }
 }
