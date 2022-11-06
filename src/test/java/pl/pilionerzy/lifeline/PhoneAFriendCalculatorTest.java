@@ -1,7 +1,7 @@
 package pl.pilionerzy.lifeline;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.lifeline.model.FriendsAnswer;
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
@@ -18,13 +18,13 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.data.Offset.offset;
 import static pl.pilionerzy.model.Prefix.*;
 
-public class PhoneAFriendCalculatorTest {
+class PhoneAFriendCalculatorTest {
 
     private final PhoneAFriendCalculator calculator = new PhoneAFriendCalculator();
     private final Question question = new Question();
 
-    @Before
-    public void setCorrectAnswer() {
+    @BeforeEach
+    void setCorrectAnswer() {
         Answer answer = new Answer();
         answer.setPrefix(A);
         answer.setCorrect(true);
@@ -32,7 +32,7 @@ public class PhoneAFriendCalculatorTest {
     }
 
     @Test
-    public void shouldBeDistributedUniformlyWhenFiftyFiftyWasUsed() {
+    void shouldBeDistributedUniformlyWhenFiftyFiftyWasUsed() {
         // Given 1000 draws for asking a friend
         int numberOfDraws = 1_000;
         Map<Prefix, Integer> prefixesToNumberOfAnswers = newHashMap(asMap(Set.of(Prefix.values()), prefix -> 0));
@@ -64,7 +64,7 @@ public class PhoneAFriendCalculatorTest {
     }
 
     @Test
-    public void shouldBeDistributedUniformlyWhenFiftyFiftyWasNotUsed() {
+    void shouldBeDistributedUniformlyWhenFiftyFiftyWasNotUsed() {
         // Given 1000 draws for asking a friend
         int numberOfDraws = 1_000;
         var prefixesToNumberOfAnswers = newHashMap(asMap(Set.of(Prefix.values()), prefix -> 0));
@@ -91,7 +91,7 @@ public class PhoneAFriendCalculatorTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenCorrectAnswerWasRejected() {
+    void shouldThrowExceptionWhenCorrectAnswerWasRejected() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> calculator.getResult(question, Set.of(A, B)))
                 .withMessage("Correct answer prefix cannot be rejected");

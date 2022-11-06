@@ -1,8 +1,8 @@
 package pl.pilionerzy.util;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.model.*;
 
@@ -16,12 +16,12 @@ import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 import static pl.pilionerzy.util.GameUtils.*;
 
-public class GameUtilsTest {
+class GameUtilsTest {
 
     private final Game game = new Game();
 
-    @Before
-    public void setGameId() {
+    @BeforeEach
+    void setGameId() {
         game.setId(1L);
     }
 
@@ -54,7 +54,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionForAnswerRequestWhenGameIsInactive() {
+    void shouldThrowExceptionForAnswerRequestWhenGameIsInactive() {
         game.deactivate();
 
         assertThatExceptionOfType(GameException.class)
@@ -63,7 +63,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionForLifelineRequestWhenGameIsInactive() {
+    void shouldThrowExceptionForLifelineRequestWhenGameIsInactive() {
         game.deactivate();
 
         assertThatExceptionOfType(GameException.class)
@@ -72,7 +72,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionForQuestionRequestWhenGameIsInactive() {
+    void shouldThrowExceptionForQuestionRequestWhenGameIsInactive() {
         game.deactivate();
 
         assertThatExceptionOfType(GameException.class)
@@ -81,7 +81,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionForTooManyRequestsForQuestion() {
+    void shouldThrowExceptionForTooManyRequestsForQuestion() {
         prepareQuestions();
         game.setLevel(1);
 
@@ -91,7 +91,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionForTooManyRequestsForAnswer() {
+    void shouldThrowExceptionForTooManyRequestsForAnswer() {
         prepareQuestions();
         game.setLevel(2);
 
@@ -101,7 +101,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void testValidRequestForQuestion() {
+    void testValidRequestForQuestion() {
         prepareQuestions();
         game.setLevel(2);
 
@@ -110,7 +110,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void testValidRequestForAnswer() {
+    void testValidRequestForAnswer() {
         prepareQuestions();
         game.setLevel(1);
 
@@ -119,14 +119,14 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
+    void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> validateForAnswer(game))
                 .withMessageContaining("Game does not have last asked question");
     }
 
     @Test
-    public void shouldBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
+    void shouldBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         prepareQuestions();
 
         assertThatCode(() -> validateForLifeline(game))
@@ -134,14 +134,14 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldNotBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
+    void shouldNotBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> validateForLifeline(game))
                 .withMessage("Cannot use a lifeline for a game without last asked question");
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenNoLifelineWasUsed() {
+    void shouldWorkCorrectlyWhenNoLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines();
 
@@ -149,7 +149,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenRequestedLifelineWasUsed() {
+    void shouldWorkCorrectlyWhenRequestedLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines(PHONE_A_FRIEND);
 
@@ -157,7 +157,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenRequestedLifelineWasNotUsed() {
+    void shouldWorkCorrectlyWhenRequestedLifelineWasNotUsed() {
         prepareQuestions();
         prepareLifelines(FIFTY_FIFTY, PHONE_A_FRIEND);
 
@@ -165,7 +165,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldReturnEmptySetWhenNoLifelineWasUsed() {
+    void shouldReturnEmptySetWhenNoLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines();
 
@@ -173,7 +173,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldReturnRejectedPrefixesWhenFiftyWasUsed() {
+    void shouldReturnRejectedPrefixesWhenFiftyWasUsed() {
         prepareQuestions();
         prepareLifelines(FIFTY_FIFTY);
         game.getUsedLifelines().stream()
@@ -187,7 +187,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void testNextLevel() {
+    void testNextLevel() {
         int nextLevel = GameUtils.getNextLevel(3);
         assertThat(nextLevel).isEqualTo(4);
     }
