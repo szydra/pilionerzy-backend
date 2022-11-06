@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.NoSuchGameException;
-import pl.pilionerzy.mapping.GameMapper;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 
@@ -21,7 +21,7 @@ import static pl.pilionerzy.util.GameUtils.validateForAnswer;
 @RequiredArgsConstructor
 public class AnswerService {
 
-    private final GameMapper gameMapper;
+    private final DtoMapper dtoMapper;
     private final GameService gameService;
     private final LevelService levelService;
 
@@ -44,7 +44,7 @@ public class AnswerService {
         } else {
             updateGameForCorrect(game);
         }
-        return gameMapper.modelToDto(game);
+        return dtoMapper.mapToDto(game);
     }
 
     private void updateGameForCorrect(Game game) {

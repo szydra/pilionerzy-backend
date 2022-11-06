@@ -9,8 +9,8 @@ import pl.pilionerzy.model.Question;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Mapper(componentModel = "spring", uses = AnswerMapper.class)
-public interface QuestionMapper {
+@Mapper(componentModel = "spring")
+interface QuestionMapper {
 
     @Mapping(target = "active", constant = "false")
     @Mapping(target = "hash", ignore = true)
