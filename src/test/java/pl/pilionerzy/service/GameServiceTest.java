@@ -1,12 +1,12 @@
 package pl.pilionerzy.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.exception.GameException;
 import pl.pilionerzy.exception.LifelineException;
@@ -32,8 +32,8 @@ import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 import static pl.pilionerzy.model.Prefix.A;
 import static pl.pilionerzy.model.Prefix.B;
 
-@RunWith(MockitoJUnitRunner.class)
-public class GameServiceTest {
+@ExtendWith(MockitoExtension.class)
+class GameServiceTest {
 
     @Mock
     private LifelineProcessor<?> lifelineProcessor;
@@ -47,51 +47,61 @@ public class GameServiceTest {
     @InjectMocks
     private GameService gameService;
 
-    @Before
-    public void initLifelineProcessors() {
+    @BeforeEach
+    void initLifelineProcessors() {
         lifelineProcessors.add(lifelineProcessor);
     }
 
     @Test
-    public void stoppingGameShouldBeTransactional() throws NoSuchMethodException {
+    void stoppingGameShouldBeTransactional() throws NoSuchMethodException {
         Method stopById = GameService.class.getMethod("stopById", Long.class);
 
         assertThat(stopById.isAnnotationPresent(Transactional.class)).isTrue();
     }
 
     @Test
-    public void shouldThrowExceptionWhenStoppingInactiveGame() {
-        Game game = mockNewGameWithId(1L);
+    void shouldThrowExceptionWhenStoppingInactiveGame() {
+        // given: inactive game
+        var game = newGameWithId(1L);
         game.deactivate();
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithLastQuestionAndAnswers(1L);
 
+        // when: trying to stop
+        // then: exception is thrown
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.stopById(1L))
                 .withMessage("Inactive game cannot be deactivated");
     }
 
     @Test
-    public void shouldThrowExceptionForNonExistingGame() {
+    void shouldThrowExceptionForNonExistingGame() {
+        // given: non-existing game
         doReturn(Optional.empty()).when(gameRepository).findByIdWithAskedQuestions(1L);
 
+        // when: trying to find it
+        // then: exception is thrown
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.findByIdWithAskedQuestions(1L));
     }
 
     @Test
-    public void shouldUpdateLastQuestion() {
-        Question question1 = new Question();
+    void shouldUpdateLastQuestion() {
+        // given
+        var question1 = new Question();
         question1.setId(11L);
         question1.setHash("abc");
-        Question question2 = new Question();
+        var question2 = new Question();
         question2.setId(12L);
         question2.setHash("def");
-        Game game = new Game();
+        var game = new Game();
         game.setId(1L);
         game.setLastAskedQuestion(question1);
         game.setAskedQuestions(newHashSet(question1));
 
+        // when
         gameService.updateLastQuestion(game, question2);
 
+        // then
         assertThat(game.getLastAskedQuestion())
                 .isEqualTo(question2);
         assertThat(game.getAskedQuestions())
@@ -101,53 +111,69 @@ public class GameServiceTest {
     // Unit tests for lifelines
 
     @Test
-    public void shouldThrowExceptionWhenLifelineIsAppliedToANonExistingGame() {
+    void shouldThrowExceptionWhenLifelineIsAppliedToANonExistingGame() {
+        // given: non-existing game
         doReturn(Optional.empty()).when(gameRepository).findByIdWithUsedLifelines(1L);
 
+        // when: trying to use lifeline
+        // then: exception is thrown
         assertThatExceptionOfType(NoSuchGameException.class)
                 .isThrownBy(() -> gameService.processLifeline(1L, FIFTY_FIFTY));
     }
 
     @Test
-    public void shouldThrowExceptionWhenLifelineIsAppliedToAGameWithoutLastAskedQuestion() {
-        mockNewGameWithId(1L);
+    void shouldThrowExceptionWhenLifelineIsAppliedToAGameWithoutLastAskedQuestion() {
+        // given: game without last asked question
+        var game = newGameWithId(1L);
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(1L);
 
+        // when: trying to use a lifeline
+        // then: exception is thrown
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.processLifeline(1L, FIFTY_FIFTY))
                 .withMessage("Cannot use a lifeline for a game without last asked question");
     }
 
     @Test
-    public void shouldThrowExceptionWhenLifelineWasAlreadyUsed() {
-        UsedLifeline fiftyFifty = new UsedLifeline();
+    void shouldThrowExceptionWhenLifelineWasAlreadyUsed() {
+        // given: game with fifty-fifty used
+        var fiftyFifty = new UsedLifeline();
         fiftyFifty.setType(FIFTY_FIFTY);
-        Game game = mockNewGameWithId(2L);
+        var game = newGameWithId(2L);
         game.setLastAskedQuestion(new Question());
         game.setUsedLifelines(newArrayList(fiftyFifty));
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(2L);
 
+        // when: trying to use fifty-fifty once again
+        // then: exception is thrown
         assertThatExceptionOfType(LifelineException.class)
                 .isThrownBy(() -> gameService.processLifeline(2L, FIFTY_FIFTY))
                 .withMessage("fifty-fifty lifeline already used");
     }
 
     @Test
-    public void shouldThrowExceptionWhenLifelineIsAppliedToInactiveGame() {
-        Game game = mockNewGameWithId(3L);
+    void shouldThrowExceptionWhenLifelineIsAppliedToInactiveGame() {
+        // given: inactive game
+        var game = newGameWithId(3L);
         game.deactivate();
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(3L);
 
+        // when: trying to use a lifeline
+        // then: exception is thrown
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> gameService.processLifeline(3L, FIFTY_FIFTY))
                 .withMessage("Game with id 3 is inactive");
     }
 
     @Test
-    public void shouldApplyLifelineWhenNoLifelineWasUsed() {
+    void shouldApplyLifelineWhenNoLifelineWasUsed() {
         // given
-        Game game = mockNewGameWithId(3L);
+        var game = newGameWithId(3L);
         game.setLastAskedQuestion(new Question());
         game.setUsedLifelines(newArrayList());
         doReturn(new FiftyFiftyResult(newHashSet(A, B))).when(lifelineProcessor).process(game);
         doReturn(FIFTY_FIFTY).when(lifelineProcessor).type();
+        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(3L);
 
         // when
         gameService.processLifeline(3L, FIFTY_FIFTY);
@@ -156,13 +182,11 @@ public class GameServiceTest {
         verify(lifelineProcessor).process(game);
     }
 
-    private Game mockNewGameWithId(long gameId) {
-        Game game = new Game();
+    private Game newGameWithId(long gameId) {
+        var game = new Game();
         game.setId(gameId);
         game.activate();
         game.setUsedLifelines(newArrayList());
-        doReturn(Optional.of(game)).when(gameRepository).findByIdWithLastQuestionAndAnswers(gameId);
-        doReturn(Optional.of(game)).when(gameRepository).findByIdWithUsedLifelines(gameId);
         return game;
     }
 }
