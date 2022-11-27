@@ -1,11 +1,11 @@
 package pl.pilionerzy.controller;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.dto.QuestionDto;
@@ -32,9 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = GameController.class)
-public class GameControllerTest {
+class GameControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -52,7 +52,7 @@ public class GameControllerTest {
     private QuestionService questionService;
 
     @Test
-    public void shouldReturnNewGame() throws Exception {
+    void shouldReturnNewGame() throws Exception {
         var game = new GameDto();
         game.setId(1_487L);
         doReturn(game).when(gameService).startNewGame();
@@ -64,7 +64,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldProcessRequest() throws Exception {
+    void shouldProcessRequest() throws Exception {
         var game = new GameDto();
         game.setCorrectAnswer(C);
         doReturn(game).when(answerService).doAnswer(50L, A);
@@ -77,7 +77,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldReturnStoppedGameWithCorrectAnswer() throws Exception {
+    void shouldReturnStoppedGameWithCorrectAnswer() throws Exception {
         var game = new GameDto();
         game.setCorrectAnswer(D);
 
@@ -90,7 +90,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldProcessFiftyFiftyLifeline() throws Exception {
+    void shouldProcessFiftyFiftyLifeline() throws Exception {
         doReturn(new FiftyFiftyResult(List.of(A, B))).when(gameService).processLifeline(25L, FIFTY_FIFTY);
 
         mvc.perform(get("/games/25/fifty-fifty"))
@@ -99,7 +99,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldProcessPhoneAFriendLifeline() throws Exception {
+    void shouldProcessPhoneAFriendLifeline() throws Exception {
         doReturn(new FriendsAnswer(C, 80)).when(gameService).processLifeline(26L, PHONE_A_FRIEND);
 
         mvc.perform(get("/games/26/phone-a-friend"))
@@ -109,7 +109,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldProcessAskTheAudienceLifeline() throws Exception {
+    void shouldProcessAskTheAudienceLifeline() throws Exception {
         doReturn(new AudienceAnswer(Map.of(
                 A, PartialAudienceAnswer.withVotes(10),
                 B, PartialAudienceAnswer.withVotes(20),
@@ -126,7 +126,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldResponseWithCorrectJson() throws Exception {
+    void shouldResponseWithCorrectJson() throws Exception {
         QuestionDto question = new QuestionDto();
         question.setContent("What is bad?");
         doReturn(question).when(questionService).getNextQuestionByGameId(1L);
@@ -138,7 +138,7 @@ public class GameControllerTest {
     }
 
     @Test
-    public void shouldReturnAllLevels() throws Exception {
+    void shouldReturnAllLevels() throws Exception {
         var level1 = new Level();
         level1.setId(1);
         level1.setAward("100 zł");
