@@ -1,12 +1,12 @@
 package pl.pilionerzy.repository;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pl.pilionerzy.model.Game;
 
 import javax.validation.ConstraintViolationException;
@@ -14,10 +14,10 @@ import javax.validation.ConstraintViolationException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class GameRepositoryIntegrationTest {
+class GameRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -26,7 +26,7 @@ public class GameRepositoryIntegrationTest {
     private GameRepository gameRepository;
 
     @Test
-    public void shouldNotSaveGameWithoutRequiredProperties() {
+    void shouldNotSaveGameWithoutRequiredProperties() {
         // given: game without required properties
         var game = new Game();
 
@@ -40,7 +40,7 @@ public class GameRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldDeactivateOldGame() {
+    void shouldDeactivateOldGame() {
         // given: active game
         var game = insertActiveGame();
 
@@ -53,7 +53,7 @@ public class GameRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotDeactivateNewGame() {
+    void shouldNotDeactivateNewGame() {
         // given: active game
         var game = insertActiveGame();
 
