@@ -1,14 +1,14 @@
 package pl.pilionerzy.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
-public class GameTest {
+class GameTest {
 
     @Test
-    public void shouldActivateInactiveGame() {
+    void shouldActivateInactiveGame() {
         // given: a new game
         Game game = new Game();
 
@@ -20,7 +20,7 @@ public class GameTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenActivatingActiveGame() {
+    void shouldThrowExceptionWhenActivatingActiveGame() {
         // given: an active game
         Game game = new Game();
         game.setActive(true);
@@ -33,7 +33,7 @@ public class GameTest {
     }
 
     @Test
-    public void shouldDeactivateActiveGame() {
+    void shouldDeactivateActiveGame() {
         // given: an active game
         Game game = new Game();
         game.setActive(true);
@@ -46,12 +46,12 @@ public class GameTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDeactivatingInactiveGame() {
+    void shouldThrowExceptionWhenDeactivatingInactiveGame() {
         // given: an inactive game
         Game game = new Game();
         game.setActive(false);
 
-        // when: trying do deactivate it
+        // when: trying to deactivate it
         // then: exception is thrown
         assertThatIllegalStateException()
                 .isThrownBy(game::deactivate)
@@ -59,7 +59,7 @@ public class GameTest {
     }
 
     @Test
-    public void shouldInitializeLevelInANewGame() {
+    void shouldInitializeLevelInANewGame() {
         // given: a new game
         Game game = new Game();
 
@@ -71,7 +71,7 @@ public class GameTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenLevelWasInitialized() {
+    void shouldThrowExceptionWhenLevelWasInitialized() {
         // given: a game on first level
         Game game = new Game();
         game.setLevel(1);
@@ -84,7 +84,7 @@ public class GameTest {
     }
 
     @Test
-    public void gamesWithTheSameIdShouldBeEqual() {
+    void gamesWithTheSameIdShouldBeEqual() {
         // given: two games with the same database identifiers
         Game game = new Game();
         game.setId(1L);
@@ -97,7 +97,7 @@ public class GameTest {
     }
 
     @Test
-    public void gamesWithDistinctIdsShouldNotBeEqual() {
+    void gamesWithDistinctIdsShouldNotBeEqual() {
         // given: two games with distinct database identifiers
         Game game = new Game();
         game.setId(1L);
@@ -110,7 +110,7 @@ public class GameTest {
     }
 
     @Test
-    public void gamesWithoutIdsShouldNotBeEqual() {
+    void gamesWithoutIdsShouldNotBeEqual() {
         // given: two games without database identifiers
         Game game = new Game();
         Game otherGame = new Game();

@@ -1,18 +1,18 @@
 package pl.pilionerzy.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 
-public class QuestionTest {
+class QuestionTest {
 
     private final Question question = new Question();
 
     @Test
-    public void shouldActivateInactiveQuestion() {
+    void shouldActivateInactiveQuestion() {
         question.setActive(false);
 
         question.activate();
@@ -21,7 +21,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenActivatingActiveQuestion() {
+    void shouldThrowExceptionWhenActivatingActiveQuestion() {
         question.setActive(true);
 
         assertThatIllegalStateException()
@@ -30,7 +30,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void shouldDeactivateActiveQuestion() {
+    void shouldDeactivateActiveQuestion() {
         question.setActive(true);
 
         question.deactivate();
@@ -39,7 +39,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDeactivatingInactiveQuestion() {
+    void shouldThrowExceptionWhenDeactivatingInactiveQuestion() {
         question.setActive(false);
 
         assertThatIllegalStateException()
@@ -48,7 +48,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void questionsWithTheSameHashShouldBeEqual() {
+    void questionsWithTheSameHashShouldBeEqual() {
         String hash = "1a2b3c4c5e6f7g8h";
         question.setHash(hash);
         question.setId(1L);
@@ -63,7 +63,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void questionsWithDistinctHashesShouldNotBeEqual() {
+    void questionsWithDistinctHashesShouldNotBeEqual() {
         question.setHash("1a2b3c4c5e6f7g8h");
 
         Question otherQuestion = new Question();
@@ -73,7 +73,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void shouldReturnCorrectAnswer() {
+    void shouldReturnCorrectAnswer() {
         Answer answer = new Answer();
         answer.setPrefix(Prefix.A);
         answer.setCorrect(true);
@@ -84,7 +84,7 @@ public class QuestionTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenThereIsNoCorrectAnswer() {
+    void shouldThrowExceptionWhenThereIsNoCorrectAnswer() {
         Answer answer = new Answer();
         answer.setPrefix(Prefix.A);
         answer.setCorrect(false);

@@ -2,13 +2,13 @@ package pl.pilionerzy.lifeline;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pilionerzy.lifeline.model.AudienceAnswer;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
@@ -29,11 +29,11 @@ import static org.assertj.core.api.Assertions.fail;
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class LifelineProcessorIntegrationTest {
+class LifelineProcessorIntegrationTest {
 
     @Autowired
     private List<LifelineProcessor<?>> lifelineProcessors;
@@ -42,7 +42,7 @@ public class LifelineProcessorIntegrationTest {
     private QuestionRepository questionRepository;
 
     @Test
-    public void shouldApplyFiftyFifty() {
+    void shouldApplyFiftyFifty() {
         // given
         var game = getGame();
 
@@ -60,7 +60,7 @@ public class LifelineProcessorIntegrationTest {
     }
 
     @Test
-    public void shouldApplyPhoneAFriend() {
+    void shouldApplyPhoneAFriend() {
         // given
         var game = getGame();
 
@@ -80,7 +80,7 @@ public class LifelineProcessorIntegrationTest {
     }
 
     @Test
-    public void shouldAskTheAudience() {
+    void shouldAskTheAudience() {
         // given
         var game = getGame();
 

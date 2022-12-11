@@ -1,20 +1,20 @@
 package pl.pilionerzy;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
-public class PilionerzyApplicationIntegrationTest {
+class PilionerzyApplicationIntegrationTest {
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
         logger.info("Context loads!");
     }
 }

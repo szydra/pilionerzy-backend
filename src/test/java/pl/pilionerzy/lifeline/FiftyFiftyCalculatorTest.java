@@ -1,6 +1,6 @@
 package pl.pilionerzy.lifeline;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
 import pl.pilionerzy.model.*;
 
@@ -10,12 +10,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 
-public class FiftyFiftyCalculatorTest {
+class FiftyFiftyCalculatorTest {
 
     private final LifelineProcessor<FiftyFiftyResult> calculator = new FiftyFiftyCalculator();
 
     @Test
-    public void shouldDiscardExactlyTwoIncorrectAnswers() {
+    void shouldDiscardExactlyTwoIncorrectAnswers() {
         // given
         var game = createGame();
 
@@ -29,7 +29,7 @@ public class FiftyFiftyCalculatorTest {
     }
 
     @Test
-    public void shouldUpdateUsedLifelines() {
+    void shouldUpdateUsedLifelines() {
         // given
         var game = createGame();
 
@@ -41,7 +41,7 @@ public class FiftyFiftyCalculatorTest {
     }
 
     @Test
-    public void shouldSaveRejectedAnswers() {
+    void shouldSaveRejectedAnswers() {
         // given
         var game = createGame();
 

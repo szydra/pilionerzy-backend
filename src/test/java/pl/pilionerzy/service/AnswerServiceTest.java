@@ -1,15 +1,15 @@
 package pl.pilionerzy.service;
 
 import com.google.common.collect.Sets;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.pilionerzy.dto.GameDto;
 import pl.pilionerzy.exception.GameException;
-import pl.pilionerzy.mapping.GameMapper;
+import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
@@ -23,19 +23,19 @@ import java.util.stream.IntStream;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AnswerServiceTest {
+@ExtendWith(MockitoExtension.class)
+class AnswerServiceTest {
 
     private static final long GAME_ID = 123L;
     private static final long QUESTION_ID = 456L;
 
     @Mock
-    private GameMapper gameMapper;
+    private DtoMapper dtoMapper;
 
     @Mock
     private GameService gameService;
@@ -46,119 +46,144 @@ public class AnswerServiceTest {
     @InjectMocks
     private AnswerService answerService;
 
-    @Before
-    public void prepareGameMapper() {
-        doAnswer(invocation -> mapToDto(invocation.getArgument(0)))
-                .when(gameMapper)
-                .modelToDto(isA(Game.class));
+    @BeforeEach
+    void prepareGameMapper() {
+        // lenient because of testing exceptions
+        lenient().doAnswer(invocation -> mapToDto(invocation.getArgument(0)))
+                .when(dtoMapper)
+                .mapToDto(isA(Game.class));
     }
 
     private GameDto mapToDto(Game game) {
-        GameDto gameDto = new GameDto();
+        var gameDto = new GameDto();
         gameDto.setActive(game.getActive());
         gameDto.setLevel(game.getLevel());
         return gameDto;
     }
 
     @Test
-    public void shouldThrowExceptionForInactiveGame() {
-        Game inactiveGame = prepareGame(false);
+    void shouldThrowExceptionForInactiveGame() {
+        // given: inactive game
+        var inactiveGame = prepareGame(false);
         doReturn(inactiveGame).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
+        // when: trying to answer
+        // then: exception is thrown
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
                 .withMessage("Game with id %s is inactive", GAME_ID);
     }
 
     @Test
-    public void shouldAcceptCorrectAnswer() {
-        Game game = prepareGame(true);
+    void shouldAcceptCorrectAnswer() {
+        // given
+        var game = prepareGame(true);
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
+        // when
         answerService.doAnswer(GAME_ID, A);
 
+        // then
         assertThat(game)
                 .isActive()
                 .hasLevel(1);
     }
 
     @Test
-    public void shouldNotAcceptIncorrectAnswer() {
-        Game game = prepareGame(true);
+    void shouldNotAcceptIncorrectAnswer() {
+        // given
+        var game = prepareGame(true);
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
         doReturn(0).when(levelService).getGuaranteedLevel(0);
 
+        // when
         answerService.doAnswer(GAME_ID, B);
 
+        // then
         assertThat(game)
                 .isInactive()
                 .hasLevel(0);
     }
 
     @Test
-    public void shouldDeactivateGameOnHighestLevel() {
-        Game game = prepareGame(true);
+    void shouldDeactivateGameOnHighestLevel() {
+        // given
+        var game = prepareGame(true);
         game.setLevel(11);
         game.setAskedQuestions(prepareQuestions(12));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
         doReturn(true).when(levelService).isHighestLevel(12);
 
+        // when
         answerService.doAnswer(GAME_ID, A);
 
+        // then
         assertThat(game)
                 .isInactive()
                 .hasLevel(12);
     }
 
     @Test
-    public void shouldThrowExceptionForGameWithoutLastQuestion() {
-        Game game = prepareGame(true);
+    void shouldThrowExceptionForGameWithoutLastQuestion() {
+        // given: game without last asked question
+        var game = prepareGame(true);
         game.setLastAskedQuestion(null);
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
+        // when: trying to answer
+        // then: exception is thrown
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
                 .withMessage("Game does not have last asked question");
     }
 
     @Test
-    public void shouldIncreaseLevelWhenAnswerIsCorrect() {
-        Game game = prepareGame(true);
+    void shouldIncreaseLevelWhenAnswerIsCorrect() {
+        // given
+        var game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
+        // when
         answerService.doAnswer(GAME_ID, A);
 
+        // then
         assertThat(game)
                 .isActive()
                 .hasLevel(6);
     }
 
     @Test
-    public void shouldDecreaseLevelWhenAnswerIsIncorrect() {
-        Game game = prepareGame(true);
+    void shouldDecreaseLevelWhenAnswerIsIncorrect() {
+        // given
+        var game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
         doReturn(2).when(levelService).getGuaranteedLevel(5);
 
+        // when
         answerService.doAnswer(GAME_ID, C);
 
+        // then
         assertThat(game)
                 .isInactive()
                 .hasLevel(2);
     }
 
     @Test
-    public void shouldNotIncreaseLevelTwice() {
-        Game game = prepareGame(true);
+    void shouldNotIncreaseLevelTwice() {
+        // given
+        var game = prepareGame(true);
         game.setLevel(5);
         game.setAskedQuestions(prepareQuestions(6));
         doReturn(game).when(gameService).findByIdWithAskedQuestions(GAME_ID);
 
+        // when
         answerService.doAnswer(GAME_ID, A);
 
+        // then
         assertThatExceptionOfType(GameException.class)
                 .isThrownBy(() -> answerService.doAnswer(GAME_ID, A))
                 .withMessage("Invalid number of requests for game with id %s", GAME_ID);
@@ -169,8 +194,8 @@ public class AnswerServiceTest {
     }
 
     private Game prepareGame(Boolean active) {
-        Question question = prepareQuestion(QUESTION_ID, A);
-        Game game = new Game();
+        var question = prepareQuestion(QUESTION_ID, A);
+        var game = new Game();
         game.setId(GAME_ID);
         game.setActive(active);
         game.setLastAskedQuestion(question);
@@ -180,10 +205,10 @@ public class AnswerServiceTest {
     }
 
     private Question prepareQuestion(Long questionId, Prefix correctAnswer) {
-        Question question = new Question();
+        var question = new Question();
         question.setId(questionId);
         question.setHash(randomAlphanumeric(32));
-        Answer answer = new Answer();
+        var answer = new Answer();
         answer.setPrefix(correctAnswer);
         answer.setCorrect(true);
         question.setAnswers(List.of(answer));

@@ -1,11 +1,11 @@
 package pl.pilionerzy.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,14 +14,15 @@ import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
 import pl.pilionerzy.repository.QuestionRepository;
 
-import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
+import java.util.List;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.*;
 import static pl.pilionerzy.service.QuestionService.LIMIT;
 
-@RunWith(MockitoJUnitRunner.class)
-public class QuestionServiceTest {
+@ExtendWith(MockitoExtension.class)
+class QuestionServiceTest {
 
     private final long gameId = 123L;
 
@@ -40,8 +41,8 @@ public class QuestionServiceTest {
     private Game game;
     private Question question;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         prepareGameAndQuestion();
         prepareMocks();
     }
@@ -53,19 +54,22 @@ public class QuestionServiceTest {
         game.setId(gameId);
         game.setLevel(1);
         game.setActive(true);
-        game.setAskedQuestions(singleton(question));
+        game.setAskedQuestions(Set.of(question));
     }
 
     private void prepareMocks() {
         doReturn(game).when(gameService).findByIdWithAskedQuestions(gameId);
-        doReturn(page).when(questionRepository).findByActive(isA(Boolean.class), isA(Pageable.class));
-        doReturn(1).when(questionRepository).countByActive(true);
+        // lenient because of testing exceptions
+        lenient().doReturn(page).when(questionRepository).findByActive(isA(Boolean.class), isA(Pageable.class));
     }
 
     @Test
-    public void shouldThrowExceptionWhenQuestionWasNotObtained() {
-        doReturn(false).when(page).hasContent();
+    void shouldThrowExceptionWhenQuestionWasNotFound() {
+        // given: only one question that was already asked
+        doReturn(1).when(questionRepository).countByActive(true);
 
+        // when: trying to get next question
+        // then: exception is thrown and was tried to find next question
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
         verify(questionRepository)
@@ -73,10 +77,14 @@ public class QuestionServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenThereAreNotEnoughQuestions() {
+    void shouldThrowExceptionWhenThereAreNotEnoughQuestions() {
+        // given: only questions that were already asked
+        doReturn(1).when(questionRepository).countByActive(true);
         doReturn(true).when(page).hasContent();
-        doReturn(singletonList(question)).when(page).getContent();
+        doReturn(List.of(question)).when(page).getContent();
 
+        // when: trying to get next question
+        // then: exception is thrown and was tried to find next question assumed number of times
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId));
         verify(questionRepository, times(LIMIT))
@@ -84,9 +92,12 @@ public class QuestionServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenThereAreNoQuestions() {
+    void shouldThrowExceptionWhenThereAreNoQuestions() {
+        // given: no questions
         doReturn(0).when(questionRepository).countByActive(true);
 
+        // when: trying to get next question
+        // then: exception is thrown
         assertThatExceptionOfType(NotEnoughDataException.class)
                 .isThrownBy(() -> questionService.getNextQuestionByGameId(gameId))
                 .withMessage("No active questions available");

@@ -1,11 +1,13 @@
 package pl.pilionerzy.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.pilionerzy.model.Level;
 import pl.pilionerzy.repository.LevelRepository;
 
@@ -14,8 +16,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 
-@RunWith(MockitoJUnitRunner.class)
-public class LevelServiceTest {
+@ExtendWith(MockitoExtension.class)
+class LevelServiceTest {
 
     @Mock
     private LevelRepository levelRepository;
@@ -23,58 +25,54 @@ public class LevelServiceTest {
     @InjectMocks
     private LevelService levelService;
 
-    @Before
-    public void setLevels() {
+    @ParameterizedTest
+    @ValueSource(ints = {-5, 13})
+    void testLevelsOutOfRange(int level) {
+        // given: mocked levels
         doReturn(mockLevels()).when(levelRepository).findByOrderByIdAsc();
-    }
 
-    @Test
-    public void testNegativeLevel() {
+        // when: trying to get guaranteed level for level out of range
+        // then: exception is thrown
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> levelService.getGuaranteedLevel(-5));
+                .isThrownBy(() -> levelService.getGuaranteedLevel(level));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"1,0", "7,7", "10,7"})
+    void testGuaranteedLevels(int level, int expectedGuaranteedLevel) {
+        // given
+        doReturn(mockLevels()).when(levelRepository).findByOrderByIdAsc();
+
+        // when
+        int guaranteedLevel = levelService.getGuaranteedLevel(level);
+
+        // then
+        assertThat(guaranteedLevel).isEqualTo(expectedGuaranteedLevel);
     }
 
     @Test
-    public void testTooLargeLevel() {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> levelService.getGuaranteedLevel(13));
-    }
-
-    @Test
-    public void testLevel10() {
-        int guaranteedLevel = levelService.getGuaranteedLevel(10);
-        assertThat(guaranteedLevel).isEqualTo(7);
-    }
-
-    @Test
-    public void testLevel7() {
-        int guaranteedLevel = levelService.getGuaranteedLevel(7);
-        assertThat(guaranteedLevel).isEqualTo(7);
-    }
-
-    @Test
-    public void testLevel1() {
-        int guaranteedLevel = levelService.getGuaranteedLevel(1);
-        assertThat(guaranteedLevel).isZero();
-    }
-
-    @Test
-    public void testNoGuaranteedLevel() {
+    void testNoGuaranteedLevel() {
+        // given: only non-guaranteed levels
         doReturn(List.of(level(0, false), level(1, false)))
                 .when(levelRepository)
                 .findByOrderByIdAsc();
 
+        // when: trying to get guaranteed level
+        // then: exception is thrown
         assertThatIllegalStateException().isThrownBy(() -> levelService.getGuaranteedLevel(1));
     }
 
-    @Test
-    public void testHighestLevel() {
-        assertThat(levelService.isHighestLevel(12)).isTrue();
-    }
+    @ParameterizedTest
+    @CsvSource({"11,false", "12,true"})
+    void testHighestLevel(int level, boolean highest) {
+        // given
+        doReturn(mockLevels()).when(levelRepository).findByOrderByIdAsc();
 
-    @Test
-    public void testNonHighestLevel() {
-        assertThat(levelService.isHighestLevel(11)).isFalse();
+        // when
+        var isHighestLevel = levelService.isHighestLevel(level);
+
+        // then
+        assertThat(isHighestLevel).isEqualTo(highest);
     }
 
     private List<Level> mockLevels() {

@@ -1,13 +1,13 @@
 package pl.pilionerzy.repository;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
@@ -16,7 +16,6 @@ import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Collections.shuffle;
 import static java.util.Comparator.comparing;
@@ -26,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static pl.pilionerzy.assertion.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.C;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @DataJpaTest
 @ActiveProfiles("test")
-public class QuestionRepositoryIntegrationTest {
+class QuestionRepositoryIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -38,9 +37,9 @@ public class QuestionRepositoryIntegrationTest {
     private QuestionRepository questionRepository;
 
     @Test
-    public void shouldNotSaveIncompleteQuestion() {
+    void shouldNotSaveIncompleteQuestion() {
         // given: question with 3 answer and with null as active property
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.getAnswers().remove(0);
 
         // when: trying to save the question
@@ -53,9 +52,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithoutContent() {
+    void shouldNotSaveQuestionWithoutContent() {
         // given: question without content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.setContent(null);
 
@@ -68,9 +67,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithEmptyContent() {
+    void shouldNotSaveQuestionWithEmptyContent() {
         // given: question with empty content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.setContent("");
 
@@ -83,9 +82,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithTooLongContent() {
+    void shouldNotSaveQuestionWithTooLongContent() {
         // given: question with too long content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.setContent(randomAlphanumeric(5000));
 
@@ -98,9 +97,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithoutAnswers() {
+    void shouldNotSaveQuestionWithoutAnswers() {
         // given: question without answers
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.setAnswers(null);
 
@@ -113,9 +112,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithoutCorrectAnswer() {
+    void shouldNotSaveQuestionWithoutCorrectAnswer() {
         // given: question without correct answer
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().forEach(answer -> answer.setCorrect(false));
 
@@ -128,9 +127,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithTwoCorrectAnswers() {
+    void shouldNotSaveQuestionWithTwoCorrectAnswers() {
         // given: question with two correct answers
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().get(0).setCorrect(true);
 
@@ -143,9 +142,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotFindInactiveQuestion() {
+    void shouldNotFindInactiveQuestion() {
         // given: inactive question
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.deactivate();
         questionRepository.save(question);
 
@@ -159,9 +158,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldFindActiveQuestion() {
+    void shouldFindActiveQuestion() {
         // given: active question
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         questionRepository.save(question);
 
@@ -175,16 +174,16 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldFindQuestionAndOrderPrefixes() {
+    void shouldFindQuestionAndOrderPrefixes() {
         // given: saved question with random order of answers
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         shuffle(question.getAnswers());
-        Long id = entityManager.persistAndGetId(question, Long.class);
+        var id = entityManager.persistAndGetId(question, Long.class);
         entityManager.clear();
 
         // when: selecting the question
-        Optional<Question> foundQuestion = questionRepository.findById(id);
+        var foundQuestion = questionRepository.findById(id);
 
         // then: answers are sorted according to prefixes
         assertThat(foundQuestion).hasValueSatisfying(q ->
@@ -192,9 +191,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveTheSameQuestionTwice() {
+    void shouldNotSaveTheSameQuestionTwice() {
         // given: saved question
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         entityManager.persistAndFlush(question);
         entityManager.detach(question);
@@ -207,9 +206,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithoutHash() {
+    void shouldNotSaveQuestionWithoutHash() {
         // given: active question without hash
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.setHash(null);
 
@@ -222,9 +221,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithAnswerWithoutContent() {
+    void shouldNotSaveQuestionWithAnswerWithoutContent() {
         // given: question with an answer without content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().get(0).setContent(null);
 
@@ -237,9 +236,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithAnswerWithEmptyContent() {
+    void shouldNotSaveQuestionWithAnswerWithEmptyContent() {
         // given: question with an answer with empty content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().get(0).setContent("");
 
@@ -252,9 +251,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithAnswerWithTooLongContent() {
+    void shouldNotSaveQuestionWithAnswerWithTooLongContent() {
         // given: question with an answer with too long content
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().get(0).setContent(randomAlphanumeric(2000));
 
@@ -267,9 +266,9 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldNotSaveQuestionWithAnswerWithoutCorrectFlag() {
+    void shouldNotSaveQuestionWithAnswerWithoutCorrectFlag() {
         // given: question with an answer without correct indicator
-        Question question = prepareRandomQuestion();
+        var question = prepareRandomQuestion();
         question.activate();
         question.getAnswers().get(0).setCorrect(null);
 
@@ -282,8 +281,8 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     private Question prepareRandomQuestion() {
-        Question question = new Question();
-        List<Answer> answers = prepareRandomAnswers();
+        var question = new Question();
+        var answers = prepareRandomAnswers();
         answers.forEach(answer -> answer.setQuestion(question));
         question.setAnswers(answers);
         question.setContent(randomAlphanumeric(32));
@@ -298,7 +297,7 @@ public class QuestionRepositoryIntegrationTest {
     }
 
     private Answer getRandomAnswer(Prefix prefix) {
-        Answer answer = new Answer();
+        var answer = new Answer();
         answer.setPrefix(prefix);
         answer.setContent(randomAlphanumeric(16));
         answer.setCorrect(prefix == C);

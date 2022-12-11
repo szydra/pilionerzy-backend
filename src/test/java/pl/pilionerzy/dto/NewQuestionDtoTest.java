@@ -1,7 +1,7 @@
 package pl.pilionerzy.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.model.Prefix;
 
 import java.io.IOException;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class NewQuestionDtoTest {
+class NewQuestionDtoTest {
 
     @Test
-    public void jsonShouldBeReadCorrectly() throws IOException {
+    void jsonShouldBeReadCorrectly() throws IOException {
         String json = "{\"content\": \"content\","
                 + "\"answers\": ["
                 + "  {\"prefix\": \"A\",\"content\": \"A\"},"
@@ -33,7 +33,7 @@ public class NewQuestionDtoTest {
     }
 
     @Test
-    public void shouldIgnoreIdInJson() throws IOException {
+    void shouldIgnoreIdInJson() throws IOException {
         String json = "{\"id\":1,"
                 + "\"content\": \"content\","
                 + "\"answers\": ["
@@ -49,7 +49,7 @@ public class NewQuestionDtoTest {
     }
 
     @Test
-    public void equalsShouldNotThrowStackOverflowError() {
+    void equalsShouldNotThrowStackOverflowError() {
         NewQuestionDto question1 = prepareQuestionWithOneAnswer();
         NewQuestionDto question2 = prepareQuestionWithOneAnswer();
 
@@ -57,7 +57,7 @@ public class NewQuestionDtoTest {
     }
 
     @Test
-    public void hashCodeShouldNotThrowStackOverflowError() {
+    void hashCodeShouldNotThrowStackOverflowError() {
         NewQuestionDto question = prepareQuestionWithOneAnswer();
 
         assertThatCode(question::hashCode).doesNotThrowAnyException();
@@ -89,5 +89,4 @@ public class NewQuestionDtoTest {
         answer.setQuestion(question);
         return question;
     }
-
 }
