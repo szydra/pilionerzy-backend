@@ -29,7 +29,6 @@ import java.util.List;
 @Component
 @Transactional
 @Slf4j
-@SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
 class InitialQuestionsLoader implements CommandLineRunner {
 
