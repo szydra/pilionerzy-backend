@@ -9,9 +9,10 @@ import java.util.Map;
 
 class LoopAvoidingContext {
 
-    private Map<Object, Object> knownInstances = new IdentityHashMap<>();
+    private final Map<Object, Object> knownInstances = new IdentityHashMap<>();
 
     @BeforeMapping
+    @SuppressWarnings("unchecked")
     <T> T getMappedInstance(Object source, @TargetType Class<T> targetType) {
         return (T) knownInstances.get(source);
     }
@@ -20,5 +21,4 @@ class LoopAvoidingContext {
     void storeMappedInstance(Object source, @MappingTarget Object target) {
         knownInstances.put(source, target);
     }
-
 }

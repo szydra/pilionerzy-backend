@@ -1,41 +1,46 @@
 package pl.pilionerzy.mapping;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import pl.pilionerzy.dto.GameDto;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import pl.pilionerzy.model.Answer;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Prefix;
 import pl.pilionerzy.model.Question;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = GameMapperImpl.class)
-public class GameMapperTest {
+class GameMapperTest {
 
     @Autowired
     private GameMapper gameMapper;
 
     @Test
-    public void shouldMapCorrectAnswer() {
-        Question question = new Question();
-        question.setCorrectAnswer(Prefix.C);
-        Game game = new Game();
+    void shouldMapCorrectAnswer() {
+        var question = new Question();
+        var answer = new Answer();
+        answer.setPrefix(Prefix.C);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
+        var game = new Game();
         game.setLastAskedQuestion(question);
 
-        GameDto gameDto = gameMapper.modelToDto(game);
+        var gameDto = gameMapper.modelToDto(game);
 
         assertThat(gameDto.getCorrectAnswer()).isSameAs(Prefix.C);
     }
 
     @Test
-    public void shouldNotThrowNullPointerException() {
-        Game game = new Game();
+    void shouldNotThrowNullPointerException() {
+        var game = new Game();
 
-        GameDto gameDto = gameMapper.modelToDto(game);
+        var gameDto = gameMapper.modelToDto(game);
 
         assertThat(gameDto.getCorrectAnswer()).isNull();
     }

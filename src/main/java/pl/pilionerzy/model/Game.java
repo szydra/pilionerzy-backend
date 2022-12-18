@@ -1,6 +1,5 @@
 package pl.pilionerzy.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,21 +12,17 @@ import java.util.Set;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = "businessId")
 public class Game {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-
-    @NotNull(message = "game must have business id")
-    @Column(unique = true, length = 32, nullable = false)
-    private String businessId;
 
     @CreationTimestamp
     private LocalDateTime startTime;
@@ -38,14 +33,24 @@ public class Game {
     @NotNull(message = "game must have level")
     private Integer level;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    @JoinTable(
+            name = "game_asked_question",
+            joinColumns = @JoinColumn(name = "game_id", foreignKey = @ForeignKey(name = "fk_asked_question_game")),
+            inverseJoinColumns = @JoinColumn(name = "question_id", foreignKey = @ForeignKey(name = "fk_asked_question"))
+    )
     private Set<Question> askedQuestions;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_game_last_asked_question"))
     private Question lastAskedQuestion;
 
     @ElementCollection
-    @OrderColumn
+    @CollectionTable(
+            name = "used_lifeline",
+            joinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "fk_used_lifeline_game"))
+    )
+    @OrderColumn(name = "request_order")
     private List<UsedLifeline> usedLifelines;
 
     public void activate() {
@@ -67,6 +72,22 @@ public class Game {
             throw new IllegalStateException("Level is already set");
         }
         level = 0;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        } else if (!(other instanceof Game)) {
+            return false;
+        }
+        Game game = (Game) other;
+        return id != null && id.equals(game.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
     }
 
     @Override

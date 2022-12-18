@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.pilionerzy.exception.GameException;
@@ -20,13 +21,13 @@ import static java.util.stream.Collectors.joining;
 import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
-public class ExceptionHandler extends ResponseEntityExceptionHandler {
+public class MainExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String DATABASE_ERROR = "Database error occurred";
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
-        return handleExceptionInternal(exception, prepareMessage(exception), new HttpHeaders(), BAD_REQUEST, request);
+        return doHandleWithMessage(exception, request, BAD_REQUEST, prepareMessage(exception));
     }
 
     private String prepareMessage(ConstraintViolationException exception) {
@@ -38,7 +39,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception,
                                                                   HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleExceptionInternal(exception, prepareMessage(exception), headers, BAD_REQUEST, request);
+        return doHandleWithMessage(exception, request, BAD_REQUEST, prepareMessage(exception));
     }
 
     private String prepareMessage(MethodArgumentNotValidException exception) {
@@ -47,24 +48,32 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(joining(", ", "Validation errors: ", ""));
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(DataAccessException.class)
+    @ExceptionHandler(DataAccessException.class)
     protected ResponseEntity<Object> handleDataAccessException(DataAccessException exception, WebRequest request) {
         logger.error(DATABASE_ERROR, exception);
-        return handleExceptionInternal(exception, DATABASE_ERROR, new HttpHeaders(), SERVICE_UNAVAILABLE, request);
+        return doHandleWithMessage(exception, request, SERVICE_UNAVAILABLE, DATABASE_ERROR);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(GameException.class)
+    @ExceptionHandler(GameException.class)
     protected ResponseEntity<Object> handleGameException(GameException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), BAD_REQUEST, request);
+        return doHandle(exception, request, BAD_REQUEST);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(LifelineException.class)
+    @ExceptionHandler(LifelineException.class)
     protected ResponseEntity<Object> handleLifelineException(LifelineException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), FORBIDDEN, request);
+        return doHandle(exception, request, FORBIDDEN);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchGameException.class)
+    @ExceptionHandler(NoSuchGameException.class)
     protected ResponseEntity<Object> handleNoSuchGameException(NoSuchGameException exception, WebRequest request) {
-        return handleExceptionInternal(exception, exception.getMessage(), new HttpHeaders(), NOT_FOUND, request);
+        return doHandle(exception, request, NOT_FOUND);
+    }
+
+    private ResponseEntity<Object> doHandle(Exception exception, WebRequest request, HttpStatus status) {
+        return doHandleWithMessage(exception, request, status, exception.getMessage());
+    }
+
+    private ResponseEntity<Object> doHandleWithMessage(Exception exception, WebRequest request, HttpStatus status, String message) {
+        return handleExceptionInternal(exception, message, new HttpHeaders(), status, request);
     }
 }

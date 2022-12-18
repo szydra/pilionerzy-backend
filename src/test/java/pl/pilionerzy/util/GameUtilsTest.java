@@ -1,12 +1,10 @@
 package pl.pilionerzy.util;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.exception.GameException;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Lifeline;
-import pl.pilionerzy.model.Question;
-import pl.pilionerzy.model.UsedLifeline;
+import pl.pilionerzy.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,21 +15,29 @@ import static org.assertj.core.api.Assertions.*;
 import static pl.pilionerzy.model.Lifeline.*;
 import static pl.pilionerzy.model.Prefix.*;
 import static pl.pilionerzy.util.GameUtils.*;
-import static pl.pilionerzy.util.RequestType.*;
 
-public class GameUtilsTest {
+class GameUtilsTest {
 
-    private Game game = new Game();
+    private final Game game = new Game();
+
+    @BeforeEach
+    void setGameId() {
+        game.setId(1L);
+    }
 
     private void prepareQuestions() {
         Question q1 = new Question();
         q1.setId(1L);
-        q1.setBusinessId("abc");
-        q1.setCorrectAnswer(A);
+        q1.setHash("abc");
+        Answer answer1 = new Answer();
+        answer1.setPrefix(A);
+        answer1.setCorrect(true);
         Question q2 = new Question();
         q2.setId(2L);
-        q2.setBusinessId("def");
-        q2.setCorrectAnswer(B);
+        q2.setHash("def");
+        Answer answer2 = new Answer();
+        answer2.setPrefix(B);
+        answer2.setCorrect(true);
         game.setAskedQuestions(newHashSet(q1, q2));
         game.setLastAskedQuestion(q2);
     }
@@ -48,86 +54,94 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenGameIsInactive() {
+    void shouldThrowExceptionForAnswerRequestWhenGameIsInactive() {
         game.deactivate();
 
-        assertThat(RequestType.values()).allSatisfy(requestType ->
-                assertThatExceptionOfType(GameException.class)
-                        .isThrownBy(() -> validate(game, requestType))
-                        .withMessageContaining("inactive")
-        );
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForAnswer(game))
+                .withMessage("Game with id 1 is inactive");
     }
 
     @Test
-    public void shouldThrowExceptionForTooManyRequestsForQuestion() {
+    void shouldThrowExceptionForLifelineRequestWhenGameIsInactive() {
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForLifeline(game))
+                .withMessage("Game with id 1 is inactive");
+    }
+
+    @Test
+    void shouldThrowExceptionForQuestionRequestWhenGameIsInactive() {
+        game.deactivate();
+
+        assertThatExceptionOfType(GameException.class)
+                .isThrownBy(() -> validateForQuestion(game))
+                .withMessage("Game with id 1 is inactive");
+    }
+
+    @Test
+    void shouldThrowExceptionForTooManyRequestsForQuestion() {
         prepareQuestions();
         game.setLevel(1);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, QUESTION))
+                .isThrownBy(() -> validateForQuestion(game))
                 .withMessageContaining("Invalid number of requests");
     }
 
     @Test
-    public void shouldThrowExceptionForTooManyRequestsForAnswer() {
+    void shouldThrowExceptionForTooManyRequestsForAnswer() {
         prepareQuestions();
         game.setLevel(2);
 
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, ANSWER))
+                .isThrownBy(() -> validateForAnswer(game))
                 .withMessageContaining("Invalid number of requests");
     }
 
     @Test
-    public void testValidRequestForQuestion() {
+    void testValidRequestForQuestion() {
         prepareQuestions();
         game.setLevel(2);
 
-        assertThatCode(() -> validate(game, QUESTION))
+        assertThatCode(() -> validateForQuestion(game))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    public void testUnknownRequestType() {
-        game.activate();
-
-        assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, UNKNOWN));
-    }
-
-    @Test
-    public void testValidRequestForAnswer() {
+    void testValidRequestForAnswer() {
         prepareQuestions();
         game.setLevel(1);
 
-        assertThatCode(() -> validate(game, ANSWER))
+        assertThatCode(() -> validateForAnswer(game))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    public void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
+    void shouldThrowExceptionWhenLastQuestionIsNotPresent() {
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, ANSWER))
+                .isThrownBy(() -> validateForAnswer(game))
                 .withMessageContaining("Game does not have last asked question");
     }
 
     @Test
-    public void shouldBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
+    void shouldBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         prepareQuestions();
 
-        assertThatCode(() -> validate(game, LIFELINE))
+        assertThatCode(() -> validateForLifeline(game))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    public void shouldNotBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
+    void shouldNotBePossibleToApplyLifelineToGameWithLastAskedQuestion() {
         assertThatExceptionOfType(GameException.class)
-                .isThrownBy(() -> validate(game, LIFELINE))
+                .isThrownBy(() -> validateForLifeline(game))
                 .withMessage("Cannot use a lifeline for a game without last asked question");
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenNoLifelineWasUsed() {
+    void shouldWorkCorrectlyWhenNoLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines();
 
@@ -135,7 +149,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenRequestedLifelineWasUsed() {
+    void shouldWorkCorrectlyWhenRequestedLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines(PHONE_A_FRIEND);
 
@@ -143,7 +157,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldWorkCorrectlyWhenRequestedLifelineWasNotUsed() {
+    void shouldWorkCorrectlyWhenRequestedLifelineWasNotUsed() {
         prepareQuestions();
         prepareLifelines(FIFTY_FIFTY, PHONE_A_FRIEND);
 
@@ -151,7 +165,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldReturnEmptySetWhenNoLifelineWasUsed() {
+    void shouldReturnEmptySetWhenNoLifelineWasUsed() {
         prepareQuestions();
         prepareLifelines();
 
@@ -159,7 +173,7 @@ public class GameUtilsTest {
     }
 
     @Test
-    public void shouldReturnRejectedPrefixesWhenFiftyWasUsed() {
+    void shouldReturnRejectedPrefixesWhenFiftyWasUsed() {
         prepareQuestions();
         prepareLifelines(FIFTY_FIFTY);
         game.getUsedLifelines().stream()
@@ -170,5 +184,11 @@ public class GameUtilsTest {
                 });
 
         assertThat(getRejectedAnswers(game)).containsExactlyInAnyOrder(A, C);
+    }
+
+    @Test
+    void testNextLevel() {
+        int nextLevel = GameUtils.getNextLevel(3);
+        assertThat(nextLevel).isEqualTo(4);
     }
 }

@@ -2,10 +2,8 @@ package pl.pilionerzy.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.dto.QuestionDto;
 import pl.pilionerzy.exception.GameException;
@@ -14,11 +12,11 @@ import pl.pilionerzy.exception.NotEnoughDataException;
 import pl.pilionerzy.mapping.DtoMapper;
 import pl.pilionerzy.model.Game;
 import pl.pilionerzy.model.Question;
-import pl.pilionerzy.util.GameUtils;
-import pl.pilionerzy.util.RequestType;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import java.util.Random;
-import java.util.Set;
+
+import static pl.pilionerzy.util.GameUtils.validateForQuestion;
 
 /**
  * Service that is responsible for operations on questions such as saving or drawing.
@@ -35,11 +33,11 @@ public class QuestionService {
     private final Random random = new Random();
     private final GameService gameService;
     private final DtoMapper mapper;
-    private final QuestionDao questionDao;
+    private final QuestionRepository questionRepository;
 
     public NewQuestionDto saveNew(NewQuestionDto newQuestion) {
-        Question question = mapper.mapToModel(newQuestion);
-        return mapper.mapToNewDto(questionDao.save(question));
+        var question = mapper.mapToModel(newQuestion);
+        return mapper.mapToNewDto(questionRepository.save(question));
     }
 
     /**
@@ -53,13 +51,13 @@ public class QuestionService {
      */
     @Transactional
     public QuestionDto getNextQuestionByGameId(Long gameId) {
-        Game game = gameService.findById(gameId);
-        GameUtils.validate(game, RequestType.QUESTION);
+        Game game = gameService.findByIdWithAskedQuestions(gameId);
+        validateForQuestion(game);
         return mapper.mapToDto(getAnotherQuestion(game));
     }
 
     private Question getAnotherQuestion(Game game) {
-        Set<Question> askedQuestions = game.getAskedQuestions();
+        var askedQuestions = game.getAskedQuestions();
         Question question;
         int attempts = 0;
         do {
@@ -74,12 +72,12 @@ public class QuestionService {
     }
 
     private Question getRandomQuestion() {
-        int numberOfActiveQuestions = questionDao.countByActive(true);
+        int numberOfActiveQuestions = questionRepository.countByActive(true);
         if (numberOfActiveQuestions == 0) {
             throw new NotEnoughDataException("No active questions available");
         }
         int page = random.nextInt(numberOfActiveQuestions);
-        Slice<Question> questionPage = questionDao.findByActive(true, PageRequest.of(page, 1));
+        var questionPage = questionRepository.findByActive(true, PageRequest.of(page, 1));
         if (questionPage.hasContent()) {
             return questionPage.getContent().get(0);
         } else {

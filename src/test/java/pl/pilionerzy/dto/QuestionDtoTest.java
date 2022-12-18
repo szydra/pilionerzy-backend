@@ -1,7 +1,7 @@
 package pl.pilionerzy.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.pilionerzy.model.Prefix;
 
 import java.io.IOException;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class QuestionDtoTest {
+class QuestionDtoTest {
 
     @Test
-    public void jsonShouldBePreparedCorrectly() throws IOException {
+    void jsonShouldBePreparedCorrectly() throws IOException {
         QuestionDto question = prepareQuestionWithFourAnswers();
         String expectedJson = "{\"content\": \"content\","
                 + "\"answers\": ["
@@ -32,7 +32,7 @@ public class QuestionDtoTest {
     }
 
     @Test
-    public void equalsShouldNotThrowStackOverflowError() {
+    void equalsShouldNotThrowStackOverflowError() {
         QuestionDto question1 = prepareQuestionWithOneAnswer();
         QuestionDto question2 = prepareQuestionWithOneAnswer();
 
@@ -40,7 +40,7 @@ public class QuestionDtoTest {
     }
 
     @Test
-    public void hashCodeShouldNotThrowStackOverflowError() {
+    void hashCodeShouldNotThrowStackOverflowError() {
         QuestionDto question = prepareQuestionWithOneAnswer();
 
         assertThatCode(question::hashCode).doesNotThrowAnyException();
@@ -71,5 +71,4 @@ public class QuestionDtoTest {
         answer.setQuestion(question);
         return question;
     }
-
 }

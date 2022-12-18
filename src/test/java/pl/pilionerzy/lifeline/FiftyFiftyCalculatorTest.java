@@ -1,27 +1,73 @@
 package pl.pilionerzy.lifeline;
 
-import org.junit.Before;
-import org.junit.Test;
-import pl.pilionerzy.model.Prefix;
-import pl.pilionerzy.model.Question;
+import org.junit.jupiter.api.Test;
+import pl.pilionerzy.lifeline.model.FiftyFiftyResult;
+import pl.pilionerzy.model.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
 
-public class FiftyFiftyCalculatorTest {
+import static com.google.common.collect.Lists.newArrayList;
+import static pl.pilionerzy.assertion.Assertions.assertThat;
+import static pl.pilionerzy.model.Lifeline.FIFTY_FIFTY;
 
-    private FiftyFiftyCalculator calculator = new FiftyFiftyCalculator();
-    private Question question;
+class FiftyFiftyCalculatorTest {
 
-    @Before
-    public void initQuestion() {
-        question = new Question();
-        question.setCorrectAnswer(Prefix.A);
+    private final LifelineProcessor<FiftyFiftyResult> calculator = new FiftyFiftyCalculator();
+
+    @Test
+    void shouldDiscardExactlyTwoIncorrectAnswers() {
+        // given
+        var game = createGame();
+
+        // when
+        var fiftyFiftyResult = calculator.process(game);
+
+        // then
+        assertThat(fiftyFiftyResult.getIncorrectPrefixes())
+                .hasSize(2)
+                .doesNotContain(Prefix.A);
     }
 
     @Test
-    public void shouldDiscardExactlyTwoIncorrectAnswers() {
-        assertThat(calculator.getPrefixesToDiscard(question).getPrefixesToDiscard())
-                .hasSize(2)
-                .doesNotContain(Prefix.A);
+    void shouldUpdateUsedLifelines() {
+        // given
+        var game = createGame();
+
+        // when
+        calculator.process(game);
+
+        // then
+        assertThat(game).hasUsedLifeline(FIFTY_FIFTY);
+    }
+
+    @Test
+    void shouldSaveRejectedAnswers() {
+        // given
+        var game = createGame();
+
+        // then
+        var fiftyFiftyResult = calculator.process(game);
+
+        // then
+        assertThat(game.getUsedLifelines())
+                .filteredOn(usedLifeline -> usedLifeline.getType() == FIFTY_FIFTY)
+                .flatExtracting(UsedLifeline::getRejectedAnswers)
+                .hasSameElementsAs(fiftyFiftyResult.getIncorrectPrefixes());
+    }
+
+    private Game createGame() {
+        var game = new Game();
+        game.setUsedLifelines(newArrayList());
+        game.setLastAskedQuestion(createQuestion());
+        return game;
+    }
+
+    private Question createQuestion() {
+        var question = new Question();
+        var answer = new Answer();
+        answer.setPrefix(Prefix.A);
+        answer.setCorrect(true);
+        question.setAnswers(List.of(answer));
+        return question;
     }
 }

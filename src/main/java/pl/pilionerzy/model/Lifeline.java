@@ -1,7 +1,12 @@
 package pl.pilionerzy.model;
 
 public enum Lifeline {
-    FIFTY_FIFTY,
     ASK_THE_AUDIENCE,
-    PHONE_A_FRIEND
+    FIFTY_FIFTY,
+    PHONE_A_FRIEND;
+
+    @Override
+    public String toString() {
+        return name().toLowerCase().replaceAll("_", "-");
+    }
 }

@@ -9,13 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import pl.pilionerzy.dao.QuestionDao;
 import pl.pilionerzy.dto.NewQuestionDto;
 import pl.pilionerzy.mapping.DtoMapper;
+import pl.pilionerzy.repository.QuestionRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,20 +29,20 @@ import java.util.List;
 @Component
 @Transactional
 @Slf4j
-@SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
 class InitialQuestionsLoader implements CommandLineRunner {
 
     private final DtoMapper dtoMapper;
-    private final QuestionDao questionDao;
+    private final QuestionRepository questionRepository;
     private final ResourceLoader resourceLoader;
 
     private Environment environment;
 
     @Override
     public void run(String... args) throws IOException {
-        String filename = environment.acceptsProfiles("test") ? "classpath:questions-test.yaml" : "file:questions.yaml";
-        Resource questionsYaml = resourceLoader.getResource(filename);
+        var testProfile = environment.acceptsProfiles(Profiles.of("test"));
+        var filename = testProfile ? "classpath:questions-test.yaml" : "file:questions.yaml";
+        var questionsYaml = resourceLoader.getResource(filename);
         if (!questionsYaml.exists()) {
             logger.info("File {} not found. No initial questions will be loaded", questionsYaml.getFilename());
         } else {
@@ -51,18 +52,18 @@ class InitialQuestionsLoader implements CommandLineRunner {
     }
 
     private void loadInitialQuestions(Resource questionsYaml) throws IOException {
-        String changedFilename = getChangedFilename(questionsYaml.getFilename());
-        Resource questionsLoadedYaml = resourceLoader.getResource("file:" + changedFilename);
+        var changedFilename = getChangedFilename(questionsYaml.getFilename());
+        var questionsLoadedYaml = resourceLoader.getResource("file:" + changedFilename);
         if (questionsLoadedYaml.exists()) {
             logger.warn("File {} found. Initial questions will not be added", changedFilename);
         } else {
             logger.info("Initial questions from file {} will be loaded", questionsYaml.getFilename());
-            List<NewQuestionDto> initialQuestions = readQuestions(questionsYaml);
+            var initialQuestions = readQuestions(questionsYaml);
             initialQuestions.stream()
                     .map(dtoMapper::mapToModel)
                     .forEach(question -> {
                         question.activate();
-                        questionDao.save(question);
+                        questionRepository.save(question);
                     });
             logger.info("{} initial questions saved", initialQuestions.size());
             rename(questionsYaml, questionsLoadedYaml);
@@ -70,18 +71,18 @@ class InitialQuestionsLoader implements CommandLineRunner {
     }
 
     String getChangedFilename(String filename) {
-        String nameWithoutExtension = Files.getNameWithoutExtension(filename);
-        String fileExtension = Files.getFileExtension(filename);
+        var nameWithoutExtension = Files.getNameWithoutExtension(filename);
+        var fileExtension = Files.getFileExtension(filename);
         return nameWithoutExtension + "_loaded." + fileExtension;
     }
 
     private List<NewQuestionDto> readQuestions(Resource questionsYaml) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
+        var objectMapper = new ObjectMapper(new YAMLFactory());
         return objectMapper.readValue(questionsYaml.getFile(), new QuestionList());
     }
 
     private void rename(Resource questionsYaml, Resource questionsLoadedYaml) throws IOException {
-        if (environment.acceptsProfiles("dev", "test")) {
+        if (environment.acceptsProfiles(Profiles.of("dev", "test"))) {
             logger.debug("File {} will not be renamed, because application is running in dev or test mode",
                     questionsYaml.getFilename());
             return;

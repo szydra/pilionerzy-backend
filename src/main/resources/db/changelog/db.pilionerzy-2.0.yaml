@@ -1,0 +1,246 @@
+databaseChangeLog:
+
+- changeSet:
+    id: pil-1
+    author: szydra
+    changes:
+    - createTable:
+        tableName: question
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: business_id
+            type: varchar(32)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: active
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: content
+            type: varchar(1023)
+            constraints:
+              nullable: false
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-2
+    author: szydra
+    changes:
+    - createTable:
+        tableName: answer
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: correct
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: prefix
+            type: char(1)
+            constraints:
+              nullable: false
+        - column:
+            name: content
+            type: varchar(1023)
+            constraints:
+              nullable: false
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              references: question(id)
+              foreignKeyName: fk_answer_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-3
+    author: szydra
+    changes:
+    - createTable:
+        tableName: game
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: business_id
+            type: varchar(32)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: start_time
+            type: datetime(6)
+            constraints:
+              nullable: false
+        - column:
+            name: active
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: level
+            type: tinyint
+            constraints:
+              nullable: false
+        - column:
+            name: last_asked_question_id
+            type: bigint
+            constraints:
+              references: question(id)
+              foreignKeyName: fk_game_last_asked_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-4
+    author: szydra
+    changes:
+    - createTable:
+        tableName: used_lifeline
+        columns:
+        - column:
+            name: request_order
+            type: tinyint
+            constraints:
+              nullable: false
+              primaryKey: true
+        - column:
+            name: game_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: game(id)
+              foreignKeyName: fk_used_lifeline_game
+        - column:
+            name: lifeline_type
+            type: varchar(16)
+            constraints:
+              nullable: false
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              references: question(id)
+              foreignKeyName: fk_used_lifeline_question
+        - column:
+            name: rejected_answers
+            type: varchar(3)
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-5
+    author: szydra
+    changes:
+    - createTable:
+        tableName: game_asked_question
+        columns:
+        - column:
+            name: game_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: game(id)
+              foreignKeyName: fk_asked_question_game
+        - column:
+            name: question_id
+            type: bigint
+            constraints:
+              nullable: false
+              primaryKey: true
+              references: question(id)
+              foreignKeyName: fk_asked_question
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-6
+    author: szydra
+    changes:
+    - renameColumn:
+        columnDataType: varchar(32)
+        newColumnName: hash
+        oldColumnName: business_id
+        tableName: question
+
+- changeSet:
+    id: pil-7
+    author: szydra
+    changes:
+    - dropColumn:
+        columnName: business_id
+        tableName: game
+
+- changeSet:
+    id: pil-8
+    author: szydra
+    changes:
+    - createTable:
+        tableName: level
+        columns:
+        - column:
+            name: id
+            type: tinyint
+            constraints:
+              nullable: false
+              primaryKey: true
+        - column:
+            name: award
+            type: varchar(15)
+            constraints:
+              nullable: false
+        - column:
+            name: guaranteed
+            type: boolean
+            constraints:
+              nullable: false
+    modifySql:
+    - append:
+        dbms: mysql
+        value: ' engine=innodb'
+
+- changeSet:
+    id: pil-9
+    author: szydra
+    changes:
+    - loadData:
+        file: db/changelog/data/levels.csv
+        tableName: level

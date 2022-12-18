@@ -1,15 +1,15 @@
 package pl.pilionerzy.lifeline.model;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static pl.pilionerzy.model.Prefix.*;
 
-public class AudienceAnswerTest {
+class AudienceAnswerTest {
 
     @Test
-    public void chartShouldBeSortedAccordingToPrefixes() {
+    void chartShouldBeSortedAccordingToPrefixes() {
         AudienceAnswer audienceAnswer = new AudienceAnswer(
                 ImmutableMap.of(
                         B, PartialAudienceAnswer.withVotes(10),

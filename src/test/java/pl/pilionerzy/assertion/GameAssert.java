@@ -2,6 +2,7 @@ package pl.pilionerzy.assertion;
 
 import org.assertj.core.api.AbstractObjectAssert;
 import pl.pilionerzy.model.Game;
+import pl.pilionerzy.model.Lifeline;
 
 import java.util.Objects;
 
@@ -37,9 +38,20 @@ public class GameAssert extends AbstractObjectAssert<GameAssert, Game> {
     public GameAssert hasLevel(int expectedLevel) {
         isNotNull();
 
-        Integer actualLevel = actual.getLevel();
+        var actualLevel = actual.getLevel();
         if (!Objects.equals(actualLevel, expectedLevel)) {
             failWithMessage("Expected to have level <%s>, but was <%s>", expectedLevel, actualLevel);
+        }
+
+        return this;
+    }
+
+    public GameAssert hasUsedLifeline(Lifeline lifeline) {
+        isNotNull();
+
+        var usedLifelines = actual.getUsedLifelines();
+        if (usedLifelines.stream().noneMatch(usedLifeline -> usedLifeline.getType() == lifeline)) {
+            failWithMessage("Expected to have used lifeline <%s>", lifeline);
         }
 
         return this;

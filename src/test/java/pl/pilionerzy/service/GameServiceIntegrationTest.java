@@ -1,21 +1,18 @@
 package pl.pilionerzy.service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import pl.pilionerzy.dto.GameDto;
-import pl.pilionerzy.model.Game;
-import pl.pilionerzy.model.Question;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class GameServiceIntegrationTest {
+class GameServiceIntegrationTest {
 
     @Autowired
     private GameService gameService;
@@ -24,8 +21,8 @@ public class GameServiceIntegrationTest {
     private QuestionService questionService;
 
     @Test
-    public void shouldStartNewGame() {
-        GameDto startedGame = gameService.startNewGame();
+    void shouldStartNewGame() {
+        var startedGame = gameService.startNewGame();
 
         assertThat(startedGame)
                 .hasFieldOrPropertyWithValue("level", 0)
@@ -34,10 +31,10 @@ public class GameServiceIntegrationTest {
     }
 
     @Test
-    public void shouldStopExistingGame() {
-        GameDto newGame = gameService.startNewGame();
+    void shouldStopExistingGame() {
+        var newGame = gameService.startNewGame();
 
-        GameDto stoppedGame = gameService.stopById(newGame.getId());
+        var stoppedGame = gameService.stopById(newGame.getId());
 
         assertThat(stoppedGame)
                 .hasFieldOrPropertyWithValue("id", newGame.getId())
@@ -46,20 +43,20 @@ public class GameServiceIntegrationTest {
     }
 
     @Test
-    public void shouldStopGameAndReturnItWithCorrectAnswer() {
+    void shouldStopGameAndReturnItWithCorrectAnswer() {
         // given
-        GameDto newGame = gameService.startNewGame();
+        var newGame = gameService.startNewGame();
         questionService.getNextQuestionByGameId(newGame.getId());
-        Game savedGame = gameService.findById(newGame.getId());
-        Question question = savedGame.getLastAskedQuestion();
+        var savedGame = gameService.findByIdWithLastQuestionAndAnswers(newGame.getId());
+        var question = savedGame.getLastAskedQuestion();
 
         // when
-        GameDto stoppedGame = gameService.stopById(newGame.getId());
+        var stoppedGame = gameService.stopById(newGame.getId());
 
         // then
         assertThat(stoppedGame)
                 .hasFieldOrPropertyWithValue("id", newGame.getId())
                 .hasFieldOrPropertyWithValue("active", false)
-                .hasFieldOrPropertyWithValue("correctAnswer", question.getCorrectAnswer());
+                .hasFieldOrPropertyWithValue("correctAnswer", question.getCorrectAnswer().getPrefix());
     }
 }

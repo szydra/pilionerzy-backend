@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 @JsonSerialize(using = ToStringSerializer.class)
 public class PartialAudienceAnswer {
 
-    private int votes;
+    private final int votes;
 
     private PartialAudienceAnswer(int votes) {
         this.votes = votes;
